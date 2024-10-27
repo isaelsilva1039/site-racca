@@ -1,0 +1,101 @@
+/* Header Container */
+.header-container {
+    background-color: #ffffff;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  /* Logo Container */
+  .logo-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .racca-logo {
+    width: 190px;
+    height: auto;
+    margin-right: -100px;
+  }
+  
+  /* Navigation */
+  .nav-container {
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente */
+    gap: 40px; /* Espaçamento entre os itens */
+    flex: 1; /* Garante que o menu ocupe o espaço restante */
+  }
+  
+  .nav-link {
+    position: relative;
+    text-decoration: none;
+    color: #a100ff;
+    font-weight: bold;
+    transition: color 0.3s;
+    padding-bottom: 5px;
+    font-size: 22px;
+  }
+  
+  /* Hover Effect - Cor */
+  .nav-link:hover {
+    color: #df80fc;
+  }
+  
+  /* Pseudo-elemento para o sublinhado */
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background-color: #df80fc;
+    transition: width 0.3s ease-out;
+  }
+  
+  /* Efeito de sublinhado ao passar o mouse */
+  .nav-link:hover::after {
+    width: 100%;
+  }
+  
+  /* Ícone do Usuário */
+  .user-icon {
+    color: #a100ff;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .user-icon:hover {
+    color: #df80fc;
+  }
+  
+  .icon {
+    font-size: 32px;
+  }
+  
+  /* Responsividade */
+  @media (max-width: 768px) {
+    .header-container {
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
+  
+    .nav-container {
+      flex-direction: column;
+      gap: 20px;
+    }
+  
+    .btn-restricted {
+      width: 100%;
+    }
+    .racca-logo {
+  
+        margin-right: 0;
+      }
+  }
+  
