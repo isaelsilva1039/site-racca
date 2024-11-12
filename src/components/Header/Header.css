@@ -1,101 +1,141 @@
 /* Header Container */
 .header-container {
-    background-color: #ffffff;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-  }
+  background-color: #ffffff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Logo Container */
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.racca-logo {
+  width: 190px;
+  height: auto;
+  margin-right: -100px;
+}
+
+/* Navigation */
+.nav-container {
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  gap: 40px; /* Espaçamento entre os itens */
+  flex: 1; /* Garante que o menu ocupe o espaço restante */
+}
+
+.nav-link {
+  position: relative;
+  text-decoration: none;
+  color: #a100ff;
+  font-weight: bold;
+  transition: color 0.3s;
+  padding-bottom: 5px;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* Hover Effect - Cor */
+.nav-link:hover {
+  color: #df80fc;
+}
+
+/* Pseudo-elemento para o sublinhado */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background-color: #df80fc;
+  transition: width 0.3s ease-out;
+}
+
+/* Efeito de sublinhado ao passar o mouse */
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  width: 200px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Mostrar o Dropdown */
+.nav-link.dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Dropdown Item */
+.dropdown-item {
+  padding: 10px 20px;
+  text-decoration: none;
+  color: #a100ff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* Ícone do Usuário */
+.user-icon {
+  color: #a100ff;
+  transition: color 0.3s;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  height: 50px;
+  width: 50px;
+}
+
+.user-icon:hover {
+  color: #df80fc;
   
-  /* Logo Container */
-  .logo-container {
-    display: flex;
-    align-items: center;
+}
+
+.icon {
+  font-size: 32px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
   }
-  
-  .racca-logo {
-    width: 190px;
-    height: auto;
-    margin-right: -100px;
-  }
-  
-  /* Navigation */
+
   .nav-container {
-    display: flex;
-    justify-content: center; /* Centraliza horizontalmente */
-    gap: 40px; /* Espaçamento entre os itens */
-    flex: 1; /* Garante que o menu ocupe o espaço restante */
+    flex-direction: column;
+    gap: 20px;
   }
-  
-  .nav-link {
-    position: relative;
-    text-decoration: none;
-    color: #a100ff;
-    font-weight: bold;
-    transition: color 0.3s;
-    padding-bottom: 5px;
-    font-size: 22px;
-  }
-  
-  /* Hover Effect - Cor */
-  .nav-link:hover {
-    color: #df80fc;
-  }
-  
-  /* Pseudo-elemento para o sublinhado */
-  .nav-link::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 0;
-    height: 2px;
-    background-color: #df80fc;
-    transition: width 0.3s ease-out;
-  }
-  
-  /* Efeito de sublinhado ao passar o mouse */
-  .nav-link:hover::after {
+
+  .btn-restricted {
     width: 100%;
   }
-  
-  /* Ícone do Usuário */
-  .user-icon {
-    color: #a100ff;
-    transition: color 0.3s;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
+
+  .racca-logo {
+    margin-right: 0;
   }
-  
-  .user-icon:hover {
-    color: #df80fc;
-  }
-  
-  .icon {
-    font-size: 32px;
-  }
-  
-  /* Responsividade */
-  @media (max-width: 768px) {
-    .header-container {
-      flex-direction: column;
-      gap: 10px;
-      text-align: center;
-    }
-  
-    .nav-container {
-      flex-direction: column;
-      gap: 20px;
-    }
-  
-    .btn-restricted {
-      width: 100%;
-    }
-    .racca-logo {
-  
-        margin-right: 0;
-      }
-  }
-  
+}

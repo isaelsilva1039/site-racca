@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const Banner = styled.section`
-  background: linear-gradient(to right, #9f00ff, #ff00ff);
+  background: linear-gradient(to right, #a100ff, #7d00cc); /* Gradiente com cores principais */
   color: white;
   text-align: center;
   padding: 50px;
@@ -15,7 +15,7 @@ const ButtonGroup = styled.div`
   margin-top: 20px;
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 15px;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -24,13 +24,18 @@ const ButtonGroup = styled.div`
 `;
 
 const Button = styled.button`
-  background-color: #dfff00;
-  border: none;
-  padding: 10px 20px;
+  background-color: white;
+  color: #a100ff;
+  border: 2px solid #a100ff;
+  padding: 10px 25px;
+  border-radius: 5px;
+  font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
 
   &:hover {
-    background-color: #bfff00;
+    background-color: #a100ff;
+    color: white;
   }
 `;
 
