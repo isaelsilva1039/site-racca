@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
+
 // Estilização do container do vídeo flutuante
 const VideoContainer = styled.div`
   position: fixed;
@@ -15,8 +16,6 @@ const VideoContainer = styled.div`
   z-index: 1000;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   display: ${({ isVisible }) => (isVisible ? 'block' : 'none')};
-  transition: opacity 0.3s ease-in-out;
-  opacity: ${({ isVisible }) => (isVisible ? '1' : '0')};
 `;
 
 // Estilização do cabeçalho do vídeo
@@ -47,25 +46,17 @@ const Button = styled.button`
 // Estilização do elemento de vídeo
 const VideoElement = styled.video`
   width: 100%;
-  height: calc(100% - 40px); /* Ajusta para o espaço disponível abaixo do cabeçalho */
-  background: black;
+  height: calc(120%); /* Ajusta para o espaço disponível */
 `;
 
-// Componente Principal
 function FloatingVideo() {
-  // Estados para controle de mudo, visibilidade e reprodução
   const [isMuted, setIsMuted] = useState(false); // Som ativado por padrão
   const [isVisible, setIsVisible] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true); // Vídeo está tocando por padrão
+  const videoRef = useRef(null); // Referência ao elemento de vídeo
 
-  // Referência ao elemento de vídeo
-  const videoRef = useRef(null);
-
-  // Função para alternar o mudo
-  const toggleMute = () => {
-    setIsMuted((prev) => !prev);
-    console.log(`Mudo ${!isMuted ? 'ativado' : 'desativado'}.`);
-  };
+  // Função para alternar o mute
+  const toggleMute = () => setIsMuted((prev) => !prev);
 
   // Função para alternar entre reproduzir e pausar
   const togglePlayPause = () => {
@@ -74,55 +65,43 @@ function FloatingVideo() {
     if (isPlaying) {
       videoRef.current.pause();
       setIsPlaying(false);
-      console.log('Vídeo pausado.');
     } else {
-      videoRef.current.play()
-        .then(() => {
-          setIsPlaying(true);
-          console.log('Vídeo reproduzindo.');
-        })
-        .catch((error) => {
-          console.error('Erro ao tentar reproduzir o vídeo:', error);
-        });
+      videoRef.current.play();
+      setIsPlaying(true);
     }
   };
 
-  // Função para fechar o vídeo e parar a reprodução
+  // Função para fechar o vídeo e parar o áudio
   const closeVideo = () => {
     if (videoRef.current) {
       videoRef.current.pause();
       videoRef.current.currentTime = 0; // Opcional: Reinicia o vídeo
-      console.log('Vídeo fechado manualmente.');
     }
     setIsVisible(false);
   };
 
   // Função para fechar o vídeo quando ele termina
   const handleVideoEnd = () => {
-    console.log('Vídeo terminou de reproduzir.');
     setIsVisible(false); // Fecha o vídeo quando termina
   };
 
-  // Efeito para controlar o estado de reprodução e mudo
+  // Efeito para controlar o estado de reprodução e mute
   useEffect(() => {
     const videoElement = videoRef.current;
 
     if (videoElement) {
-      videoElement.muted = isMuted; // Define o mudo com base no estado
+      videoElement.muted = isMuted; // Define o mute com base no estado
       if (isPlaying) {
         videoElement
           .play()
           .then(() => {
             if (!isMuted) {
-              videoElement.muted = false; // Desativa o mudo se permitido
+              videoElement.muted = false; // Desativa o mute se permitido
             }
-            console.log('Vídeo reproduzido com sucesso.');
           })
           .catch((error) => {
-            console.error('Autoplay bloqueado ou erro na reprodução:', error);
-            setIsMuted(true); // Ativa o mudo se o navegador bloquear
-            setIsPlaying(false); // Atualiza o estado de reprodução
-            setIsVisible(false); // Fecha o vídeo em caso de erro
+            console.error('Autoplay bloqueado:', error);
+            setIsMuted(true); // Ativa o mute se o navegador bloquear
           });
       } else {
         videoElement.pause();
@@ -130,23 +109,12 @@ function FloatingVideo() {
     }
   }, [isMuted, isPlaying]);
 
-  // Efeito para adicionar o listener do evento 'ended' apenas uma vez
-  useEffect(() => {
-    const videoElement = videoRef.current;
-    if (videoElement) {
-      videoElement.addEventListener('ended', handleVideoEnd);
-      return () => {
-        videoElement.removeEventListener('ended', handleVideoEnd);
-      };
-    }
-  }, []);
-
   return (
     <VideoContainer isVisible={isVisible}>
       <VideoHeader>
         <span>Racca Saúde</span>
         <div>
-          <Button onClick={toggleMute} aria-label="Alternar Mudo">
+          <Button onClick={toggleMute} aria-label="Alternar Mute">
             {isMuted ? '🔇' : '🔊'}
           </Button>
           <Button onClick={togglePlayPause} aria-label="Alternar Play/Pause">
@@ -162,7 +130,6 @@ function FloatingVideo() {
         loop={false} // Sem loop para não reiniciar
         muted={isMuted}
         onEnded={handleVideoEnd} // Fecha ao terminar
-        onError={(e) => console.error('Erro no elemento de vídeo:', e)}
       />
     </VideoContainer>
   );
