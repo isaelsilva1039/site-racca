@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from 'react';
+// components/FloatingVideo.js
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
+
+// Estilização do container do vídeo flutuante
 const VideoContainer = styled.div`
   position: fixed;
   bottom: 90px; /* Ajuste para ficar acima do botão do WhatsApp */
@@ -15,6 +18,7 @@ const VideoContainer = styled.div`
   display: ${({ isVisible }) => (isVisible ? 'block' : 'none')};
 `;
 
+// Estilização do cabeçalho do vídeo
 const VideoHeader = styled.div`
   display: flex;
   justify-content: space-between;
@@ -25,6 +29,7 @@ const VideoHeader = styled.div`
   font-size: 0.9rem;
 `;
 
+// Estilização dos botões no cabeçalho
 const Button = styled.button`
   background: none;
   border: none;
@@ -38,6 +43,7 @@ const Button = styled.button`
   }
 `;
 
+// Estilização do elemento de vídeo
 const VideoElement = styled.video`
   width: 100%;
   height: calc(120%); /* Ajusta para o espaço disponível */
@@ -46,45 +52,79 @@ const VideoElement = styled.video`
 function FloatingVideo() {
   const [isMuted, setIsMuted] = useState(false); // Som ativado por padrão
   const [isVisible, setIsVisible] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true); // Vídeo está tocando por padrão
+  const videoRef = useRef(null); // Referência ao elemento de vídeo
 
+  // Função para alternar o mute
   const toggleMute = () => setIsMuted((prev) => !prev);
-  const closeVideo = () => setIsVisible(false);
 
+  // Função para alternar entre reproduzir e pausar
+  const togglePlayPause = () => {
+    if (!videoRef.current) return;
+
+    if (isPlaying) {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      videoRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  // Função para fechar o vídeo e parar o áudio
+  const closeVideo = () => {
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0; // Opcional: Reinicia o vídeo
+    }
+    setIsVisible(false);
+  };
+
+  // Função para fechar o vídeo quando ele termina
   const handleVideoEnd = () => {
     setIsVisible(false); // Fecha o vídeo quando termina
   };
 
+  // Efeito para controlar o estado de reprodução e mute
   useEffect(() => {
-    const videoElement = document.querySelector('video');
+    const videoElement = videoRef.current;
 
     if (videoElement) {
       videoElement.muted = isMuted; // Define o mute com base no estado
-      videoElement
-        .play()
-        .then(() => {
-          if (!isMuted) {
-            videoElement.muted = false; // Desativa o mute se permitido
-          }
-        })
-        .catch((error) => {
-          console.error('Autoplay bloqueado:', error);
-          setIsMuted(true); // Ativa o mute se o navegador bloquear
-        });
+      if (isPlaying) {
+        videoElement
+          .play()
+          .then(() => {
+            if (!isMuted) {
+              videoElement.muted = false; // Desativa o mute se permitido
+            }
+          })
+          .catch((error) => {
+            console.error('Autoplay bloqueado:', error);
+            setIsMuted(true); // Ativa o mute se o navegador bloquear
+          });
+      } else {
+        videoElement.pause();
+      }
     }
-  }, [isMuted]);
+  }, [isMuted, isPlaying]);
 
   return (
     <VideoContainer isVisible={isVisible}>
       <VideoHeader>
         <span>Racca Saúde</span>
         <div>
-          <Button onClick={toggleMute}>
+          <Button onClick={toggleMute} aria-label="Alternar Mute">
             {isMuted ? '🔇' : '🔊'}
           </Button>
-          <Button onClick={closeVideo}>❌</Button>
+          <Button onClick={togglePlayPause} aria-label="Alternar Play/Pause">
+            {isPlaying ? '⏸️' : '▶️'}
+          </Button>
+          <Button onClick={closeVideo} aria-label="Fechar Vídeo">❌</Button>
         </div>
       </VideoHeader>
       <VideoElement
+        ref={videoRef}
         src="/video.mp4" // Substitua pelo caminho correto do vídeo
         autoPlay
         loop={false} // Sem loop para não reiniciar

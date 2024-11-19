@@ -1,23 +1,13 @@
 import './Header.css';
 import { AccountCircle } from '@mui/icons-material';
 import { useState, useEffect, useRef } from 'react';
-import { FaBars, FaTimes } from 'react-icons/fa';
 
 function Header() {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef(null); // Referência para o dropdown
 
   const toggleDropdown = () => {
     setDropdownOpen((prev) => !prev);
-  };
-
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen((prev) => !prev);
-  };
-
-  const closeMobileMenu = () => {
-    setMobileMenuOpen(false);
   };
 
   const handleAgendamentoClick = () => {
@@ -47,26 +37,15 @@ function Header() {
       <div className="logo-container">
         <img src="/img/logo-racca.png" alt="Racca Saúde Logo" className="racca-logo" />
       </div>
+      <nav className="nav-container">
+        <a href="#home" className="nav-link">Início</a>
+        <a href="#benefits" className="nav-link">Benefícios</a>
+        <a href="#plans" className="nav-link">Planos</a>
 
-      {/* Botão de Menu Mobile */}
-      <div className="hamburger-menu" onClick={toggleMobileMenu}>
-        {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
-      </div>
-
-      {/* Navegação para Desktop e Mobile */}
-      <nav className={`nav-container ${isMobileMenuOpen ? 'nav-open' : ''}`}>
-        <a href="#home" className="nav-link" onClick={closeMobileMenu}>
-          Início
-        </a>
-        <a href="#benefits" className="nav-link" onClick={closeMobileMenu}>
-          Benefícios
-        </a>
-        <a href="#plans" className="nav-link" onClick={closeMobileMenu}>
-          Planos
-        </a>
-        <div
-          className="nav-link dropdown"
-          onClick={toggleDropdown}
+        {/* Dropdown Sou Cliente */}
+        <div 
+          className="nav-link dropdown" 
+          onClick={toggleDropdown} 
           ref={dropdownRef}
         >
           Sou Cliente
@@ -82,8 +61,7 @@ function Header() {
           )}
         </div>
       </nav>
-
-      {/* Ícone de Usuário */}
+      {/* Ícone do usuário com redirecionamento */}
       <a href="/admin" className="user-icon">
         <AccountCircle className="icon" />
       </a>

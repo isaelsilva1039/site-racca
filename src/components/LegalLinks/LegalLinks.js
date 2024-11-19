@@ -1,3 +1,4 @@
+// components/LegalLinks.js
 import styled from 'styled-components';
 import { FaInstagram, FaFacebook, FaLinkedin } from 'react-icons/fa'; // Importando os ícones
 
@@ -37,7 +38,14 @@ const LegalSection = styled.div`
   }
 `;
 
-function LegalLinks() {
+function LegalLinks({ onFAQClick }) { // Recebendo a prop
+  const handleFAQClick = (e) => {
+    e.preventDefault(); // Evita a navegação padrão
+    if (onFAQClick) {
+      onFAQClick();
+    }
+  };
+
   return (
     <LegalSection>
       {/* Ícones das Redes Sociais */}
@@ -55,11 +63,11 @@ function LegalLinks() {
 
       {/* Links Legais */}
       <div className="legal-links">
-        <a href="/politica-de-privacidade" target="_blank" rel="noopener noreferrer">
+        <a href="/politica-de-privacidade" rel="noopener noreferrer">
           Política de Privacidade
         </a>
         |
-        <a href="/faq" target="_blank" rel="noopener noreferrer">
+        <a href="#faq" onClick={handleFAQClick} rel="noopener noreferrer">
           FAQ
         </a>
         |
