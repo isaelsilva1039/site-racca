@@ -1,14 +1,29 @@
 import styled from 'styled-components';
 
 const Banner = styled.section`
-  background: linear-gradient(to right, #a100ff, #7d00cc); /* Gradiente com cores principais */
+  background: 
+    linear-gradient(rgba(161, 0, 255, 0.7), rgba(161, 0, 255, 0.7)), /* Gradiente roxo com transparência */
+    url('/telemedicina.jpg') no-repeat center center/cover; /* Substitua pelo caminho correto da imagem */
   color: white;
   text-align: center;
   padding: 50px;
+  min-height: 70vh; /* Define uma altura mínima maior */
+
+  display: flex;
+  justify-content: center; /* Centraliza o conteúdo horizontalmente */
+  align-items: center; /* Centraliza o conteúdo verticalmente */
 
   @media (max-width: 768px) {
     padding: 30px;
+    min-height: 50vh; /* Altura menor em telas pequenas */
   }
+`;
+
+const Overlay = styled.div`
+  background-color: rgba(0, 0, 0, 0.5); /* Adiciona um overlay escuro */
+  padding: 50px;
+  border-radius: 10px;
+  display: inline-block;
 `;
 
 const ButtonGroup = styled.div`
@@ -42,12 +57,14 @@ const Button = styled.button`
 function Home() {
   return (
     <Banner>
-      <h1>Racca Saúde</h1>
-      <p>Terapia Online e Monitoramento</p>
-      <ButtonGroup>
-        <Button>Veja Planos</Button>
-        <Button>Saiba Mais</Button>
-      </ButtonGroup>
+      <Overlay>
+        <h1>Racca Saúde</h1>
+        <p>Terapia Online e Monitoramento</p>
+        <ButtonGroup>
+          <Button>Veja Planos</Button>
+          <Button>Saiba Mais</Button>
+        </ButtonGroup>
+      </Overlay>
     </Banner>
   );
 }

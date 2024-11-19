@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import './Plans.css';
-import { FaHeart, FaStar, FaGem, FaCrown } from 'react-icons/fa';
+import { FaHeart, FaStar, FaGem, FaBolt, FaCrown } from 'react-icons/fa';
 import { initMercadoPago, Payment } from '@mercadopago/sdk-react';
 
-initMercadoPago('TEST-5311c89c-ffbd-4482-8716-9c76457593df'); // Use sua public key
+initMercadoPago('TEST-5311c89c-ffbd-4482-8716-9c76457593df');
 
 function Plans() {
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -71,11 +71,59 @@ function Plans() {
         'Médicos Especialistas: R$ 60,00',
       ],
     },
-    // Adicione os outros planos conforme necessário
+    {
+      id: 1084,
+      icon: <FaGem />,
+      title: 'Plano Confort Extra',
+      preferenceId: 'PREFERENCE_ID_CONFORT_EXTRA',
+      prices: {
+        fidelidade: 'R$ 109,90/mês c/ fidelidade 12 meses',
+        semFidelidade: 'R$ 149,90/mês s/ fidelidade',
+      },
+      benefits: [
+        'Desconto em farmácias parceiras',
+        '5% de desconto p/ pagamento antecipado',
+        '4 terapias mensais de 45 minutos cada',
+      ],
+    },
+    {
+      id: 500,
+      icon: <FaBolt />,
+      title: 'Plano Premium',
+      preferenceId: 'PREFERENCE_ID_PREMIUM',
+      prices: {
+        fidelidade: 'R$ 99,90/mês c/ fidelidade 12 meses',
+        semFidelidade: 'R$ 139,90/mês s/ fidelidade',
+      },
+      benefits: [
+        'Desconto em farmácias parceiras',
+        '5% de desconto p/ pagamento antecipado',
+        '2 terapias mensais de 45 minutos cada',
+        '1 sessão com especialista ao mês',
+        'Especialistas Disponíveis: Cardiologista, Dermatologista, Endocrinologista, Geriatria, Ginecologista, Neurologista, Nutricionista, Ortopedista, Otorrinolaringologista, Pediatria, Traumatologia, Urologista.',
+      ],
+    },
+    {
+      id: 706,
+      icon: <FaCrown />,
+      title: 'Plano Premium Extra',
+      preferenceId: 'PREFERENCE_ID_PREMIUM_EXTRA',
+      prices: {
+        fidelidade: 'R$ 119,90/mês c/ fidelidade 12 meses',
+        semFidelidade: 'R$ 159,90/mês s/ fidelidade',
+      },
+      benefits: [
+        'Desconto em farmácias parceiras',
+        '5% de desconto p/ pagamento antecipado',
+        '4 terapias mensais de 45 minutos cada',
+        '1 sessão com especialista ao mês',
+        'Especialistas Disponíveis: Cardiologista, Dermatologista, Endocrinologista, Geriatria, Ginecologista, Neurologista, Nutricionista, Ortopedista, Otorrinolaringologista, Pediatria, Traumatologia, Urologista.',
+      ],
+    },
   ];
 
   const initialization = (preferenceId) => ({
-    amount: 100, // Ajuste o valor conforme necessário ou obtenha dinamicamente
+    amount: 100,
     preferenceId,
   });
 
@@ -90,9 +138,8 @@ function Plans() {
   };
 
   const onSubmit = async ({ selectedPaymentMethod, formData }) => {
-    // Envie os dados para o backend para processar o pagamento
     try {
-      const response = await fetch('http://localhost:5000/process_payment', { // Substitua pela URL correta do seu backend
+      const response = await fetch('http://localhost:5000/process_payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
