@@ -50,13 +50,13 @@ function LegalLinks({ onFAQClick }) { // Recebendo a prop
     <LegalSection>
       {/* Ícones das Redes Sociais */}
       <div className="social-icons">
-        <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
+        <a href="https://www.instagram.com/raccasaude/" target="_blank" rel="noopener noreferrer">
           <FaInstagram />
         </a>
-        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
+        <a href="https://www.facebook.com/raccasaude" target="_blank" rel="noopener noreferrer">
           <FaFacebook />
         </a>
-        <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer">
+        <a href="https://www.linkedin.com/in/racca-sa%C3%BAde-64a48b2a5/" target="_blank" rel="noopener noreferrer">
           <FaLinkedin />
         </a>
       </div>
