@@ -1,6 +1,6 @@
-// components/LegalLinks.js
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaInstagram, FaFacebook, FaLinkedin } from 'react-icons/fa'; // Importando os ícones
+import { FaInstagram, FaFacebook, FaLinkedin } from 'react-icons/fa';
 
 const LegalSection = styled.div`
   background-color: #f8f9fa; /* Cor de fundo */
@@ -25,7 +25,7 @@ const LegalSection = styled.div`
   }
 
   .legal-links {
-    a {
+    a, .router-link {
       text-decoration: none;
       color: #a100ff;
       margin: 0 10px;
@@ -38,9 +38,9 @@ const LegalSection = styled.div`
   }
 `;
 
-function LegalLinks({ onFAQClick }) { // Recebendo a prop
+function LegalLinks({ onFAQClick }) {
   const handleFAQClick = (e) => {
-    e.preventDefault(); // Evita a navegação padrão
+    e.preventDefault();
     if (onFAQClick) {
       onFAQClick();
     }
@@ -63,21 +63,21 @@ function LegalLinks({ onFAQClick }) { // Recebendo a prop
 
       {/* Links Legais */}
       <div className="legal-links">
-        <a href="/politica-de-privacidade" rel="noopener noreferrer">
+        <Link to="/politica-de-privacidade" className="router-link">
           Política de Privacidade
-        </a>
+        </Link>
         |
         <a href="#faq" onClick={handleFAQClick} rel="noopener noreferrer">
           FAQ
         </a>
         |
-        <a href="/termos-de-uso" target="_blank" rel="noopener noreferrer">
+        <Link to="/termos-de-uso" className="router-link">
           Termos de Uso
-        </a>
+        </Link>
         |
-        <a href="/politica-de-reembolso" target="_blank" rel="noopener noreferrer">
+        <Link to="/politica-de-reembolso" className="router-link">
           Política de Reembolso
-        </a>
+        </Link>
       </div>
     </LegalSection>
   );
