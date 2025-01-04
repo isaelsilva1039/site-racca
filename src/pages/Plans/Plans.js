@@ -3,7 +3,7 @@ import './Plans.css';
 import { FaHeart, FaStar, FaGem, FaBolt, FaCrown } from 'react-icons/fa';
 import { initMercadoPago, Payment } from '@mercadopago/sdk-react';
 
-initMercadoPago('TEST-5311c89c-ffbd-4482-8716-9c76457593df');
+initMercadoPago('APP_USR-1bbe4abf-703f-4e4a-a36e-844a0e570a0c');
 
 function Plans() {
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -139,19 +139,22 @@ function Plans() {
 
   const onSubmit = async ({ selectedPaymentMethod, formData }) => {
     try {
-      const response = await fetch('http://localhost:5000/process_payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/process_payment`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Erro ao processar pagamento');
       }
-
+  
       const paymentResult = await response.json();
       console.log('Pagamento realizado com sucesso:', paymentResult);
       alert('Pagamento realizado com sucesso!');
@@ -161,6 +164,7 @@ function Plans() {
       alert(`Erro no pagamento: ${error.message}`);
     }
   };
+  
 
   const onError = (error) => {
     console.error("Erro no pagamento:", error);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Importa o hook para navegação
+import { useNavigate } from 'react-router-dom'; 
 import styled from 'styled-components';
 
 const PrivacyContainer = styled.div`
@@ -182,7 +182,6 @@ const PrivacyPolicy = () => {
         e outros agentes conforme necessário para prestação de serviços ou
         cumprimento de obrigações legais.
       </p>
-      {/* Continue o conteúdo restante até o final */}
       <p className="footer-note">
         Última atualização: 31 de janeiro de 2024.
       </p>
