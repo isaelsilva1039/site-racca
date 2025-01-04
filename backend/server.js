@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
-const mercadopago = require('mercadopago');
+const { MercadoPagoConfig, Payment } = require('mercadopago');
 
 // Carrega variáveis de ambiente
 dotenv.config();
@@ -15,8 +15,10 @@ if (!process.env.MERCADOPAGO_ACCESS_TOKEN) {
   console.error('Erro: MERCADOPAGO_ACCESS_TOKEN não configurado no .env');
   process.exit(1); // Finaliza o servidor se o token estiver ausente
 }
-mercadopago.configure({
-  access_token: process.env.MERCADOPAGO_ACCESS_TOKEN,
+
+// Configuração do cliente Mercado Pago
+const client = new MercadoPagoConfig({
+  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
 });
 
 // Middlewares
@@ -48,11 +50,24 @@ app.post('/create_preference', async (req, res) => {
   };
 
   try {
-    const response = await mercadopago.preferences.create(preference);
+    const response = await client.preferences.create(preference);
     res.json({ id: response.body.id });
   } catch (error) {
     console.error('Erro ao criar preferência:', error);
     res.status(500).json({ error: 'Erro ao criar preferência de pagamento' });
+  }
+});
+
+// Rota para processar pagamento
+app.post('/process_payment', async (req, res) => {
+  const payment = new Payment(client);
+
+  try {
+    const response = await payment.create({ body: req.body });
+    res.json(response.body);
+  } catch (error) {
+    console.error('Erro ao processar pagamento:', error);
+    res.status(500).json({ error: 'Erro ao processar pagamento' });
   }
 });
 

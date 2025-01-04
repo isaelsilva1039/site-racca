@@ -3,6 +3,7 @@ import './Plans.css';
 import { FaHeart, FaStar, FaGem, FaBolt, FaCrown } from 'react-icons/fa';
 import { initMercadoPago, Payment } from '@mercadopago/sdk-react';
 
+// Inicializa o Mercado Pago com a chave pública
 initMercadoPago('APP_USR-1bbe4abf-703f-4e4a-a36e-844a0e570a0c');
 
 function Plans() {
@@ -15,9 +16,8 @@ function Plans() {
       icon: <FaHeart />,
       title: 'Plano Básico',
       preferenceId: 'PREFERENCE_ID_BASIC',
-      prices: {
-        mensal: 'R$ 79,90/mês',
-      },
+      amount: 79.9, // Valor em reais
+      prices: { mensal: 'R$ 79,90/mês' },
       benefits: [
         'Consultas online ilimitadas',
         'Descontos em farmácias',
@@ -29,6 +29,7 @@ function Plans() {
       icon: <FaStar />,
       title: 'Plano Confort',
       preferenceId: 'PREFERENCE_ID_CONFORT',
+      amount: 89.9, // Valor em reais
       prices: {
         fidelidade: 'R$ 89,90/mês c/ fidelidade 12 meses',
         semFidelidade: 'R$ 129,90/mês s/ fidelidade',
@@ -44,9 +45,8 @@ function Plans() {
       icon: <FaGem />,
       title: 'Plano RACCA Proteção Plus',
       preferenceId: 'PREFERENCE_ID_PROTECAO_PLUS',
-      prices: {
-        fidelidade: 'R$ 15,00/mês c/ fidelidade 12 meses',
-      },
+      amount: 15.0, // Valor em reais
+      prices: { fidelidade: 'R$ 15,00/mês c/ fidelidade 12 meses' },
       benefits: [
         'Assistência Funeral Familiar de R$ 7.000,00',
         'MA - Morte Acidental - Capital Segurado R$ 20.000,00',
@@ -59,9 +59,8 @@ function Plans() {
       icon: <FaCrown />,
       title: 'Plano Personalize',
       preferenceId: 'PREFERENCE_ID_PERSONALIZE',
-      prices: {
-        mensal: 'R$ 39,90/mês s/ fidelidade',
-      },
+      amount: 39.9, // Valor em reais
+      prices: { mensal: 'R$ 39,90/mês s/ fidelidade' },
       benefits: [
         'Desconto em farmácias parceiras',
         '5% de desconto p/ pagamento antecipado',
@@ -76,6 +75,7 @@ function Plans() {
       icon: <FaGem />,
       title: 'Plano Confort Extra',
       preferenceId: 'PREFERENCE_ID_CONFORT_EXTRA',
+      amount: 109.9, // Valor em reais
       prices: {
         fidelidade: 'R$ 109,90/mês c/ fidelidade 12 meses',
         semFidelidade: 'R$ 149,90/mês s/ fidelidade',
@@ -91,6 +91,7 @@ function Plans() {
       icon: <FaBolt />,
       title: 'Plano Premium',
       preferenceId: 'PREFERENCE_ID_PREMIUM',
+      amount: 99.9, // Valor em reais
       prices: {
         fidelidade: 'R$ 99,90/mês c/ fidelidade 12 meses',
         semFidelidade: 'R$ 139,90/mês s/ fidelidade',
@@ -108,6 +109,7 @@ function Plans() {
       icon: <FaCrown />,
       title: 'Plano Premium Extra',
       preferenceId: 'PREFERENCE_ID_PREMIUM_EXTRA',
+      amount: 119.9, // Valor em reais
       prices: {
         fidelidade: 'R$ 119,90/mês c/ fidelidade 12 meses',
         semFidelidade: 'R$ 159,90/mês s/ fidelidade',
@@ -122,39 +124,34 @@ function Plans() {
     },
   ];
 
-  const initialization = (preferenceId) => ({
-    amount: 100,
+  const initialization = (preferenceId, amount) => ({
     preferenceId,
+    amount,
   });
 
   const customization = {
     paymentMethods: {
-      ticket: "all",
-      bankTransfer: "all",
-      creditCard: "all",
-      debitCard: "all",
-      mercadoPago: "all",
+      ticket: 'all',
+      bankTransfer: 'all',
+      creditCard: 'all',
+      debitCard: 'all',
+      mercadoPago: 'all',
     },
   };
 
-  const onSubmit = async ({ selectedPaymentMethod, formData }) => {
+  const onSubmit = async ({ formData }) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/process_payment`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-  
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/process_payment`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Erro ao processar pagamento');
       }
-  
+
       const paymentResult = await response.json();
       console.log('Pagamento realizado com sucesso:', paymentResult);
       alert('Pagamento realizado com sucesso!');
@@ -164,14 +161,17 @@ function Plans() {
       alert(`Erro no pagamento: ${error.message}`);
     }
   };
-  
 
   const onError = (error) => {
-    console.error("Erro no pagamento:", error);
+    console.error('Erro no pagamento:', error);
     alert('Ocorreu um erro no pagamento. Por favor, tente novamente.');
   };
 
   const openModal = (plan) => {
+    if (!plan.preferenceId) {
+      alert('Erro: Plano não possui um preferenceId válido.');
+      return;
+    }
     setSelectedPlan(plan);
     setIsModalOpen(true);
   };
@@ -222,10 +222,7 @@ function Plans() {
                 </div>
               )}
             </div>
-            <button
-              className="plan-button"
-              onClick={() => openModal(plan)}
-            >
+            <button className="plan-button" onClick={() => openModal(plan)}>
               Assine Agora
             </button>
           </div>
@@ -235,10 +232,12 @@ function Plans() {
       {isModalOpen && selectedPlan && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-button" onClick={closeModal}>X</button>
+            <button className="modal-close-button" onClick={closeModal}>
+              X
+            </button>
             <h3>{`Pagamento para o ${selectedPlan.title}`}</h3>
             <Payment
-              initialization={initialization(selectedPlan.preferenceId)}
+              initialization={initialization(selectedPlan.preferenceId, selectedPlan.amount)}
               customization={customization}
               onSubmit={onSubmit}
               onError={onError}
