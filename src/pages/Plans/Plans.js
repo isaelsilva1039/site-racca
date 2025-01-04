@@ -4,7 +4,7 @@ import { FaHeart, FaStar, FaGem, FaBolt, FaCrown } from 'react-icons/fa';
 import { initMercadoPago, Payment } from '@mercadopago/sdk-react';
 
 // Inicializa o Mercado Pago com a chave pública
-initMercadoPago('APP_USR-1bbe4abf-703f-4e4a-a36e-844a0e570a0c');
+initMercadoPago('APP_USR-849ed4e7-e2a8-48d5-a831-b2f7c8639ed8');
 
 function Plans() {
   const [selectedPlan, setSelectedPlan] = useState(null);
