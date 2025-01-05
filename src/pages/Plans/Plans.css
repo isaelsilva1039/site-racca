@@ -1,3 +1,5 @@
+/* src/styles/Plans.css */
+
 /* Container Principal */
 .plans-container {
   padding: 50px 20px;
@@ -325,7 +327,107 @@
   margin-bottom: 15px;
 }
 
-/* Ajustes de Responsividade */
+/* Formulário do Pagador */
+.payer-form {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.payer-form h4 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.75rem;
+}
+
+.form-group label {
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.form-group input,
+.form-group select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  color: #333;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #a100ff;
+  outline: none;
+}
+
+.form-group input::placeholder {
+  color: #aaa;
+}
+
+@media (max-width: 768px) {
+  .payer-form h4 {
+    font-size: 1.1rem;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .payer-form h4 {
+    font-size: 1rem;
+  }
+
+  .form-group input,
+  .form-group select {
+    font-size: 0.9rem;
+  }
+}
+
+/* Mensagem de Carregamento */
+.loading-message {
+  font-size: 1rem;
+  color: #555;
+  margin-top: 10px;
+}
+
+/* Estilos Adicionais para o Formulário */
+.payer-form {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.payer-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.payer-form button {
+  background-color: #a100ff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  font-size: 1rem;
+}
+
+.payer-form button:hover {
+  background-color: #7d00cc;
+}
+
+/* Responsividade Geral */
 @media (max-width: 768px) {
   .modal-content {
     padding: 15px 20px;
@@ -337,6 +439,10 @@
 
   .modal-close-button {
     font-size: 1.3rem;
+  }
+
+  .form-group {
+    margin-bottom: 0.5rem;
   }
 }
 
@@ -351,5 +457,15 @@
 
   .modal-close-button {
     font-size: 1.2rem;
+  }
+
+  .form-group {
+    margin-bottom: 0.4rem;
+  }
+
+  .payer-form button {
+    width: 100%;
+    padding: 8px 15px;
+    font-size: 0.9rem;
   }
 }

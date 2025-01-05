@@ -9,6 +9,20 @@ initMercadoPago('APP_USR-849ed4e7-e2a8-48d5-a831-b2f7c8639ed8');
 function Plans() {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [payerInfo, setPayerInfo] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    identification_type: '',
+    identification_number: '',
+    street_name: '',
+    street_number: '',
+    zip_code: '',
+    area_code: '',
+    phone_number: '',
+  });
+
+  const [loading, setLoading] = useState(false);
 
   const plans = [
     {
@@ -139,12 +153,87 @@ function Plans() {
     },
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPayerInfo((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const validatePayerInfo = () => {
+    const requiredFields = [
+      'first_name',
+      'last_name',
+      'email',
+      'identification_type',
+      'identification_number',
+      'street_name',
+      'street_number',
+      'zip_code',
+      'area_code',
+      'phone_number',
+    ];
+
+    for (let field of requiredFields) {
+      if (!payerInfo[field]) {
+        alert(`Por favor, preencha o campo ${field.replace('_', ' ')}`);
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const onSubmit = async ({ formData }) => {
+    if (!validatePayerInfo()) {
+      return;
+    }
+
+    const paymentData = {
+      transaction_amount: selectedPlan.amount,
+      token: formData.token,
+      description: `Assinatura do ${selectedPlan.title}`,
+      installments: formData.installments,
+      payment_method_id: formData.payment_method_id,
+      issuer_id: formData.issuer_id,
+      payer: {
+        email: payerInfo.email,
+        first_name: payerInfo.first_name,
+        last_name: payerInfo.last_name,
+        identification: {
+          type: payerInfo.identification_type,
+          number: payerInfo.identification_number,
+        },
+        address: {
+          street_name: payerInfo.street_name,
+          street_number: payerInfo.street_number,
+          zip_code: payerInfo.zip_code,
+        },
+        phone: {
+          area_code: payerInfo.area_code,
+          number: payerInfo.phone_number,
+        },
+      },
+      external_reference: `ORDER_${Date.now()}`,
+      items: [
+        {
+          id: selectedPlan.id,
+          title: selectedPlan.title,
+          description: selectedPlan.benefits.join(', '),
+          quantity: 1,
+          unit_price: selectedPlan.amount,
+          category_id: 'services', // Ajuste conforme a categoria apropriada
+        },
+      ],
+    };
+
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/process_payment`, {
+      setLoading(true);
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/process_payment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(paymentData),
       });
 
       if (!response.ok) {
@@ -153,12 +242,19 @@ function Plans() {
       }
 
       const paymentResult = await response.json();
-      console.log('Pagamento realizado com sucesso:', paymentResult);
-      alert('Pagamento realizado com sucesso!');
+      if (paymentResult.merchant_order && paymentResult.merchant_order.status === 'closed') {
+        console.log('Pagamento realizado com sucesso:', paymentResult);
+        alert('Pagamento realizado com sucesso!');
+      } else {
+        throw new Error('Status do merchant_order não está fechado.');
+      }
+
       closeModal();
     } catch (error) {
       console.error('Erro no pagamento:', error);
       alert(`Erro no pagamento: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -179,6 +275,18 @@ function Plans() {
   const closeModal = () => {
     setSelectedPlan(null);
     setIsModalOpen(false);
+    setPayerInfo({
+      first_name: '',
+      last_name: '',
+      email: '',
+      identification_type: '',
+      identification_number: '',
+      street_name: '',
+      street_number: '',
+      zip_code: '',
+      area_code: '',
+      phone_number: '',
+    });
   };
 
   useEffect(() => {
@@ -236,12 +344,135 @@ function Plans() {
               X
             </button>
             <h3>{`Pagamento para o ${selectedPlan.title}`}</h3>
+            
+            {/* Formulário para coletar informações do pagador */}
+            <form className="payer-form">
+              <h4>Informações do Pagador</h4>
+              <div className="form-group">
+                <label>Nome:</label>
+                <input
+                  type="text"
+                  name="first_name"
+                  value={payerInfo.first_name}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Sobrenome:</label>
+                <input
+                  type="text"
+                  name="last_name"
+                  value={payerInfo.last_name}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>E-mail:</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={payerInfo.email}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Tipo de Identificação:</label>
+                <select
+                  name="identification_type"
+                  value={payerInfo.identification_type}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value="">Selecione</option>
+                  <option value="CPF">CPF</option>
+                  <option value="CNPJ">CNPJ</option>
+                  {/* Adicione outros tipos conforme necessário */}
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Número da Identificação:</label>
+                <input
+                  type="text"
+                  name="identification_number"
+                  value={payerInfo.identification_number}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Endereço:</label>
+                <input
+                  type="text"
+                  name="street_name"
+                  placeholder="Rua, Avenida, etc."
+                  value={payerInfo.street_name}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Número:</label>
+                <input
+                  type="text"
+                  name="street_number"
+                  value={payerInfo.street_number}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Cep:</label>
+                <input
+                  type="text"
+                  name="zip_code"
+                  value={payerInfo.zip_code}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Código de Área:</label>
+                <input
+                  type="text"
+                  name="area_code"
+                  value={payerInfo.area_code}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Telefone:</label>
+                <input
+                  type="text"
+                  name="phone_number"
+                  value={payerInfo.phone_number}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+            </form>
+
+            {/* Componente de Pagamento do Mercado Pago */}
             <Payment
               initialization={initialization(selectedPlan.preferenceId, selectedPlan.amount)}
               customization={customization}
               onSubmit={onSubmit}
               onError={onError}
+              styles={{
+                input: {
+                  fontSize: '16px',
+                  color: '#333',
+                },
+                invalid: {
+                  color: '#e1e1e1',
+                },
+              }}
             />
+
+            {loading && <p>Processando pagamento...</p>}
           </div>
         </div>
       )}
