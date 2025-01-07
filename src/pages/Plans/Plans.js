@@ -1,27 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './Plans.css';
 import { FaHeart, FaStar, FaGem, FaBolt, FaCrown } from 'react-icons/fa';
-import { initMercadoPago, Payment } from '@mercadopago/sdk-react';
-
-// Inicializa o Mercado Pago com a chave pública
-initMercadoPago('APP_USR-849ed4e7-e2a8-48d5-a831-b2f7c8639ed8');
 
 function Plans() {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('creditCard'); // creditCard, pix, boleto
   const [payerInfo, setPayerInfo] = useState({
-    first_name: '',
-    last_name: '',
+    name: '',
     email: '',
-    identification_type: '',
-    identification_number: '',
-    street_name: '',
-    street_number: '',
-    zip_code: '',
-    area_code: '',
-    phone_number: '',
+    cpfCnpj: '',
+    phone: '',
+    address: '',
   });
-
+  const [paymentInfo, setPaymentInfo] = useState({
+    cardNumber: '',
+    expiryMonth: '',
+    expiryYear: '',
+    ccv: '',
+  });
   const [loading, setLoading] = useState(false);
 
   const plans = [
@@ -29,8 +26,7 @@ function Plans() {
       id: 1,
       icon: <FaHeart />,
       title: 'Plano Básico',
-      preferenceId: 'PREFERENCE_ID_BASIC',
-      amount: 79.9, // Valor em reais
+      amount: 79.9,
       prices: { mensal: 'R$ 79,90/mês' },
       benefits: [
         'Consultas online ilimitadas',
@@ -42,8 +38,7 @@ function Plans() {
       id: 471,
       icon: <FaStar />,
       title: 'Plano Confort',
-      preferenceId: 'PREFERENCE_ID_CONFORT',
-      amount: 89.9, // Valor em reais
+      amount: 89.9,
       prices: {
         fidelidade: 'R$ 89,90/mês c/ fidelidade 12 meses',
         semFidelidade: 'R$ 129,90/mês s/ fidelidade',
@@ -58,8 +53,7 @@ function Plans() {
       id: 3907,
       icon: <FaGem />,
       title: 'Plano RACCA Proteção Plus',
-      preferenceId: 'PREFERENCE_ID_PROTECAO_PLUS',
-      amount: 15.0, // Valor em reais
+      amount: 15.0,
       prices: { fidelidade: 'R$ 15,00/mês c/ fidelidade 12 meses' },
       benefits: [
         'Assistência Funeral Familiar de R$ 7.000,00',
@@ -72,8 +66,7 @@ function Plans() {
       id: 'ID_DINAMICO',
       icon: <FaCrown />,
       title: 'Plano Personalize',
-      preferenceId: 'PREFERENCE_ID_PERSONALIZE',
-      amount: 39.9, // Valor em reais
+      amount: 39.9,
       prices: { mensal: 'R$ 39,90/mês s/ fidelidade' },
       benefits: [
         'Desconto em farmácias parceiras',
@@ -88,8 +81,7 @@ function Plans() {
       id: 1084,
       icon: <FaGem />,
       title: 'Plano Confort Extra',
-      preferenceId: 'PREFERENCE_ID_CONFORT_EXTRA',
-      amount: 109.9, // Valor em reais
+      amount: 109.9,
       prices: {
         fidelidade: 'R$ 109,90/mês c/ fidelidade 12 meses',
         semFidelidade: 'R$ 149,90/mês s/ fidelidade',
@@ -104,8 +96,7 @@ function Plans() {
       id: 500,
       icon: <FaBolt />,
       title: 'Plano Premium',
-      preferenceId: 'PREFERENCE_ID_PREMIUM',
-      amount: 99.9, // Valor em reais
+      amount: 99.9,
       prices: {
         fidelidade: 'R$ 99,90/mês c/ fidelidade 12 meses',
         semFidelidade: 'R$ 139,90/mês s/ fidelidade',
@@ -122,8 +113,7 @@ function Plans() {
       id: 706,
       icon: <FaCrown />,
       title: 'Plano Premium Extra',
-      preferenceId: 'PREFERENCE_ID_PREMIUM_EXTRA',
-      amount: 119.9, // Valor em reais
+      amount: 119.9,
       prices: {
         fidelidade: 'R$ 119,90/mês c/ fidelidade 12 meses',
         semFidelidade: 'R$ 159,90/mês s/ fidelidade',
@@ -138,136 +128,64 @@ function Plans() {
     },
   ];
 
-  const initialization = (preferenceId, amount) => ({
-    preferenceId,
-    amount,
-  });
-
-  const customization = {
-    paymentMethods: {
-      ticket: 'all',
-      bankTransfer: 'all',
-      creditCard: 'all',
-      debitCard: 'all',
-      mercadoPago: 'all',
-    },
-  };
-
-  const handleInputChange = (e) => {
+  const handleInputChange = (e, type) => {
     const { name, value } = e.target;
-    setPayerInfo((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (type === 'payer') {
+      setPayerInfo((prev) => ({ ...prev, [name]: value }));
+    } else {
+      setPaymentInfo((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
-  const validatePayerInfo = () => {
-    const requiredFields = [
-      'first_name',
-      'last_name',
-      'email',
-      'identification_type',
-      'identification_number',
-      'street_name',
-      'street_number',
-      'zip_code',
-      'area_code',
-      'phone_number',
-    ];
-
-    for (let field of requiredFields) {
-      if (!payerInfo[field]) {
-        alert(`Por favor, preencha o campo ${field.replace('_', ' ')}`);
-        return false;
-      }
-    }
-
-    return true;
+  const handlePaymentMethodChange = (method) => {
+    setPaymentMethod(method);
   };
 
-  const onSubmit = async ({ formData }) => {
-    if (!validatePayerInfo()) {
-      return;
-    }
-
-    const paymentData = {
-      transaction_amount: selectedPlan.amount,
-      token: formData.token,
-      description: `Assinatura do ${selectedPlan.title}`,
-      installments: formData.installments,
-      payment_method_id: formData.payment_method_id,
-      issuer_id: formData.issuer_id,
-      payer: {
-        email: payerInfo.email,
-        first_name: payerInfo.first_name,
-        last_name: payerInfo.last_name,
-        identification: {
-          type: payerInfo.identification_type,
-          number: payerInfo.identification_number,
-        },
-        address: {
-          street_name: payerInfo.street_name,
-          street_number: payerInfo.street_number,
-          zip_code: payerInfo.zip_code,
-        },
-        phone: {
-          area_code: payerInfo.area_code,
-          number: payerInfo.phone_number,
-        },
-      },
-      external_reference: `ORDER_${Date.now()}`,
-      items: [
-        {
-          id: selectedPlan.id,
-          title: selectedPlan.title,
-          description: selectedPlan.benefits.join(', '),
-          quantity: 1,
-          unit_price: selectedPlan.amount,
-          category_id: 'services', // Ajuste conforme a categoria apropriada
-        },
-      ],
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
     try {
-      setLoading(true);
+      const sanitizedPlan = {
+        id: selectedPlan.id,
+        title: selectedPlan.title,
+        amount: selectedPlan.amount,
+      };
+
+      const requestBody = {
+        payer: { ...payerInfo },
+        paymentMethod,
+        plan: sanitizedPlan,
+      };
+
+      if (paymentMethod === 'creditCard') {
+        requestBody.paymentInfo = { ...paymentInfo };
+      }
+
+      console.log('Dados enviados:', requestBody); // Log para debug
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/api/process_payment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(paymentData),
+        body: JSON.stringify(requestBody),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erro ao processar pagamento');
-      }
+      const result = await response.json();
 
-      const paymentResult = await response.json();
-      if (paymentResult.merchant_order && paymentResult.merchant_order.status === 'closed') {
-        console.log('Pagamento realizado com sucesso:', paymentResult);
+      if (response.ok) {
         alert('Pagamento realizado com sucesso!');
+        closeModal();
       } else {
-        throw new Error('Status do merchant_order não está fechado.');
+        throw new Error(result.message || 'Erro ao processar pagamento');
       }
-
-      closeModal();
     } catch (error) {
-      console.error('Erro no pagamento:', error);
       alert(`Erro no pagamento: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const onError = (error) => {
-    console.error('Erro no pagamento:', error);
-    alert('Ocorreu um erro no pagamento. Por favor, tente novamente.');
-  };
-
   const openModal = (plan) => {
-    if (!plan.preferenceId) {
-      alert('Erro: Plano não possui um preferenceId válido.');
-      return;
-    }
     setSelectedPlan(plan);
     setIsModalOpen(true);
   };
@@ -275,27 +193,10 @@ function Plans() {
   const closeModal = () => {
     setSelectedPlan(null);
     setIsModalOpen(false);
-    setPayerInfo({
-      first_name: '',
-      last_name: '',
-      email: '',
-      identification_type: '',
-      identification_number: '',
-      street_name: '',
-      street_number: '',
-      zip_code: '',
-      area_code: '',
-      phone_number: '',
-    });
+    setPayerInfo({ name: '', email: '', cpfCnpj: '', phone: '', address: '' });
+    setPaymentInfo({ cardNumber: '', expiryMonth: '', expiryYear: '', ccv: '' });
+    setPaymentMethod('creditCard');
   };
-
-  useEffect(() => {
-    return () => {
-      if (window.paymentBrickController) {
-        window.paymentBrickController.unmount();
-      }
-    };
-  }, []);
 
   return (
     <section className="plans-container">
@@ -307,172 +208,142 @@ function Plans() {
             <h3 className="plan-title">{plan.title}</h3>
             <ul className="plan-benefits">
               {plan.benefits.map((benefit, index) => (
-                <li className="plan-benefit" key={index}>{benefit}</li>
+                <li key={index}>{benefit}</li>
               ))}
             </ul>
-            <div className="plan-prices">
-              {plan.prices.fidelidade && (
-                <div className="plan-price-group">
-                  <span className="price-label">Com Fidelidade:</span>
-                  <span className="price-value">{plan.prices.fidelidade}</span>
-                </div>
-              )}
-              {plan.prices.semFidelidade && (
-                <div className="plan-price-group">
-                  <span className="price-label">Sem Fidelidade:</span>
-                  <span className="price-value">{plan.prices.semFidelidade}</span>
-                </div>
-              )}
-              {plan.prices.mensal && (
-                <div className="plan-price-group">
-                  <span className="price-label">Mensal:</span>
-                  <span className="price-value">{plan.prices.mensal}</span>
-                </div>
-              )}
-            </div>
-            <button className="plan-button" onClick={() => openModal(plan)}>
+            <button onClick={() => openModal(plan)} className="plan-button">
               Assine Agora
             </button>
           </div>
         ))}
       </div>
 
-      {isModalOpen && selectedPlan && (
+      {isModalOpen && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-button" onClick={closeModal}>
-              X
+            <button onClick={closeModal} className="modal-close">
+              Fechar
             </button>
-            <h3>{`Pagamento para o ${selectedPlan.title}`}</h3>
-            
-            {/* Formulário para coletar informações do pagador */}
-            <form className="payer-form">
+            <h3>{`Pagamento para o plano ${selectedPlan.title}`}</h3>
+            <form onSubmit={handleSubmit}>
               <h4>Informações do Pagador</h4>
-              <div className="form-group">
-                <label>Nome:</label>
-                <input
-                  type="text"
-                  name="first_name"
-                  value={payerInfo.first_name}
-                  onChange={handleInputChange}
-                  required
-                />
+              <input
+                type="text"
+                name="name"
+                placeholder="Nome Completo"
+                value={payerInfo.name}
+                onChange={(e) => handleInputChange(e, 'payer')}
+                required
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="E-mail"
+                value={payerInfo.email}
+                onChange={(e) => handleInputChange(e, 'payer')}
+                required
+              />
+              <input
+                type="text"
+                name="cpfCnpj"
+                placeholder="CPF ou CNPJ"
+                value={payerInfo.cpfCnpj}
+                onChange={(e) => handleInputChange(e, 'payer')}
+                required
+              />
+              <input
+                type="text"
+                name="phone"
+                placeholder="Telefone"
+                value={payerInfo.phone}
+                onChange={(e) => handleInputChange(e, 'payer')}
+                required
+              />
+              <input
+                type="text"
+                name="address"
+                placeholder="Endereço"
+                value={payerInfo.address}
+                onChange={(e) => handleInputChange(e, 'payer')}
+                required
+              />
+
+              <h4>Forma de Pagamento</h4>
+              <div className="form-group payment-methods">
+                <label>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="creditCard"
+                    checked={paymentMethod === 'creditCard'}
+                    onChange={() => handlePaymentMethodChange('creditCard')}
+                  />
+                  Cartão de Crédito
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="pix"
+                    checked={paymentMethod === 'pix'}
+                    onChange={() => handlePaymentMethodChange('pix')}
+                  />
+                  Pix
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="paymentMethod"
+                    value="boleto"
+                    checked={paymentMethod === 'boleto'}
+                    onChange={() => handlePaymentMethodChange('boleto')}
+                  />
+                  Boleto Bancário
+                </label>
               </div>
-              <div className="form-group">
-                <label>Sobrenome:</label>
-                <input
-                  type="text"
-                  name="last_name"
-                  value={payerInfo.last_name}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>E-mail:</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={payerInfo.email}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Tipo de Identificação:</label>
-                <select
-                  name="identification_type"
-                  value={payerInfo.identification_type}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Selecione</option>
-                  <option value="CPF">CPF</option>
-                  <option value="CNPJ">CNPJ</option>
-                  {/* Adicione outros tipos conforme necessário */}
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Número da Identificação:</label>
-                <input
-                  type="text"
-                  name="identification_number"
-                  value={payerInfo.identification_number}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Endereço:</label>
-                <input
-                  type="text"
-                  name="street_name"
-                  placeholder="Rua, Avenida, etc."
-                  value={payerInfo.street_name}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Número:</label>
-                <input
-                  type="text"
-                  name="street_number"
-                  value={payerInfo.street_number}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Cep:</label>
-                <input
-                  type="text"
-                  name="zip_code"
-                  value={payerInfo.zip_code}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Código de Área:</label>
-                <input
-                  type="text"
-                  name="area_code"
-                  value={payerInfo.area_code}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Telefone:</label>
-                <input
-                  type="text"
-                  name="phone_number"
-                  value={payerInfo.phone_number}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
+
+              {paymentMethod === 'creditCard' && (
+                <>
+                  <h4>Informações do Cartão</h4>
+                  <input
+                    type="text"
+                    name="cardNumber"
+                    placeholder="Número do Cartão"
+                    value={paymentInfo.cardNumber}
+                    onChange={(e) => handleInputChange(e, 'payment')}
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="expiryMonth"
+                    placeholder="Mês de Validade (MM)"
+                    value={paymentInfo.expiryMonth}
+                    onChange={(e) => handleInputChange(e, 'payment')}
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="expiryYear"
+                    placeholder="Ano de Validade (AAAA)"
+                    value={paymentInfo.expiryYear}
+                    onChange={(e) => handleInputChange(e, 'payment')}
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="ccv"
+                    placeholder="CCV"
+                    value={paymentInfo.ccv}
+                    onChange={(e) => handleInputChange(e, 'payment')}
+                    required
+                  />
+                </>
+              )}
+
+              <button type="submit" disabled={loading}>
+                {loading ? 'Processando...' : 'Finalizar Pagamento'}
+              </button>
             </form>
-
-            {/* Componente de Pagamento do Mercado Pago */}
-            <Payment
-              initialization={initialization(selectedPlan.preferenceId, selectedPlan.amount)}
-              customization={customization}
-              onSubmit={onSubmit}
-              onError={onError}
-              styles={{
-                input: {
-                  fontSize: '16px',
-                  color: '#333',
-                },
-                invalid: {
-                  color: '#e1e1e1',
-                },
-              }}
-            />
-
-            {loading && <p>Processando pagamento...</p>}
           </div>
         </div>
       )}

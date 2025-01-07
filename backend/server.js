@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
-const { MercadoPagoConfig, Payment, Preferences, Refund } = require('mercadopago');
+const axios = require('axios');
 
 // Carrega variáveis de ambiente
 dotenv.config();
@@ -10,15 +10,19 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Verifica se o token de acesso está configurado
-if (!process.env.MERCADOPAGO_ACCESS_TOKEN) {
-  console.error('Erro: MERCADOPAGO_ACCESS_TOKEN não configurado no arquivo .env');
-  process.exit(1); // Finaliza o servidor se o token estiver ausente
+// Verifica se a chave de API do Asaas está configurada
+if (!process.env.ASAAS_API_KEY) {
+  console.error('Erro: ASAAS_API_KEY não configurado no arquivo .env');
+  process.exit(1); // Finaliza o servidor se a chave estiver ausente
 }
 
-// Configuração do cliente Mercado Pago
-const client = new MercadoPagoConfig({
-  accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
+// Configuração do Axios para o Asaas
+const asaasClient = axios.create({
+  baseURL: 'https://www.asaas.com/api/v3',
+  headers: {
+    'Content-Type': 'application/json',
+    access_token: process.env.ASAAS_API_KEY,
+  },
 });
 
 // Middlewares
@@ -32,162 +36,120 @@ const logInfo = (message) => {
 
 // Rota padrão
 app.get('/', (req, res) => {
-  res.send('Backend do Racca Saúde está rodando...');
+  res.send('Backend do Racca Saúde está rodando com Asaas...');
 });
 
-// Rota para criar preferência de pagamento
-app.post('/create_preference', async (req, res) => {
-  const { title, quantity, unit_price, description, category_id } = req.body;
+// Rota para criar cliente no Asaas
+app.post('/create_customer', async (req, res) => {
+  const { name, email, cpfCnpj, phone } = req.body;
 
-  if (!title || !quantity || !unit_price) {
+  if (!name || !email || !cpfCnpj || !phone) {
     return res.status(400).json({ error: 'Parâmetros ausentes ou inválidos' });
   }
 
-  const preference = {
-    items: [
-      {
-        id: `item_${Date.now()}`,
-        title,
-        description,
-        quantity,
-        unit_price,
-        currency_id: 'BRL',
-        category_id,
-      },
-    ],
-    external_reference: `order_${Date.now()}`, // Identificador único
-    notification_url: `${process.env.NOTIFICATION_URL}/webhook`, // URL para Webhook
-  };
-
   try {
-    const preferences = new Preferences(client);
-    const response = await preferences.create(preference);
+    const response = await asaasClient.post('/customers', {
+      name,
+      email,
+      cpfCnpj,
+      phone,
+    });
 
-    logInfo(`Preferência criada com sucesso: ${response.body.id}`);
-    res.json({ id: response.body.id });
+    logInfo(`Cliente criado com sucesso: ${JSON.stringify(response.data)}`);
+    res.json(response.data);
   } catch (error) {
-    console.error('Erro ao criar preferência:', error);
-    res.status(error.status || 500).json({ error: error.message || 'Erro ao criar preferência de pagamento' });
+    console.error('Erro ao criar cliente:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json({
+      error: error.response?.data || 'Erro ao criar cliente',
+    });
   }
 });
 
-// Rota para processar pagamento
+// Rota para processar pagamento (Criação de cliente e cobrança)
 app.post('/process_payment', async (req, res) => {
-  const payment = new Payment(client);
+  const { payer, paymentMethod, paymentInfo, plan } = req.body;
 
-  try {
-    const { transaction_amount, payment_method_id, payer, items } = req.body;
-
-    // Validações
-    if (!transaction_amount || !payment_method_id || !payer || !items) {
-      return res.status(400).json({ error: 'Parâmetros ausentes ou inválidos' });
-    }
-    if (!Array.isArray(items)) {
-      return res.status(400).json({ error: 'O campo "items" deve ser um array válido.' });
-    }
-
-    items.forEach((item, index) => {
-      if (!item.title || typeof item.title !== 'string') {
-        throw new Error(`O item na posição ${index} deve conter o campo "title" válido.`);
-      }
-      if (!item.unit_price || typeof item.unit_price !== 'number') {
-        throw new Error(`O item na posição ${index} deve conter o campo "unit_price" válido.`);
-      }
-    });
-
-    const response = await payment.create({
-      body: {
-        transaction_amount,
-        payment_method_id,
-        payer: {
-          email: payer.email,
-          first_name: payer.first_name,
-          last_name: payer.last_name,
-          identification: payer.identification,
-          address: payer.address,
-        },
-        items: items.map((item) => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          quantity: item.quantity,
-          unit_price: item.unit_price,
-          category_id: item.category_id,
-        })),
-        external_reference: `order_${Date.now()}`,
-        binary_mode: true, // Aprovação binária
-        statement_descriptor: "RACCA SAUDE", // Descrição na fatura do cartão
-      },
-    });
-
-    logInfo(`Pagamento processado com sucesso: ${JSON.stringify(response.body)}`);
-    res.json({
-      id: response.body.id,
-      status: response.body.status,
-      detail: response.body.status_detail,
-    });
-  } catch (error) {
-    console.error('Erro ao processar pagamento:', error);
-
-    res.status(error.status || 500).json({
-      error: error.message || 'Erro ao processar pagamento',
-      details: error.cause || [],
-    });
+  if (!payer || !paymentMethod || !plan) {
+    return res.status(400).json({ error: 'Parâmetros ausentes ou inválidos' });
   }
-});
 
-// Rota para Webhook
-app.post('/webhook', async (req, res) => {
   try {
-    logInfo(`Webhook recebido: ${JSON.stringify(req.body)}`);
+    logInfo('Dados recebidos para processamento:', req.body);
 
-    const { id, type } = req.body;
+    // Criação do cliente
+    const customerResponse = await asaasClient.post('/customers', {
+      name: payer.name,
+      email: payer.email,
+      cpfCnpj: payer.cpfCnpj,
+      phone: payer.phone,
+    });
 
-    switch (type) {
-      case 'payment':
-        const payment = new Payment(client);
-        const response = await payment.get(id);
-        logInfo(`Pagamento recebido no Webhook: ${JSON.stringify(response.body)}`);
+    const customerId = customerResponse.data.id;
 
-        if (response.body.status === 'approved' && response.body.status_detail === 'accredited') {
-          logInfo('Pagamento aprovado com sucesso. Atualizar status no sistema interno.');
-        }
-
+    // Configuração do tipo de cobrança
+    let billingType;
+    switch (paymentMethod) {
+      case 'creditCard':
+        billingType = 'CREDIT_CARD';
         break;
-
-      case 'merchant_order':
-        logInfo(`Merchant order recebida: ${id}`);
+      case 'pix':
+        billingType = 'PIX';
         break;
-
+      case 'boleto':
+        billingType = 'BOLETO';
+        break;
       default:
-        logInfo(`Tipo de notificação não tratado: ${type}`);
+        return res.status(400).json({ error: 'Método de pagamento inválido' });
     }
 
-    res.status(200).send('OK');
+    // Configuração dos dados do pagamento
+    const paymentData = {
+      customer: customerId,
+      billingType,
+      value: plan.amount,
+      dueDate: new Date().toISOString().split('T')[0],
+      description: `Assinatura do plano ${plan.title}`,
+    };
+
+    if (paymentMethod === 'creditCard') {
+      paymentData.creditCard = {
+        holderName: paymentInfo.holderName,
+        number: paymentInfo.cardNumber,
+        expiryMonth: paymentInfo.expiryMonth,
+        expiryYear: paymentInfo.expiryYear,
+        ccv: paymentInfo.ccv,
+      };
+    }
+
+    // Criação da cobrança
+    const paymentResponse = await asaasClient.post('/payments', paymentData);
+
+    logInfo(`Pagamento processado com sucesso: ${JSON.stringify(paymentResponse.data)}`);
+    res.json(paymentResponse.data);
   } catch (error) {
-    console.error('Erro no Webhook:', error);
-    res.status(500).send('Erro no Webhook');
+    console.error('Erro ao processar pagamento:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json({
+      error: error.response?.data || 'Erro ao processar pagamento',
+    });
   }
 });
 
 // Rota para estornos totais
 app.post('/refund', async (req, res) => {
+  const { paymentId } = req.body;
+
+  if (!paymentId) {
+    return res.status(400).json({ error: 'O campo "paymentId" é obrigatório.' });
+  }
+
   try {
-    const { payment_id } = req.body;
-    if (!payment_id) {
-      return res.status(400).json({ error: 'O campo "payment_id" é obrigatório.' });
-    }
-
-    const refund = new Refund(client);
-    const response = await refund.create(payment_id);
-
-    logInfo(`Estorno realizado com sucesso: ${JSON.stringify(response.body)}`);
-    res.json(response.body);
+    const response = await asaasClient.post(`/payments/${paymentId}/refund`);
+    logInfo(`Estorno realizado com sucesso: ${JSON.stringify(response.data)}`);
+    res.json(response.data);
   } catch (error) {
-    console.error('Erro ao processar estorno:', error);
-    res.status(error.status || 500).json({
-      error: error.message || 'Erro ao processar estorno',
-      details: error.cause || [],
+    console.error('Erro ao processar estorno:', error.response?.data || error.message);
+    res.status(error.response?.status || 500).json({
+      error: error.response?.data || 'Erro ao processar estorno',
     });
   }
 });
