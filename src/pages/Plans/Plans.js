@@ -1,7 +1,10 @@
+// src/pages/Plans/Plans.js
+
 import React, { useState } from 'react';
 import './Plans.css';
 import { FaHeart, FaStar, FaGem, FaBolt, FaCrown } from 'react-icons/fa';
 import InputMask from 'react-input-mask';
+import QRCode from 'react-qr-code'; // Biblioteca para gerar QR Codes
 
 function Plans() {
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -21,9 +24,9 @@ function Plans() {
     ccv: '',
   });
   const [loading, setLoading] = useState(false);
+  const [qrCodeData, setQrCodeData] = useState(null); // Estado para armazenar a linha digitável
 
-  // ⚠️ Substitua com a sua chave de API
-  const ASAAAS_ACCESS_TOKEN = '$aact_MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjdiODVhMzMzLTkwZmItNDM1OC1hNDZmLWUzNDg1MzI1Mzg1ZTo6JGFhY2hfZTFlNzcyYzEtMjliYy00MjIzLTljZDAtZWY0Yjg4ODk0MmIy';
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
 
   const plans = [
     {
@@ -145,51 +148,49 @@ function Plans() {
     setPaymentMethod(method);
   };
 
-  // Função para buscar cliente pelo CPF/CNPJ
-  const getCustomerByCpfCnpj = async (cpfCnpj) => {
+  // Função para buscar ou criar cliente via backend
+  const getOrCreateCustomer = async () => {
     try {
-      const response = await fetch(`https://sandbox.asaas.com/api/v3/customers?cpfCnpj=${cpfCnpj}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          access_token: ASAAAS_ACCESS_TOKEN, // ⚠️ Substitua com a sua chave de API
-        },
-      });
-      const data = await response.json();
-      if (data.data && data.data.length > 0) {
-        return data.data[0].id;
-      }
-      return null;
-    } catch (error) {
-      console.error('Erro ao buscar cliente:', error);
-      return null;
-    }
-  };
-
-  // Função para criar um novo cliente
-  const createCustomer = async () => {
-    try {
-      const response = await fetch('https://sandbox.asaas.com/api/v3/customers', {
+      const response = await fetch(`${BACKEND_URL}/api/customers`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          access_token: ASAAAS_ACCESS_TOKEN, // ⚠️ Substitua com a sua chave de API
         },
-        body: JSON.stringify({
-          name: payerInfo.name,
-          email: payerInfo.email,
-          cpfCnpj: payerInfo.cpfCnpj,
-          phone: payerInfo.phone,
-          address: payerInfo.address,
-        }),
+        body: JSON.stringify(payerInfo),
       });
+
       const data = await response.json();
-      if (data.id) {
-        return data.id;
+
+      if (response.ok) {
+        return data.customerId;
+      } else {
+        throw new Error(data.message || 'Erro ao obter/criar cliente');
       }
-      throw new Error(data.message || 'Erro ao criar cliente');
     } catch (error) {
-      console.error('Erro ao criar cliente:', error);
+      console.error('Erro ao obter/criar cliente:', error);
+      throw error;
+    }
+  };
+
+  // Função para recuperar a linha digitável do boleto
+  const getIdentificationField = async (paymentId) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/payments/${paymentId}/identificationField`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        return data.identificationField;
+      } else {
+        throw new Error(data.message || 'Erro ao recuperar a linha digitável');
+      }
+    } catch (error) {
+      console.error('Erro ao recuperar a linha digitável:', error);
       throw error;
     }
   };
@@ -197,15 +198,11 @@ function Plans() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setQrCodeData(null); // Resetar QR Code antes de um novo pagamento
 
     try {
-      // Verificar se o cliente já existe
-      let customerId = await getCustomerByCpfCnpj(payerInfo.cpfCnpj);
-
-      // Se o cliente não existir, criar um novo
-      if (!customerId) {
-        customerId = await createCustomer();
-      }
+      // Obter ou criar cliente via backend
+      const customerId = await getOrCreateCustomer();
 
       if (!customerId) {
         alert('Não foi possível obter o cliente. Por favor, tente novamente.');
@@ -221,12 +218,6 @@ function Plans() {
       };
       const billingType = billingTypeMap[paymentMethod] || 'BOLETO';
 
-      const sanitizedPlan = {
-        id: selectedPlan.id,
-        title: selectedPlan.title,
-        amount: selectedPlan.amount,
-      };
-
       const requestBody = {
         customer: customerId, // Passando o ID do cliente
         billingType, // Passando o billingType correto
@@ -239,7 +230,7 @@ function Plans() {
         requestBody.paymentMethod = 'CREDIT_CARD';
         requestBody.creditCard = {
           holderName: payerInfo.name,
-          number: paymentInfo.cardNumber,
+          number: paymentInfo.cardNumber.replace(/\s/g, ''), // Remove espaços
           expirationMonth: paymentInfo.expiryMonth,
           expirationYear: paymentInfo.expiryYear,
           ccv: paymentInfo.ccv,
@@ -250,24 +241,29 @@ function Plans() {
         requestBody.paymentMethod = 'BOLETO';
       }
 
-      console.log('Dados enviados:', requestBody); // Log para debug
+      console.log('Dados enviados para pagamento:', requestBody); // Log para debug
 
-      const response = await fetch('https://sandbox.asaas.com/api/v3/payments', {
+      // Enviar pagamento via backend
+      const paymentResponse = await fetch(`${BACKEND_URL}/api/payments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          access_token: ASAAAS_ACCESS_TOKEN, // ⚠️ Substitua com a sua chave de API
         },
         body: JSON.stringify(requestBody),
       });
 
-      const result = await response.json();
+      const paymentResult = await paymentResponse.json();
 
-      if (response.ok) {
+      if (paymentResponse.ok) {
         alert('Pagamento realizado com sucesso!');
+        // Se for boleto, recuperar a linha digitável
+        if (paymentMethod === 'boleto') {
+          const linhaDigitavel = await getIdentificationField(paymentResult.id);
+          setQrCodeData(linhaDigitavel); // Armazena a linha digitável para exibir o QR Code
+        }
         closeModal();
       } else {
-        throw new Error(result.message || 'Erro ao processar pagamento');
+        throw new Error(paymentResult.message || 'Erro ao processar pagamento');
       }
     } catch (error) {
       alert(`Erro no pagamento: ${error.message}`);
@@ -287,6 +283,7 @@ function Plans() {
     setPayerInfo({ name: '', email: '', cpfCnpj: '', phone: '', address: '' });
     setPaymentInfo({ cardNumber: '', expiryMonth: '', expiryYear: '', ccv: '' });
     setPaymentMethod('creditCard');
+    setQrCodeData(null);
   };
 
   return (
@@ -335,7 +332,11 @@ function Plans() {
                 required
               />
               <InputMask
-                mask={payerInfo.cpfCnpj.replace(/\D/g, '').length > 11 ? '99.999.999/9999-99' : '999.999.999-99'}
+                mask={
+                  payerInfo.cpfCnpj.replace(/\D/g, '').length > 11
+                    ? '99.999.999/9999-99'
+                    : '999.999.999-99'
+                }
                 maskChar=""
                 type="text"
                 name="cpfCnpj"
@@ -443,6 +444,14 @@ function Plans() {
                     />
                   </div>
                 </>
+              )}
+
+              {paymentMethod === 'boleto' && qrCodeData && (
+                <div className="qr-code-container">
+                  <h4>Escaneie o QR Code para pagar:</h4>
+                  <QRCode value={qrCodeData} />
+                  <p>Ou use a linha digitável: {qrCodeData}</p>
+                </div>
               )}
 
               <button type="submit" disabled={loading} className="submit-button">

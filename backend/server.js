@@ -1,159 +1,183 @@
+// backend/server.js
+
 const express = require('express');
 const cors = require('cors');
-const bodyParser = require('body-parser');
+const fetch = require('node-fetch');
 const dotenv = require('dotenv');
-const axios = require('axios');
 
-// Carrega variáveis de ambiente
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const ASAAS_ACCESS_TOKEN = process.env.ASAAS_ACCESS_TOKEN;
 
-// Verifica se a chave de API do Asaas está configurada
-if (!process.env.ASAAS_API_KEY) {
-  console.error('Erro: ASAAS_API_KEY não configurado no arquivo .env');
-  process.exit(1); // Finaliza o servidor se a chave estiver ausente
-}
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-// Configuração do Axios para o Asaas
-const asaasClient = axios.create({
-  baseURL: 'https://www.asaas.com/api/v3',
-  headers: {
-    'Content-Type': 'application/json',
-    access_token: process.env.ASAAS_API_KEY,
-  },
-});
-
-// Middlewares
-app.use(cors({ origin: 'http://localhost:3000' })); // Permite apenas o frontend local
-app.use(bodyParser.json());
-
-// Função para logar informações
-const logInfo = (message) => {
-  console.log(`${new Date().toISOString()} - ${message}`);
-};
-
-// Rota padrão
-app.get('/', (req, res) => {
-  res.send('Backend do Racca Saúde está rodando com Asaas...');
-});
-
-// Rota para criar cliente no Asaas
-app.post('/create_customer', async (req, res) => {
-  const { name, email, cpfCnpj, phone } = req.body;
-
-  if (!name || !email || !cpfCnpj || !phone) {
-    return res.status(400).json({ error: 'Parâmetros ausentes ou inválidos' });
-  }
+// Endpoint para buscar ou criar cliente
+app.post('/api/customers', async (req, res) => {
+  const { name, cpfCnpj, email, phone, address } = req.body;
 
   try {
-    const response = await asaasClient.post('/customers', {
-      name,
-      email,
-      cpfCnpj,
-      phone,
-    });
+    // 1. Sanitizar o cpfCnpj: remover caracteres não numéricos
+    const sanitizedCpfCnpj = cpfCnpj.replace(/\D/g, '');
+    console.log(`CPF/CNPJ Sanitizado: ${sanitizedCpfCnpj}`);
 
-    logInfo(`Cliente criado com sucesso: ${JSON.stringify(response.data)}`);
-    res.json(response.data);
-  } catch (error) {
-    console.error('Erro ao criar cliente:', error.response?.data || error.message);
-    res.status(error.response?.status || 500).json({
-      error: error.response?.data || 'Erro ao criar cliente',
-    });
-  }
-});
-
-// Rota para processar pagamento (Criação de cliente e cobrança)
-app.post('/process_payment', async (req, res) => {
-  const { payer, paymentMethod, paymentInfo, plan } = req.body;
-
-  if (!payer || !paymentMethod || !plan) {
-    return res.status(400).json({ error: 'Parâmetros ausentes ou inválidos' });
-  }
-
-  try {
-    logInfo('Dados recebidos para processamento:', req.body);
-
-    // Criação do cliente
-    const customerResponse = await asaasClient.post('/customers', {
-      name: payer.name,
-      email: payer.email,
-      cpfCnpj: payer.cpfCnpj,
-      phone: payer.phone,
-    });
-
-    const customerId = customerResponse.data.id;
-
-    // Configuração do tipo de cobrança
-    let billingType;
-    switch (paymentMethod) {
-      case 'creditCard':
-        billingType = 'CREDIT_CARD';
-        break;
-      case 'pix':
-        billingType = 'PIX';
-        break;
-      case 'boleto':
-        billingType = 'BOLETO';
-        break;
-      default:
-        return res.status(400).json({ error: 'Método de pagamento inválido' });
+    // 2. Validar se o cpfCnpj possui 11 (CPF) ou 14 (CNPJ) dígitos
+    if (![11, 14].includes(sanitizedCpfCnpj.length)) {
+      return res.status(400).json({ message: 'CPF ou CNPJ inválido.' });
     }
 
-    // Configuração dos dados do pagamento
-    const paymentData = {
-      customer: customerId,
-      billingType,
-      value: plan.amount,
-      dueDate: new Date().toISOString().split('T')[0],
-      description: `Assinatura do plano ${plan.title}`,
-    };
+    // 3. Buscar cliente existente
+    const searchResponse = await fetch(
+      `https://www.asaas.com/api/v3/customers?cpfCnpj=${sanitizedCpfCnpj}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          access_token: ASAAS_ACCESS_TOKEN,
+        },
+      }
+    );
 
-    if (paymentMethod === 'creditCard') {
-      paymentData.creditCard = {
-        holderName: paymentInfo.holderName,
-        number: paymentInfo.cardNumber,
-        expiryMonth: paymentInfo.expiryMonth,
-        expiryYear: paymentInfo.expiryYear,
-        ccv: paymentInfo.ccv,
-      };
+    const searchStatus = searchResponse.status;
+    const searchText = await searchResponse.text();
+    console.log(`GET /customers?cpfCnpj=${sanitizedCpfCnpj} - Status: ${searchStatus} - Body: ${searchText}`);
+
+    let searchData;
+    try {
+      searchData = searchText ? JSON.parse(searchText) : {};
+    } catch (e) {
+      console.error('Resposta não é JSON válida:', searchText);
+      throw new Error('Resposta inválida do Asaas ao buscar cliente.');
     }
 
-    // Criação da cobrança
-    const paymentResponse = await asaasClient.post('/payments', paymentData);
+    if (searchData.data && searchData.data.length > 0) {
+      // Cliente encontrado
+      console.log('Cliente já existe. Retornando customerId existente.');
+      return res.json({ customerId: searchData.data[0].id });
+    }
 
-    logInfo(`Pagamento processado com sucesso: ${JSON.stringify(paymentResponse.data)}`);
-    res.json(paymentResponse.data);
-  } catch (error) {
-    console.error('Erro ao processar pagamento:', error.response?.data || error.message);
-    res.status(error.response?.status || 500).json({
-      error: error.response?.data || 'Erro ao processar pagamento',
+    // 4. Se não encontrado, criar novo cliente
+    const createResponse = await fetch('https://www.asaas.com/api/v3/customers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        access_token: ASAAS_ACCESS_TOKEN,
+      },
+      body: JSON.stringify({
+        name,
+        cpfCnpj: sanitizedCpfCnpj,
+        email: email || '', // Campo opcional
+        phone: phone || '', // Campo opcional
+        address: address || '', // Campo opcional
+      }),
     });
+
+    const createStatus = createResponse.status;
+    const createText = await createResponse.text();
+    console.log(`POST /customers - Status: ${createStatus} - Body: ${createText}`);
+
+    let createData;
+    try {
+      createData = createText ? JSON.parse(createText) : {};
+    } catch (e) {
+      console.error('Resposta não é JSON válida:', createText);
+      throw new Error('Resposta inválida do Asaas ao criar cliente.');
+    }
+
+    if (createResponse.ok) {
+      console.log('Cliente criado com sucesso.');
+      return res.json({ customerId: createData.id });
+    } else {
+      console.error('Erro ao criar cliente:', createData.message);
+      return res.status(createResponse.status).json({ message: createData.message || 'Erro ao criar cliente.' });
+    }
+  } catch (error) {
+    console.error('Erro no backend ao gerenciar cliente:', error.message);
+    res.status(500).json({ message: 'Erro interno do servidor.' });
   }
 });
 
-// Rota para estornos totais
-app.post('/refund', async (req, res) => {
-  const { paymentId } = req.body;
-
-  if (!paymentId) {
-    return res.status(400).json({ error: 'O campo "paymentId" é obrigatório.' });
-  }
+// Endpoint para processar pagamento
+app.post('/api/payments', async (req, res) => {
+  const paymentData = req.body;
 
   try {
-    const response = await asaasClient.post(`/payments/${paymentId}/refund`);
-    logInfo(`Estorno realizado com sucesso: ${JSON.stringify(response.data)}`);
-    res.json(response.data);
-  } catch (error) {
-    console.error('Erro ao processar estorno:', error.response?.data || error.message);
-    res.status(error.response?.status || 500).json({
-      error: error.response?.data || 'Erro ao processar estorno',
+    const paymentResponse = await fetch('https://www.asaas.com/api/v3/payments', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        access_token: ASAAS_ACCESS_TOKEN,
+      },
+      body: JSON.stringify(paymentData),
     });
+
+    const paymentStatus = paymentResponse.status;
+    const paymentText = await paymentResponse.text();
+    console.log(`POST /payments - Status: ${paymentStatus} - Body: ${paymentText}`);
+
+    let paymentResult;
+    try {
+      paymentResult = paymentText ? JSON.parse(paymentText) : {};
+    } catch (e) {
+      console.error('Resposta não é JSON válida:', paymentText);
+      throw new Error('Resposta inválida do Asaas ao processar pagamento.');
+    }
+
+    if (paymentResponse.ok) {
+      console.log('Pagamento processado com sucesso.');
+      return res.json(paymentResult);
+    } else {
+      console.error('Erro ao processar pagamento:', paymentResult.message);
+      return res.status(paymentResponse.status).json(paymentResult);
+    }
+  } catch (error) {
+    console.error('Erro no backend ao processar pagamento:', error.message);
+    res.status(500).json({ message: 'Erro interno do servidor.' });
   }
 });
 
+// 🔹 **Nova Rota para Recuperar a Linha Digitável do Boleto**
+app.get('/api/payments/:id/identificationField', async (req, res) => {
+  const paymentId = req.params.id;
+
+  try {
+    const response = await fetch(`https://www.asaas.com/api/v3/payments/${paymentId}/identificationField`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        access_token: ASAAS_ACCESS_TOKEN,
+      },
+    });
+
+    const status = response.status;
+    const text = await response.text();
+    console.log(`GET /payments/${paymentId}/identificationField - Status: ${status} - Body: ${text}`);
+
+    let data;
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch (e) {
+      console.error('Resposta não é JSON válida:', text);
+      throw new Error('Resposta inválida do Asaas ao buscar a linha digitável.');
+    }
+
+    if (response.ok) {
+      console.log('Linha digitável recuperada com sucesso.');
+      return res.json({ identificationField: data.identificationField });
+    } else {
+      console.error('Erro ao recuperar a linha digitável:', data.message);
+      return res.status(response.status).json({ message: data.message || 'Erro ao recuperar a linha digitável.' });
+    }
+  } catch (error) {
+    console.error('Erro no backend ao recuperar a linha digitável:', error.message);
+    res.status(500).json({ message: 'Erro interno do servidor.' });
+  }
+});
+
+// Iniciar o servidor
 app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
