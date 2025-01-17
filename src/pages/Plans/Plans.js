@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Plans.css';
 import { FaHeart, FaStar, FaGem, FaBolt, FaCrown } from 'react-icons/fa';
+import InputMask from 'react-input-mask';
 
 function Plans() {
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -20,6 +21,9 @@ function Plans() {
     ccv: '',
   });
   const [loading, setLoading] = useState(false);
+
+  // ⚠️ Substitua com a sua chave de API
+  const ASAAAS_ACCESS_TOKEN = '$aact_MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OjdiODVhMzMzLTkwZmItNDM1OC1hNDZmLWUzNDg1MzI1Mzg1ZTo6JGFhY2hfZTFlNzcyYzEtMjliYy00MjIzLTljZDAtZWY0Yjg4ODk0MmIy';
 
   const plans = [
     {
@@ -141,11 +145,82 @@ function Plans() {
     setPaymentMethod(method);
   };
 
+  // Função para buscar cliente pelo CPF/CNPJ
+  const getCustomerByCpfCnpj = async (cpfCnpj) => {
+    try {
+      const response = await fetch(`https://sandbox.asaas.com/api/v3/customers?cpfCnpj=${cpfCnpj}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          access_token: ASAAAS_ACCESS_TOKEN, // ⚠️ Substitua com a sua chave de API
+        },
+      });
+      const data = await response.json();
+      if (data.data && data.data.length > 0) {
+        return data.data[0].id;
+      }
+      return null;
+    } catch (error) {
+      console.error('Erro ao buscar cliente:', error);
+      return null;
+    }
+  };
+
+  // Função para criar um novo cliente
+  const createCustomer = async () => {
+    try {
+      const response = await fetch('https://sandbox.asaas.com/api/v3/customers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          access_token: ASAAAS_ACCESS_TOKEN, // ⚠️ Substitua com a sua chave de API
+        },
+        body: JSON.stringify({
+          name: payerInfo.name,
+          email: payerInfo.email,
+          cpfCnpj: payerInfo.cpfCnpj,
+          phone: payerInfo.phone,
+          address: payerInfo.address,
+        }),
+      });
+      const data = await response.json();
+      if (data.id) {
+        return data.id;
+      }
+      throw new Error(data.message || 'Erro ao criar cliente');
+    } catch (error) {
+      console.error('Erro ao criar cliente:', error);
+      throw error;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
+      // Verificar se o cliente já existe
+      let customerId = await getCustomerByCpfCnpj(payerInfo.cpfCnpj);
+
+      // Se o cliente não existir, criar um novo
+      if (!customerId) {
+        customerId = await createCustomer();
+      }
+
+      if (!customerId) {
+        alert('Não foi possível obter o cliente. Por favor, tente novamente.');
+        setLoading(false);
+        return;
+      }
+
+      // Definindo corretamente o billingType
+      const billingTypeMap = {
+        creditCard: 'CREDIT_CARD',
+        pix: 'PIX',
+        boleto: 'BOLETO',
+      };
+      const billingType = billingTypeMap[paymentMethod] || 'BOLETO';
+
       const sanitizedPlan = {
         id: selectedPlan.id,
         title: selectedPlan.title,
@@ -153,20 +228,36 @@ function Plans() {
       };
 
       const requestBody = {
-        payer: { ...payerInfo },
-        paymentMethod,
-        plan: sanitizedPlan,
+        customer: customerId, // Passando o ID do cliente
+        billingType, // Passando o billingType correto
+        value: selectedPlan.amount, // Valor do pagamento
+        description: `Pagamento do plano ${selectedPlan.title}`,
+        dueDate: new Date().toISOString().split('T')[0], // Data de vencimento (hoje)
       };
 
       if (paymentMethod === 'creditCard') {
-        requestBody.paymentInfo = { ...paymentInfo };
+        requestBody.paymentMethod = 'CREDIT_CARD';
+        requestBody.creditCard = {
+          holderName: payerInfo.name,
+          number: paymentInfo.cardNumber,
+          expirationMonth: paymentInfo.expiryMonth,
+          expirationYear: paymentInfo.expiryYear,
+          ccv: paymentInfo.ccv,
+        };
+      } else if (paymentMethod === 'pix') {
+        requestBody.paymentMethod = 'PIX';
+      } else if (paymentMethod === 'boleto') {
+        requestBody.paymentMethod = 'BOLETO';
       }
 
       console.log('Dados enviados:', requestBody); // Log para debug
 
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/process_payment`, {
+      const response = await fetch('https://sandbox.asaas.com/api/v3/payments', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          access_token: ASAAAS_ACCESS_TOKEN, // ⚠️ Substitua com a sua chave de API
+        },
         body: JSON.stringify(requestBody),
       });
 
@@ -218,7 +309,7 @@ function Plans() {
         ))}
       </div>
 
-      {isModalOpen && (
+      {isModalOpen && selectedPlan && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button onClick={closeModal} className="modal-close">
@@ -243,7 +334,9 @@ function Plans() {
                 onChange={(e) => handleInputChange(e, 'payer')}
                 required
               />
-              <input
+              <InputMask
+                mask={payerInfo.cpfCnpj.replace(/\D/g, '').length > 11 ? '99.999.999/9999-99' : '999.999.999-99'}
+                maskChar=""
                 type="text"
                 name="cpfCnpj"
                 placeholder="CPF ou CNPJ"
@@ -251,7 +344,9 @@ function Plans() {
                 onChange={(e) => handleInputChange(e, 'payer')}
                 required
               />
-              <input
+              <InputMask
+                mask="(99) 99999-9999"
+                maskChar=""
                 type="text"
                 name="phone"
                 placeholder="Telefone"
@@ -305,7 +400,9 @@ function Plans() {
               {paymentMethod === 'creditCard' && (
                 <>
                   <h4>Informações do Cartão</h4>
-                  <input
+                  <InputMask
+                    mask="9999 9999 9999 9999"
+                    maskChar=""
                     type="text"
                     name="cardNumber"
                     placeholder="Número do Cartão"
@@ -313,34 +410,42 @@ function Plans() {
                     onChange={(e) => handleInputChange(e, 'payment')}
                     required
                   />
-                  <input
-                    type="text"
-                    name="expiryMonth"
-                    placeholder="Mês de Validade (MM)"
-                    value={paymentInfo.expiryMonth}
-                    onChange={(e) => handleInputChange(e, 'payment')}
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="expiryYear"
-                    placeholder="Ano de Validade (AAAA)"
-                    value={paymentInfo.expiryYear}
-                    onChange={(e) => handleInputChange(e, 'payment')}
-                    required
-                  />
-                  <input
-                    type="text"
-                    name="ccv"
-                    placeholder="CCV"
-                    value={paymentInfo.ccv}
-                    onChange={(e) => handleInputChange(e, 'payment')}
-                    required
-                  />
+                  <div className="card-details">
+                    <InputMask
+                      mask="99"
+                      maskChar=""
+                      type="text"
+                      name="expiryMonth"
+                      placeholder="Mês de Validade (MM)"
+                      value={paymentInfo.expiryMonth}
+                      onChange={(e) => handleInputChange(e, 'payment')}
+                      required
+                    />
+                    <InputMask
+                      mask="9999"
+                      maskChar=""
+                      type="text"
+                      name="expiryYear"
+                      placeholder="Ano de Validade (AAAA)"
+                      value={paymentInfo.expiryYear}
+                      onChange={(e) => handleInputChange(e, 'payment')}
+                      required
+                    />
+                    <InputMask
+                      mask="999"
+                      maskChar=""
+                      type="text"
+                      name="ccv"
+                      placeholder="CCV"
+                      value={paymentInfo.ccv}
+                      onChange={(e) => handleInputChange(e, 'payment')}
+                      required
+                    />
+                  </div>
                 </>
               )}
 
-              <button type="submit" disabled={loading}>
+              <button type="submit" disabled={loading} className="submit-button">
                 {loading ? 'Processando...' : 'Finalizar Pagamento'}
               </button>
             </form>
