@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import './Plans.css';
-import { FaHeart, FaStar, FaGem, FaBolt, FaCrown } from 'react-icons/fa';
+import { FaHeart, FaStar, FaGem, FaBolt, FaCrown, FaEnvelope, FaPhone } from 'react-icons/fa';
 import InputMask from 'react-input-mask';
 import QRCode from 'react-qr-code'; // Biblioteca para gerar QR Codes
 
@@ -310,59 +310,71 @@ function Plans() {
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button onClick={closeModal} className="modal-close">
-              Fechar
+              &times;
             </button>
             <h3>{`Pagamento para o plano ${selectedPlan.title}`}</h3>
             <form onSubmit={handleSubmit}>
               <h4>Informações do Pagador</h4>
-              <input
-                type="text"
-                name="name"
-                placeholder="Nome Completo"
-                value={payerInfo.name}
-                onChange={(e) => handleInputChange(e, 'payer')}
-                required
-              />
-              <input
-                type="email"
-                name="email"
-                placeholder="E-mail"
-                value={payerInfo.email}
-                onChange={(e) => handleInputChange(e, 'payer')}
-                required
-              />
-              <InputMask
-                mask={
-                  payerInfo.cpfCnpj.replace(/\D/g, '').length > 11
-                    ? '99.999.999/9999-99'
-                    : '999.999.999-99'
-                }
-                maskChar=""
-                type="text"
-                name="cpfCnpj"
-                placeholder="CPF ou CNPJ"
-                value={payerInfo.cpfCnpj}
-                onChange={(e) => handleInputChange(e, 'payer')}
-                required
-              />
-              <InputMask
-                mask="(99) 99999-9999"
-                maskChar=""
-                type="text"
-                name="phone"
-                placeholder="Telefone"
-                value={payerInfo.phone}
-                onChange={(e) => handleInputChange(e, 'payer')}
-                required
-              />
-              <input
-                type="text"
-                name="address"
-                placeholder="Endereço"
-                value={payerInfo.address}
-                onChange={(e) => handleInputChange(e, 'payer')}
-                required
-              />
+              <div className="form-group">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Nome Completo"
+                  value={payerInfo.name}
+                  onChange={(e) => handleInputChange(e, 'payer')}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="E-mail"
+                  value={payerInfo.email}
+                  onChange={(e) => handleInputChange(e, 'payer')}
+                  required
+                />
+                <FaEnvelope className="input-icon" />
+              </div>
+              <div className="form-group">
+                <InputMask
+                  mask={
+                    payerInfo.cpfCnpj.replace(/\D/g, '').length > 11
+                      ? '99.999.999/9999-99'
+                      : '999.999.999-99'
+                  }
+                  maskChar=""
+                  type="text"
+                  name="cpfCnpj"
+                  placeholder="CPF ou CNPJ"
+                  value={payerInfo.cpfCnpj}
+                  onChange={(e) => handleInputChange(e, 'payer')}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <InputMask
+                  mask="(99) 99999-9999"
+                  maskChar=""
+                  type="text"
+                  name="phone"
+                  placeholder="Telefone"
+                  value={payerInfo.phone}
+                  onChange={(e) => handleInputChange(e, 'payer')}
+                  required
+                />
+                <FaPhone className="input-icon" />
+              </div>
+              <div className="form-group">
+                <input
+                  type="text"
+                  name="address"
+                  placeholder="Endereço"
+                  value={payerInfo.address}
+                  onChange={(e) => handleInputChange(e, 'payer')}
+                  required
+                />
+              </div>
 
               <h4>Forma de Pagamento</h4>
               <div className="form-group payment-methods">
@@ -401,47 +413,55 @@ function Plans() {
               {paymentMethod === 'creditCard' && (
                 <>
                   <h4>Informações do Cartão</h4>
-                  <InputMask
-                    mask="9999 9999 9999 9999"
-                    maskChar=""
-                    type="text"
-                    name="cardNumber"
-                    placeholder="Número do Cartão"
-                    value={paymentInfo.cardNumber}
-                    onChange={(e) => handleInputChange(e, 'payment')}
-                    required
-                  />
+                  <div className="form-group">
+                    <InputMask
+                      mask="9999 9999 9999 9999"
+                      maskChar=""
+                      type="text"
+                      name="cardNumber"
+                      placeholder="Número do Cartão"
+                      value={paymentInfo.cardNumber}
+                      onChange={(e) => handleInputChange(e, 'payment')}
+                      required
+                    />
+                  </div>
                   <div className="card-details">
-                    <InputMask
-                      mask="99"
-                      maskChar=""
-                      type="text"
-                      name="expiryMonth"
-                      placeholder="Mês de Validade (MM)"
-                      value={paymentInfo.expiryMonth}
-                      onChange={(e) => handleInputChange(e, 'payment')}
-                      required
-                    />
-                    <InputMask
-                      mask="9999"
-                      maskChar=""
-                      type="text"
-                      name="expiryYear"
-                      placeholder="Ano de Validade (AAAA)"
-                      value={paymentInfo.expiryYear}
-                      onChange={(e) => handleInputChange(e, 'payment')}
-                      required
-                    />
-                    <InputMask
-                      mask="999"
-                      maskChar=""
-                      type="text"
-                      name="ccv"
-                      placeholder="CCV"
-                      value={paymentInfo.ccv}
-                      onChange={(e) => handleInputChange(e, 'payment')}
-                      required
-                    />
+                    <div className="form-group">
+                      <InputMask
+                        mask="99"
+                        maskChar=""
+                        type="text"
+                        name="expiryMonth"
+                        placeholder="Mês (MM)"
+                        value={paymentInfo.expiryMonth}
+                        onChange={(e) => handleInputChange(e, 'payment')}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <InputMask
+                        mask="9999"
+                        maskChar=""
+                        type="text"
+                        name="expiryYear"
+                        placeholder="Ano (AAAA)"
+                        value={paymentInfo.expiryYear}
+                        onChange={(e) => handleInputChange(e, 'payment')}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <InputMask
+                        mask="999"
+                        maskChar=""
+                        type="text"
+                        name="ccv"
+                        placeholder="CCV"
+                        value={paymentInfo.ccv}
+                        onChange={(e) => handleInputChange(e, 'payment')}
+                        required
+                      />
+                    </div>
                   </div>
                 </>
               )}
@@ -457,6 +477,7 @@ function Plans() {
               <button type="submit" disabled={loading} className="submit-button">
                 {loading ? 'Processando...' : 'Finalizar Pagamento'}
               </button>
+              {loading && <p className="loading-message">Por favor, aguarde...</p>}
             </form>
           </div>
         </div>
