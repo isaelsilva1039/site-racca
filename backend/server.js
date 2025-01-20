@@ -1,5 +1,3 @@
-// backend/server.js
-
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
@@ -20,16 +18,13 @@ app.post('/api/customers', async (req, res) => {
   const { name, cpfCnpj, email, phone, address } = req.body;
 
   try {
-    // 1. Sanitizar o cpfCnpj: remover caracteres não numéricos
     const sanitizedCpfCnpj = cpfCnpj.replace(/\D/g, '');
     console.log(`CPF/CNPJ Sanitizado: ${sanitizedCpfCnpj}`);
 
-    // 2. Validar se o cpfCnpj possui 11 (CPF) ou 14 (CNPJ) dígitos
     if (![11, 14].includes(sanitizedCpfCnpj.length)) {
       return res.status(400).json({ message: 'CPF ou CNPJ inválido.' });
     }
 
-    // 3. Buscar cliente existente
     const searchResponse = await fetch(
       `https://www.asaas.com/api/v3/customers?cpfCnpj=${sanitizedCpfCnpj}`,
       {
@@ -54,12 +49,10 @@ app.post('/api/customers', async (req, res) => {
     }
 
     if (searchData.data && searchData.data.length > 0) {
-      // Cliente encontrado
       console.log('Cliente já existe. Retornando customerId existente.');
       return res.json({ customerId: searchData.data[0].id });
     }
 
-    // 4. Se não encontrado, criar novo cliente
     const createResponse = await fetch('https://www.asaas.com/api/v3/customers', {
       method: 'POST',
       headers: {
@@ -69,9 +62,9 @@ app.post('/api/customers', async (req, res) => {
       body: JSON.stringify({
         name,
         cpfCnpj: sanitizedCpfCnpj,
-        email: email || '', // Campo opcional
-        phone: phone || '', // Campo opcional
-        address: address || '', // Campo opcional
+        email: email || '',
+        phone: phone || '',
+        address: address || '',
       }),
     });
 
@@ -139,7 +132,6 @@ app.post('/api/payments', async (req, res) => {
   }
 });
 
-// 🔹 **Nova Rota para Recuperar a Linha Digitável do Boleto**
 app.get('/api/payments/:id/identificationField', async (req, res) => {
   const paymentId = req.params.id;
 
