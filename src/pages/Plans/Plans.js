@@ -1,5 +1,3 @@
-// src/pages/Plans/Plans.js
-
 import React, { useState } from 'react';
 import './Plans.css';
 import { FaHeart, FaStar, FaGem, FaBolt, FaCrown, FaEnvelope, FaPhone } from 'react-icons/fa';
@@ -26,7 +24,7 @@ function Plans() {
   const [loading, setLoading] = useState(false);
   const [qrCodeData, setQrCodeData] = useState(null); // Estado para armazenar a linha digitável
 
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:5000';
+  const BACKEND_URL =  'https://www.asaas.com/api/v3';
 
   const plans = [
     {
