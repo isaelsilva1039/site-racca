@@ -37,6 +37,7 @@ function Plans() {
       icon: <FaHeart />,
       title: 'Plano Básico',
       amount: 79.9,
+      id_plano_sistema_racca: 100,
       prices: { mensal: 'R$ 79,90/mês' },
       benefits: [
         'Consultas online ilimitadas',
@@ -47,6 +48,7 @@ function Plans() {
     {
       id: 471,
       icon: <FaStar />,
+      id_plano_sistema_racca: 101,
       title: 'Plano Confort',
       amount: 89.9,
       prices: {
@@ -62,6 +64,7 @@ function Plans() {
     {
       id: 3907,
       icon: <FaGem />,
+      id_plano_sistema_racca: 102,
       title: 'Plano RACCA Proteção Plus',
       amount: 15.0,
       prices: { fidelidade: 'R$ 15,00/mês c/ fidelidade 12 meses' },
@@ -75,6 +78,7 @@ function Plans() {
     {
       id: 'ID_DINAMICO',
       icon: <FaCrown />,
+      id_plano_sistema_racca: 102,
       title: 'Plano Personalize',
       amount: 39.9,
       prices: { mensal: 'R$ 39,90/mês s/ fidelidade' },
@@ -90,6 +94,7 @@ function Plans() {
     {
       id: 1084,
       icon: <FaGem />,
+      id_plano_sistema_racca: 104,
       title: 'Plano Confort Extra',
       amount: 109.9,
       prices: {
@@ -105,6 +110,7 @@ function Plans() {
     {
       id: 500,
       icon: <FaBolt />,
+      id_plano_sistema_racca: 105,
       title: 'Plano Premium',
       amount: 99.9,
       prices: {
@@ -122,6 +128,7 @@ function Plans() {
     {
       id: 706,
       icon: <FaCrown />,
+      id_plano_sistema_racca: 106,
       title: 'Plano Premium Extra',
       amount: 119.9,
       prices: {
@@ -215,6 +222,7 @@ function Plans() {
     
 
     createPayment({
+      externalReference: selectedPlan.id_plano_sistema_racca,
       customer: id_cliente_assas,
       billingType: 'UNDEFINED',
       dueDate:new Date().toISOString().split("T")[0],
@@ -222,14 +230,19 @@ function Plans() {
       description: `Pagamento do plano ${selectedPlan.title}`,
       cpfCnpj: payerInfo?.cpfCnpj,
 
+      name: payerInfo?.name,
+      email: payerInfo?.email,
+      phone: payerInfo?.phone,
+      address: payerInfo?.address,
+
       onSuccess: (data) => {
 
         const invoiceUrl = data?.original?.invoiceUrl;
-        console.log(invoiceUrl, 'pagamento');
+        // console.log(invoiceUrl, 'pagamento');
       
         if (invoiceUrl) {
       
-          window.location.href = invoiceUrl;
+          // window.location.href = invoiceUrl;
         }
 
       },
