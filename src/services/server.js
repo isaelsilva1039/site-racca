@@ -79,7 +79,6 @@ export const createCustomer = async ({
 
 
 
-
 export const createPayment = async ({
   externalReference,
   customer,    // Ex: "cus_000108793807"

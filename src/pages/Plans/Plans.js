@@ -30,32 +30,21 @@ function Plans() {
   const [qrCodeData, setQrCodeData] = useState(null); // Estado para armazenar a linha digitável
 
   const BACKEND_URL = 'https://www.asaas.com/api/v3';
-
   const plans = [
-    {
-      id: 1,
-      icon: <FaHeart />,
-      title: 'Plano Básico',
-      amount: 79.9,
-      id_plano_sistema_racca: 100,
-      prices: { mensal: 'R$ 79,90/mês' },
-      benefits: [
-        'Consultas online ilimitadas',
-        'Descontos em farmácias',
-        'Acesso ao histórico médico',
-      ],
-    },
+   
     {
       id: 471,
       icon: <FaStar />,
-      id_plano_sistema_racca: 101,
+      id_plano_sistema_racca: 471,
       title: 'Plano Confort',
       amount: 89.9,
       prices: {
         fidelidade: 'R$ 89,90/mês c/ fidelidade 12 meses',
-        semFidelidade: 'R$ 129,90/mês s/ fidelidade',
+        semFidelidade: 'R$ 119,90/mês s/ fidelidade',
       },
       benefits: [
+        'Desconto em farmácias parceiras',
+        'Acompanhamento clínico (Grupo CUIDAR CONECTADO)',
         'Desconto em farmácias parceiras',
         '5% de desconto p/ pagamento antecipado',
         '2 terapias mensais de 45 minutos cada',
@@ -64,7 +53,7 @@ function Plans() {
     {
       id: 3907,
       icon: <FaGem />,
-      id_plano_sistema_racca: 102,
+      id_plano_sistema_racca: 3907,
       title: 'Plano RACCA Proteção Plus',
       amount: 15.0,
       prices: { fidelidade: 'R$ 15,00/mês c/ fidelidade 12 meses' },
@@ -75,34 +64,20 @@ function Plans() {
         'Reembolso de Medicamentos Genéricos Gratuitos até R$ 150,00',
       ],
     },
-    {
-      id: 'ID_DINAMICO',
-      icon: <FaCrown />,
-      id_plano_sistema_racca: 102,
-      title: 'Plano Personalize',
-      amount: 39.9,
-      prices: { mensal: 'R$ 39,90/mês s/ fidelidade' },
-      benefits: [
-        'Desconto em farmácias parceiras',
-        '5% de desconto p/ pagamento antecipado',
-        'Valor da consulta por especialidade:',
-        'Psicólogo e Nutricionista: R$ 50,00',
-        'Psiquiatra: R$ 100,00',
-        'Médicos Especialistas: R$ 60,00',
-      ],
-    },
+
     {
       id: 1084,
       icon: <FaGem />,
-      id_plano_sistema_racca: 104,
+      id_plano_sistema_racca: 1084,
       title: 'Plano Confort Extra',
-      amount: 109.9,
+      amount: 159.9,
       prices: {
-        fidelidade: 'R$ 109,90/mês c/ fidelidade 12 meses',
-        semFidelidade: 'R$ 149,90/mês s/ fidelidade',
+        fidelidade: 'R$ 159,90/mês c/ fidelidade 12 meses',
+        semFidelidade: 'R$ 189,90/mês s/ fidelidade',
       },
       benefits: [
         'Desconto em farmácias parceiras',
+        'Acompanhamento clínico (Grupo CUIDAR CONECTADO)',
         '5% de desconto p/ pagamento antecipado',
         '4 terapias mensais de 45 minutos cada',
       ],
@@ -110,11 +85,11 @@ function Plans() {
     {
       id: 500,
       icon: <FaBolt />,
-      id_plano_sistema_racca: 105,
+      id_plano_sistema_racca: 500,
       title: 'Plano Premium',
-      amount: 99.9,
+      amount: 109.9,
       prices: {
-        fidelidade: 'R$ 99,90/mês c/ fidelidade 12 meses',
+        fidelidade: 'R$ 109,90/mês c/ fidelidade 12 meses',
         semFidelidade: 'R$ 139,90/mês s/ fidelidade',
       },
       benefits: [
@@ -128,22 +103,139 @@ function Plans() {
     {
       id: 706,
       icon: <FaCrown />,
-      id_plano_sistema_racca: 106,
-      title: 'Plano Premium Extra',
-      amount: 119.9,
+      id_plano_sistema_racca: 706,
+      title: 'Plano Premium Extra Plus',
+      amount: 189.9,
       prices: {
-        fidelidade: 'R$ 119,90/mês c/ fidelidade 12 meses',
-        semFidelidade: 'R$ 159,90/mês s/ fidelidade',
+        fidelidade: 'R$ 189,90/mês c/ fidelidade 12 meses',
       },
       benefits: [
         'Desconto em farmácias parceiras',
         '5% de desconto p/ pagamento antecipado',
         '4 terapias mensais de 45 minutos cada',
         '1 sessão com especialista ao mês',
+        'Assistência Funeral Familiar de R$ 7.000,00',
+        'MA - Morte Acidental - Capital Segurado R$ 20.000,00',
+        'IPA - Invalidez por Acidente - Capital Segurado R$ 20.000,00',
+        'Reembolso de Medicamentos Genéricos Gratuitos até R$ 150,00',
         'Especialistas Disponíveis: Cardiologista, Dermatologista, Endocrinologista, Geriatria, Ginecologista, Neurologista, Nutricionista, Ortopedista, Otorrinolaringologista, Pediatria, Traumatologia, Urologista.',
       ],
     },
   ];
+
+  // const plans = [
+  //   {
+  //     id: 1,
+  //     icon: <FaHeart />,
+  //     title: 'Plano Básico',
+  //     amount: 79.9,
+  //     id_plano_sistema_racca: 100,
+  //     prices: { mensal: 'R$ 79,90/mês' },
+  //     benefits: [
+  //       'Consultas online ilimitadas',
+  //       'Descontos em farmácias',
+  //       'Acesso ao histórico médico',
+  //     ],
+  //   },
+  //   {
+  //     id: 471,
+  //     icon: <FaStar />,
+  //     id_plano_sistema_racca: 101,
+  //     title: 'Plano Confort',
+  //     amount: 89.9,
+  //     prices: {
+  //       fidelidade: 'R$ 89,90/mês c/ fidelidade 12 meses',
+  //       semFidelidade: 'R$ 129,90/mês s/ fidelidade',
+  //     },
+  //     benefits: [
+  //       'Desconto em farmácias parceiras',
+  //       '5% de desconto p/ pagamento antecipado',
+  //       '2 terapias mensais de 45 minutos cada',
+  //     ],
+  //   },
+  //   {
+  //     id: 3907,
+  //     icon: <FaGem />,
+  //     id_plano_sistema_racca: 102,
+  //     title: 'Plano RACCA Proteção Plus',
+  //     amount: 15.0,
+  //     prices: { fidelidade: 'R$ 15,00/mês c/ fidelidade 12 meses' },
+  //     benefits: [
+  //       'Assistência Funeral Familiar de R$ 7.000,00',
+  //       'MA - Morte Acidental - Capital Segurado R$ 20.000,00',
+  //       'IPA - Invalidez por Acidente - Capital Segurado R$ 20.000,00',
+  //       'Reembolso de Medicamentos Genéricos Gratuitos até R$ 150,00',
+  //     ],
+  //   },
+  //   {
+  //     id: 'ID_DINAMICO',
+  //     icon: <FaCrown />,
+  //     id_plano_sistema_racca: 102,
+  //     title: 'Plano Personalize',
+  //     amount: 39.9,
+  //     prices: { mensal: 'R$ 39,90/mês s/ fidelidade' },
+  //     benefits: [
+  //       'Desconto em farmácias parceiras',
+  //       '5% de desconto p/ pagamento antecipado',
+  //       'Valor da consulta por especialidade:',
+  //       'Psicólogo e Nutricionista: R$ 50,00',
+  //       'Psiquiatra: R$ 100,00',
+  //       'Médicos Especialistas: R$ 60,00',
+  //     ],
+  //   },
+  //   {
+  //     id: 1084,
+  //     icon: <FaGem />,
+  //     id_plano_sistema_racca: 104,
+  //     title: 'Plano Confort Extra',
+  //     amount: 109.9,
+  //     prices: {
+  //       fidelidade: 'R$ 109,90/mês c/ fidelidade 12 meses',
+  //       semFidelidade: 'R$ 149,90/mês s/ fidelidade',
+  //     },
+  //     benefits: [
+  //       'Desconto em farmácias parceiras',
+  //       '5% de desconto p/ pagamento antecipado',
+  //       '4 terapias mensais de 45 minutos cada',
+  //     ],
+  //   },
+  //   {
+  //     id: 500,
+  //     icon: <FaBolt />,
+  //     id_plano_sistema_racca: 105,
+  //     title: 'Plano Premium',
+  //     amount: 99.9,
+  //     prices: {
+  //       fidelidade: 'R$ 99,90/mês c/ fidelidade 12 meses',
+  //       semFidelidade: 'R$ 139,90/mês s/ fidelidade',
+  //     },
+  //     benefits: [
+  //       'Desconto em farmácias parceiras',
+  //       '5% de desconto p/ pagamento antecipado',
+  //       '2 terapias mensais de 45 minutos cada',
+  //       '1 sessão com especialista ao mês',
+  //       'Especialistas Disponíveis: Cardiologista, Dermatologista, Endocrinologista, Geriatria, Ginecologista, Neurologista, Nutricionista, Ortopedista, Otorrinolaringologista, Pediatria, Traumatologia, Urologista.',
+  //     ],
+  //   },
+  //   {
+  //     id: 706,
+  //     icon: <FaCrown />,
+  //     id_plano_sistema_racca: 106,
+  //     title: 'Plano Premium Extra',
+  //     amount: 119.9,
+  //     prices: {
+  //       fidelidade: 'R$ 119,90/mês c/ fidelidade 12 meses',
+  //       semFidelidade: 'R$ 159,90/mês s/ fidelidade',
+  //     },
+  //     benefits: [
+  //       'Desconto em farmácias parceiras',
+  //       '5% de desconto p/ pagamento antecipado',
+  //       '4 terapias mensais de 45 minutos cada',
+  //       '1 sessão com especialista ao mês',
+  //       'Especialistas Disponíveis: Cardiologista, Dermatologista, Endocrinologista, Geriatria, Ginecologista, Neurologista, Nutricionista, Ortopedista, Otorrinolaringologista, Pediatria, Traumatologia, Urologista.',
+  //     ],
+  //   },
+  // ];
 
   const handleInputChange = (e, type) => {
     const { name, value } = e.target;
@@ -197,6 +289,7 @@ function Plans() {
         email: payerInfo?.email,
         phone: payerInfo?.phone,
         address: payerInfo?.address,
+        address: payerInfo?.address,
 
         onSuccess: (data) => {
 
@@ -238,7 +331,6 @@ function Plans() {
       onSuccess: (data) => {
 
         const invoiceUrl = data?.original?.invoiceUrl;
-        // console.log(invoiceUrl, 'pagamento');
       
         if (invoiceUrl) {
       
@@ -303,21 +395,33 @@ function Plans() {
     <section className="plans-container">
       <h2 className="plans-title">Nossos Planos</h2>
       <div className="plans-grid">
-        {plans.map((plan) => (
-          <div className="plan-card" key={plan.id}>
-            <div className="plan-icon">{plan.icon}</div>
-            <h3 className="plan-title">{plan.title}</h3>
-            <ul className="plan-benefits">
-              {plan.benefits.map((benefit, index) => (
-                <li key={index}>{benefit}</li>
-              ))}
-            </ul>
-            <button onClick={() => openModal(plan)} className="plan-button">
-              Assine Agora
-            </button>
-          </div>
-        ))}
+  {plans.map((plan) => (
+    <div className="plan-card" key={plan.id}>
+      <div className="plan-icon">{plan.icon}</div>
+      <h3 className="plan-title">{plan.title}</h3>
+      
+      <div className="plan-price-container">
+        <span className="original-price">
+          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(plan.originalAmount || (plan.amount * 1.5))} {/* Exemplo de cálculo do preço original */}
+        </span>
+        <span className="discount-badge">ECONOMIZE 50%</span>
       </div>
+      <p className="plan-price">
+        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(plan.amount)} <span className="price-unit">/mês</span>
+      </p>
+
+      <ul className="plan-benefits">
+        {plan.benefits.map((benefit, index) => (
+          <li key={index}>{benefit}</li>
+        ))}
+      </ul>
+      <button onClick={() => openModal(plan)} className="plan-button">
+        Assine Agora
+      </button>
+    </div>
+  ))}
+</div>
+
 
       {isModalOpen && selectedPlan && (
         <div className="modal-overlay" onClick={closeModal}>
