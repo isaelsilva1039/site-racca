@@ -3,10 +3,15 @@ import './Plans.css';
 import { FaHeart, FaStar, FaGem, FaBolt, FaCrown, FaEnvelope, FaPhone } from 'react-icons/fa';
 import InputMask from 'react-input-mask';
 import QRCode from 'react-qr-code'; // Biblioteca para gerar QR Codes
+import { createCustomer, createPayment, getOrCreateCustomer } from '../../services/server';
+import { ASAAS_ACCESS_TOKEN_DEV, URL_SANBOX_ASSAS } from '../../services/urls';
 
 function Plans() {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [customer, setCustomer] = useState([]);
+
   const [paymentMethod, setPaymentMethod] = useState('creditCard'); // creditCard, pix, boleto
   const [payerInfo, setPayerInfo] = useState({
     name: '',
@@ -24,7 +29,7 @@ function Plans() {
   const [loading, setLoading] = useState(false);
   const [qrCodeData, setQrCodeData] = useState(null); // Estado para armazenar a linha digitável
 
-  const BACKEND_URL =  'https://www.asaas.com/api/v3';
+  const BACKEND_URL = 'https://www.asaas.com/api/v3';
 
   const plans = [
     {
@@ -146,29 +151,96 @@ function Plans() {
     setPaymentMethod(method);
   };
 
-  // Função para buscar ou criar cliente via backend
-  const getOrCreateCustomer = async () => {
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/customers`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+
+
+
+
+  const getOrCreateCustomerPla = async () => {
+
+    setLoading(true)
+  
+      getOrCreateCustomer({
+        cpfCnpj: payerInfo?.cpfCnpj,
+        onSuccess: (data) => {
+
+          if(data.length > 0){
+            const id = data[0].id
+            payment(id)
+          }else{
+            create()
+          }
+
+
+
         },
-        body: JSON.stringify(payerInfo),
+        onError: (message) => {
+          console.error("onError chamado com:", message);
+          setLoading(false)
+        },
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        return data.customerId;
-      } else {
-        throw new Error(data.message || 'Erro ao obter/criar cliente');
-      }
-    } catch (error) {
-      console.error('Erro ao obter/criar cliente:', error);
-      throw error;
-    }
+    
   };
+
+
+  const create = () => {
+
+    createCustomer({
+        name: payerInfo?.name,
+        cpfCnpj: payerInfo?.cpfCnpj,
+        email: payerInfo?.email,
+        phone: payerInfo?.phone,
+        address: payerInfo?.address,
+
+        onSuccess: (data) => {
+
+          if(data.length > 0){
+            const id = data[0].id
+
+            payment(id)
+  
+
+          }
+
+        },
+        onError: (message) => {
+          console.error("onError chamado com:", message);
+          setLoading(false)
+        },
+      });
+  }
+  
+
+
+  const payment = (id_cliente_assas) => {
+    
+
+    createPayment({
+      customer: id_cliente_assas,
+      billingType: 'UNDEFINED',
+      dueDate:new Date().toISOString().split("T")[0],
+      value: selectedPlan.amount,
+      description: `Pagamento do plano ${selectedPlan.title}`,
+      cpfCnpj: payerInfo?.cpfCnpj,
+
+      onSuccess: (data) => {
+
+        const invoiceUrl = data?.original?.invoiceUrl;
+        console.log(invoiceUrl, 'pagamento');
+      
+        if (invoiceUrl) {
+      
+          window.location.href = invoiceUrl;
+        }
+
+      },
+      onError: (message) => {
+        setLoading(false)
+        console.error("onError chamado com:", message);
+        
+      },
+    });
+  }
+
 
   // Função para recuperar a linha digitável do boleto
   const getIdentificationField = async (paymentId) => {
@@ -196,78 +268,8 @@ function Plans() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setQrCodeData(null); // Resetar QR Code antes de um novo pagamento
-
-    try {
-      // Obter ou criar cliente via backend
-      const customerId = await getOrCreateCustomer();
-
-      if (!customerId) {
-        alert('Não foi possível obter o cliente. Por favor, tente novamente.');
-        setLoading(false);
-        return;
-      }
-
-      // Definindo corretamente o billingType
-      const billingTypeMap = {
-        creditCard: 'CREDIT_CARD',
-        pix: 'PIX',
-        boleto: 'BOLETO',
-      };
-      const billingType = billingTypeMap[paymentMethod] || 'BOLETO';
-
-      const requestBody = {
-        customer: customerId, // Passando o ID do cliente
-        billingType, // Passando o billingType correto
-        value: selectedPlan.amount, // Valor do pagamento
-        description: `Pagamento do plano ${selectedPlan.title}`,
-        dueDate: new Date().toISOString().split('T')[0], // Data de vencimento (hoje)
-      };
-
-      if (paymentMethod === 'creditCard') {
-        requestBody.paymentMethod = 'CREDIT_CARD';
-        requestBody.creditCard = {
-          holderName: payerInfo.name,
-          number: paymentInfo.cardNumber.replace(/\s/g, ''), // Remove espaços
-          expirationMonth: paymentInfo.expiryMonth,
-          expirationYear: paymentInfo.expiryYear,
-          ccv: paymentInfo.ccv,
-        };
-      } else if (paymentMethod === 'pix') {
-        requestBody.paymentMethod = 'PIX';
-      } else if (paymentMethod === 'boleto') {
-        requestBody.paymentMethod = 'BOLETO';
-      }
-
-      console.log('Dados enviados para pagamento:', requestBody); // Log para debug
-
-      // Enviar pagamento via backend
-      const paymentResponse = await fetch(`${BACKEND_URL}/api/payments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      const paymentResult = await paymentResponse.json();
-
-      if (paymentResponse.ok) {
-        alert('Pagamento realizado com sucesso!');
-        // Se for boleto, recuperar a linha digitável
-        if (paymentMethod === 'boleto') {
-          const linhaDigitavel = await getIdentificationField(paymentResult.id);
-          setQrCodeData(linhaDigitavel); // Armazena a linha digitável para exibir o QR Code
-        }
-        closeModal();
-      } else {
-        throw new Error(paymentResult.message || 'Erro ao processar pagamento');
-      }
-    } catch (error) {
-      alert(`Erro no pagamento: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
+    setQrCodeData(null);
+    getOrCreateCustomerPla();
   };
 
   const openModal = (plan) => {
@@ -374,106 +376,8 @@ function Plans() {
                 />
               </div>
 
-              <h4>Forma de Pagamento</h4>
-              <div className="form-group payment-methods">
-                <label>
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="creditCard"
-                    checked={paymentMethod === 'creditCard'}
-                    onChange={() => handlePaymentMethodChange('creditCard')}
-                  />
-                  Cartão de Crédito
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="pix"
-                    checked={paymentMethod === 'pix'}
-                    onChange={() => handlePaymentMethodChange('pix')}
-                  />
-                  Pix
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="boleto"
-                    checked={paymentMethod === 'boleto'}
-                    onChange={() => handlePaymentMethodChange('boleto')}
-                  />
-                  Boleto Bancário
-                </label>
-              </div>
-
-              {paymentMethod === 'creditCard' && (
-                <>
-                  <h4>Informações do Cartão</h4>
-                  <div className="form-group">
-                    <InputMask
-                      mask="9999 9999 9999 9999"
-                      maskChar=""
-                      type="text"
-                      name="cardNumber"
-                      placeholder="Número do Cartão"
-                      value={paymentInfo.cardNumber}
-                      onChange={(e) => handleInputChange(e, 'payment')}
-                      required
-                    />
-                  </div>
-                  <div className="card-details">
-                    <div className="form-group">
-                      <InputMask
-                        mask="99"
-                        maskChar=""
-                        type="text"
-                        name="expiryMonth"
-                        placeholder="Mês (MM)"
-                        value={paymentInfo.expiryMonth}
-                        onChange={(e) => handleInputChange(e, 'payment')}
-                        required
-                      />
-                    </div>
-                    <div className="form-group">
-                      <InputMask
-                        mask="9999"
-                        maskChar=""
-                        type="text"
-                        name="expiryYear"
-                        placeholder="Ano (AAAA)"
-                        value={paymentInfo.expiryYear}
-                        onChange={(e) => handleInputChange(e, 'payment')}
-                        required
-                      />
-                    </div>
-                    <div className="form-group">
-                      <InputMask
-                        mask="999"
-                        maskChar=""
-                        type="text"
-                        name="ccv"
-                        placeholder="CCV"
-                        value={paymentInfo.ccv}
-                        onChange={(e) => handleInputChange(e, 'payment')}
-                        required
-                      />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {paymentMethod === 'boleto' && qrCodeData && (
-                <div className="qr-code-container">
-                  <h4>Escaneie o QR Code para pagar:</h4>
-                  <QRCode value={qrCodeData} />
-                  <p>Ou use a linha digitável: {qrCodeData}</p>
-                </div>
-              )}
-
               <button type="submit" disabled={loading} className="submit-button">
-                {loading ? 'Processando...' : 'Finalizar Pagamento'}
+                {loading ? 'Processando...' : 'Processar Pagamento'}
               </button>
               {loading && <p className="loading-message">Por favor, aguarde...</p>}
             </form>
