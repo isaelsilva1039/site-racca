@@ -45,7 +45,6 @@ function Plans() {
       benefits: [
         'Desconto em farmácias parceiras',
         'Acompanhamento clínico (Grupo CUIDAR CONECTADO)',
-        'Desconto em farmácias parceiras',
         '5% de desconto p/ pagamento antecipado',
         '2 terapias mensais de 45 minutos cada',
       ],
@@ -62,6 +61,26 @@ function Plans() {
         'MA - Morte Acidental - Capital Segurado R$ 20.000,00',
         'IPA - Invalidez por Acidente - Capital Segurado R$ 20.000,00',
         'Reembolso de Medicamentos Genéricos Gratuitos até R$ 150,00',
+      ],
+    },
+
+    {
+      id: 'ID_DINAMICO',
+      icon: <FaCrown />,
+      id_plano_sistema_racca: 9999,
+      title: 'Plano Familiar',
+      amount: 19.9,
+      prices: { mensal: 'R$ 19,90/mês s/ fidelidade' },
+      benefits: [
+        'Clínico Geral',
+        'Desconto em farmácias parceiras',
+        'Acompanhamento clínico (Grupo CUIDAR CONECTADO)',
+        'R$ 9,90 por vida adicionada',
+        '5% de desconto p/ pagamento antecipado',
+        'Valor da consulta por especialidade:',
+        'Psicólogo e Nutricionista: R$ 50,00',
+        'Psiquiatra: R$ 100,00',
+        'Médicos Especialistas: R$ 60,00',
       ],
     },
 
