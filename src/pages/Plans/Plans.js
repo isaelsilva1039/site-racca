@@ -242,7 +242,7 @@ function Plans() {
       
         if (invoiceUrl) {
       
-          // window.location.href = invoiceUrl;
+          window.location.href = invoiceUrl;
         }
 
       },
