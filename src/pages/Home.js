@@ -2,25 +2,25 @@ import styled from 'styled-components';
 
 const Banner = styled.section`
   background: 
-    linear-gradient(rgba(161, 0, 255, 0.7), rgba(161, 0, 255, 0.7)), /* Gradiente roxo com transparência */
-    url('/telemedicina.jpg') no-repeat center center/cover; /* Substitua pelo caminho correto da imagem */
+    linear-gradient(rgba(161, 0, 255, 0.7), rgba(161, 0, 255, 0.7)),
+    url('/telemedicina.jpg') no-repeat center center/cover;
   color: white;
   text-align: center;
   padding: 50px;
-  min-height: 70vh; /* Define uma altura mínima maior */
-
+  min-height: 70vh;
+  
   display: flex;
-  justify-content: center; /* Centraliza o conteúdo horizontalmente */
-  align-items: center; /* Centraliza o conteúdo verticalmente */
+  justify-content: center;
+  align-items: center;
 
   @media (max-width: 768px) {
     padding: 30px;
-    min-height: 50vh; /* Altura menor em telas pequenas */
+    min-height: 50vh;
   }
 `;
 
 const Overlay = styled.div`
-  background-color: rgba(0, 0, 0, 0.5); /* Adiciona um overlay escuro */
+  background-color: rgba(0, 0, 0, 0.5);
   padding: 50px;
   border-radius: 10px;
   display: inline-block;
@@ -61,8 +61,10 @@ function Home() {
         <h1>Racca Saúde</h1>
         <p>Terapia Online e Monitoramento</p>
         <ButtonGroup>
-          <Button>Veja Planos</Button>
-          <Button>Saiba Mais</Button>
+          {/* O botão foi transformado em link, direcionando para a âncora #plans */}
+          <Button as="a" href="#plans" className="nav-link">
+            Veja Planos
+          </Button>
         </ButtonGroup>
       </Overlay>
     </Banner>

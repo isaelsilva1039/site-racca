@@ -10,7 +10,7 @@ const FooterContainer = styled.footer`
 function Footer() {
   return (
     <FooterContainer>
-      <p>Racca Saúde © 2024 - Todos os direitos reservados</p>
+      <p>Racca Saúde © 2025 - Todos os direitos reservados</p>
     </FooterContainer>
   );
 }
