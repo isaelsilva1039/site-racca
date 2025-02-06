@@ -1,5 +1,4 @@
 import './Header.css';
-import { AccountCircle } from '@mui/icons-material';
 import { useState, useEffect, useRef } from 'react';
 
 function Header() {
@@ -62,9 +61,7 @@ function Header() {
         </div>
       </nav>
       {/* Ícone do usuário com redirecionamento */}
-      <a href="/admin" className="user-icon">
-        <AccountCircle className="icon" />
-      </a>
+
     </header>
   );
 }

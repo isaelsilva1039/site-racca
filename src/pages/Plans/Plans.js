@@ -2,17 +2,16 @@ import React, { useState } from 'react';
 import './Plans.css';
 import { FaHeart, FaStar, FaGem, FaBolt, FaCrown, FaEnvelope, FaPhone } from 'react-icons/fa';
 import InputMask from 'react-input-mask';
-import QRCode from 'react-qr-code'; // Biblioteca para gerar QR Codes
+import QRCode from 'react-qr-code';
 import { createCustomer, createPayment, getOrCreateCustomer } from '../../services/server';
 import { ASAAS_ACCESS_TOKEN_DEV, URL_SANBOX_ASSAS } from '../../services/urls';
 
 function Plans() {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [selectedPriceOption, setSelectedPriceOption] = useState('');
   const [customer, setCustomer] = useState([]);
-
-  const [paymentMethod, setPaymentMethod] = useState('creditCard'); // creditCard, pix, boleto
+  const [paymentMethod, setPaymentMethod] = useState('creditCard');
   const [payerInfo, setPayerInfo] = useState({
     name: '',
     email: '',
@@ -27,17 +26,18 @@ function Plans() {
     ccv: '',
   });
   const [loading, setLoading] = useState(false);
-  const [qrCodeData, setQrCodeData] = useState(null); // Estado para armazenar a linha digitável
+  const [qrCodeData, setQrCodeData] = useState(null);
 
   const BACKEND_URL = 'https://www.asaas.com/api/v3';
+
   const plans = [
-   
     {
       id: 471,
       icon: <FaStar />,
       id_plano_sistema_racca: 471,
       title: 'Plano Confort',
       amount: 89.9,
+      amountSemFidelidade: 119.9,
       prices: {
         fidelidade: 'R$ 89,90/mês c/ fidelidade 12 meses',
         semFidelidade: 'R$ 119,90/mês s/ fidelidade',
@@ -55,7 +55,9 @@ function Plans() {
       id_plano_sistema_racca: 3907,
       title: 'Plano RACCA Proteção Plus',
       amount: 15.0,
-      prices: { fidelidade: 'R$ 15,00/mês c/ fidelidade 12 meses' },
+      prices: {
+        fidelidade: 'R$ 15,00/mês c/ fidelidade 12 meses',
+      },
       benefits: [
         'Assistência Funeral Familiar de R$ 7.000,00',
         'MA - Morte Acidental - Capital Segurado R$ 20.000,00',
@@ -63,14 +65,15 @@ function Plans() {
         'Reembolso de Medicamentos Genéricos Gratuitos até R$ 150,00',
       ],
     },
-
     {
       id: 'ID_DINAMICO',
       icon: <FaCrown />,
       id_plano_sistema_racca: 9999,
       title: 'Plano Familiar',
       amount: 19.9,
-      prices: { mensal: 'R$ 19,90/mês s/ fidelidade' },
+      prices: {
+        mensal: 'R$ 19,90/mês s/ fidelidade',
+      },
       benefits: [
         'Clínico Geral',
         'Desconto em farmácias parceiras',
@@ -83,13 +86,13 @@ function Plans() {
         'Médicos Especialistas: R$ 60,00',
       ],
     },
-
     {
       id: 1084,
       icon: <FaGem />,
       id_plano_sistema_racca: 1084,
       title: 'Plano Confort Extra',
       amount: 159.9,
+      amountSemFidelidade: 189.9,
       prices: {
         fidelidade: 'R$ 159,90/mês c/ fidelidade 12 meses',
         semFidelidade: 'R$ 189,90/mês s/ fidelidade',
@@ -107,6 +110,7 @@ function Plans() {
       id_plano_sistema_racca: 500,
       title: 'Plano Premium',
       amount: 109.9,
+      amountSemFidelidade: 139.9,
       prices: {
         fidelidade: 'R$ 109,90/mês c/ fidelidade 12 meses',
         semFidelidade: 'R$ 139,90/mês s/ fidelidade',
@@ -142,120 +146,6 @@ function Plans() {
     },
   ];
 
-  // const plans = [
-  //   {
-  //     id: 1,
-  //     icon: <FaHeart />,
-  //     title: 'Plano Básico',
-  //     amount: 79.9,
-  //     id_plano_sistema_racca: 100,
-  //     prices: { mensal: 'R$ 79,90/mês' },
-  //     benefits: [
-  //       'Consultas online ilimitadas',
-  //       'Descontos em farmácias',
-  //       'Acesso ao histórico médico',
-  //     ],
-  //   },
-  //   {
-  //     id: 471,
-  //     icon: <FaStar />,
-  //     id_plano_sistema_racca: 101,
-  //     title: 'Plano Confort',
-  //     amount: 89.9,
-  //     prices: {
-  //       fidelidade: 'R$ 89,90/mês c/ fidelidade 12 meses',
-  //       semFidelidade: 'R$ 129,90/mês s/ fidelidade',
-  //     },
-  //     benefits: [
-  //       'Desconto em farmácias parceiras',
-  //       '5% de desconto p/ pagamento antecipado',
-  //       '2 terapias mensais de 45 minutos cada',
-  //     ],
-  //   },
-  //   {
-  //     id: 3907,
-  //     icon: <FaGem />,
-  //     id_plano_sistema_racca: 102,
-  //     title: 'Plano RACCA Proteção Plus',
-  //     amount: 15.0,
-  //     prices: { fidelidade: 'R$ 15,00/mês c/ fidelidade 12 meses' },
-  //     benefits: [
-  //       'Assistência Funeral Familiar de R$ 7.000,00',
-  //       'MA - Morte Acidental - Capital Segurado R$ 20.000,00',
-  //       'IPA - Invalidez por Acidente - Capital Segurado R$ 20.000,00',
-  //       'Reembolso de Medicamentos Genéricos Gratuitos até R$ 150,00',
-  //     ],
-  //   },
-  //   {
-  //     id: 'ID_DINAMICO',
-  //     icon: <FaCrown />,
-  //     id_plano_sistema_racca: 102,
-  //     title: 'Plano Personalize',
-  //     amount: 39.9,
-  //     prices: { mensal: 'R$ 39,90/mês s/ fidelidade' },
-  //     benefits: [
-  //       'Desconto em farmácias parceiras',
-  //       '5% de desconto p/ pagamento antecipado',
-  //       'Valor da consulta por especialidade:',
-  //       'Psicólogo e Nutricionista: R$ 50,00',
-  //       'Psiquiatra: R$ 100,00',
-  //       'Médicos Especialistas: R$ 60,00',
-  //     ],
-  //   },
-  //   {
-  //     id: 1084,
-  //     icon: <FaGem />,
-  //     id_plano_sistema_racca: 104,
-  //     title: 'Plano Confort Extra',
-  //     amount: 109.9,
-  //     prices: {
-  //       fidelidade: 'R$ 109,90/mês c/ fidelidade 12 meses',
-  //       semFidelidade: 'R$ 149,90/mês s/ fidelidade',
-  //     },
-  //     benefits: [
-  //       'Desconto em farmácias parceiras',
-  //       '5% de desconto p/ pagamento antecipado',
-  //       '4 terapias mensais de 45 minutos cada',
-  //     ],
-  //   },
-  //   {
-  //     id: 500,
-  //     icon: <FaBolt />,
-  //     id_plano_sistema_racca: 105,
-  //     title: 'Plano Premium',
-  //     amount: 99.9,
-  //     prices: {
-  //       fidelidade: 'R$ 99,90/mês c/ fidelidade 12 meses',
-  //       semFidelidade: 'R$ 139,90/mês s/ fidelidade',
-  //     },
-  //     benefits: [
-  //       'Desconto em farmácias parceiras',
-  //       '5% de desconto p/ pagamento antecipado',
-  //       '2 terapias mensais de 45 minutos cada',
-  //       '1 sessão com especialista ao mês',
-  //       'Especialistas Disponíveis: Cardiologista, Dermatologista, Endocrinologista, Geriatria, Ginecologista, Neurologista, Nutricionista, Ortopedista, Otorrinolaringologista, Pediatria, Traumatologia, Urologista.',
-  //     ],
-  //   },
-  //   {
-  //     id: 706,
-  //     icon: <FaCrown />,
-  //     id_plano_sistema_racca: 106,
-  //     title: 'Plano Premium Extra',
-  //     amount: 119.9,
-  //     prices: {
-  //       fidelidade: 'R$ 119,90/mês c/ fidelidade 12 meses',
-  //       semFidelidade: 'R$ 159,90/mês s/ fidelidade',
-  //     },
-  //     benefits: [
-  //       'Desconto em farmácias parceiras',
-  //       '5% de desconto p/ pagamento antecipado',
-  //       '4 terapias mensais de 45 minutos cada',
-  //       '1 sessão com especialista ao mês',
-  //       'Especialistas Disponíveis: Cardiologista, Dermatologista, Endocrinologista, Geriatria, Ginecologista, Neurologista, Nutricionista, Ortopedista, Otorrinolaringologista, Pediatria, Traumatologia, Urologista.',
-  //     ],
-  //   },
-  // ];
-
   const handleInputChange = (e, type) => {
     const { name, value } = e.target;
     if (type === 'payer') {
@@ -269,104 +159,100 @@ function Plans() {
     setPaymentMethod(method);
   };
 
-
-
-
-
-  const getOrCreateCustomerPla = async () => {
-
-    setLoading(true)
-  
-      getOrCreateCustomer({
-        cpfCnpj: payerInfo?.cpfCnpj,
-        onSuccess: (data) => {
-
-          if(data.length > 0){
-            const id = data[0].id
-            payment(id)
-          }else{
-            create()
-          }
-
-
-
-        },
-        onError: (message) => {
-          console.error("onError chamado com:", message);
-          setLoading(false)
-        },
-      });
-    
+  const openModal = (plan) => {
+    setSelectedPlan(plan);
+    if (plan.prices.fidelidade && plan.prices.semFidelidade) {
+      setSelectedPriceOption('fidelidade');
+    } else if (plan.prices.fidelidade) {
+      setSelectedPriceOption('fidelidade');
+    } else if (plan.prices.semFidelidade) {
+      setSelectedPriceOption('semFidelidade');
+    } else if (plan.prices.mensal) {
+      setSelectedPriceOption('mensal');
+    }
+    setIsModalOpen(true);
   };
 
+  const closeModal = () => {
+    setSelectedPlan(null);
+    setIsModalOpen(false);
+    setPayerInfo({ name: '', email: '', cpfCnpj: '', phone: '', address: '' });
+    setPaymentInfo({ cardNumber: '', expiryMonth: '', expiryYear: '', ccv: '' });
+    setPaymentMethod('creditCard');
+    setQrCodeData(null);
+  };
+
+  const getOrCreateCustomerPla = async () => {
+    setLoading(true);
+    getOrCreateCustomer({
+      cpfCnpj: payerInfo?.cpfCnpj,
+      onSuccess: (data) => {
+        if (data.length > 0) {
+          const id = data[0].id;
+          payment(id);
+        } else {
+          create();
+        }
+      },
+      onError: (message) => {
+        console.error("onError chamado com:", message);
+        setLoading(false);
+      },
+    });
+  };
 
   const create = () => {
-
     createCustomer({
-        name: payerInfo?.name,
-        cpfCnpj: payerInfo?.cpfCnpj,
-        email: payerInfo?.email,
-        phone: payerInfo?.phone,
-        address: payerInfo?.address,
-        address: payerInfo?.address,
-
-        onSuccess: (data) => {
-
-          if(data.length > 0){
-            const id = data[0].id
-
-            payment(id)
-  
-
-          }
-
-        },
-        onError: (message) => {
-          console.error("onError chamado com:", message);
-          setLoading(false)
-        },
-      });
-  }
-  
-
+      name: payerInfo?.name,
+      cpfCnpj: payerInfo?.cpfCnpj,
+      email: payerInfo?.email,
+      phone: payerInfo?.phone,
+      address: payerInfo?.address,
+      onSuccess: (data) => {
+        if (data.length > 0) {
+          const id = data[0].id;
+          payment(id);
+        }
+      },
+      onError: (message) => {
+        console.error("onError chamado com:", message);
+        setLoading(false);
+      },
+    });
+  };
 
   const payment = (id_cliente_assas) => {
-    
-
+    let priceValue = selectedPlan.amount;
+    if (selectedPriceOption === 'fidelidade') {
+      priceValue = selectedPlan.amount;
+    } else if (selectedPriceOption === 'semFidelidade') {
+      priceValue = selectedPlan.amountSemFidelidade;
+    }
     createPayment({
       externalReference: selectedPlan.id_plano_sistema_racca,
       customer: id_cliente_assas,
       billingType: 'UNDEFINED',
-      dueDate:new Date().toISOString().split("T")[0],
-      value: selectedPlan.amount,
-      description: `Pagamento do plano ${selectedPlan.title}`,
+      dueDate: new Date().toISOString().split("T")[0],
+      value: priceValue,
+      description: `Pagamento do plano ${selectedPlan.title} (${selectedPriceOption})`,
       cpfCnpj: payerInfo?.cpfCnpj,
-
       name: payerInfo?.name,
       email: payerInfo?.email,
       phone: payerInfo?.phone,
       address: payerInfo?.address,
-
       onSuccess: (data) => {
-
         const invoiceUrl = data?.original?.invoiceUrl;
-      
         if (invoiceUrl) {
-      
           window.location.href = invoiceUrl;
         }
-
       },
       onError: (message) => {
-        setLoading(false)
+        setLoading(false);
         console.error("onError chamado com:", message);
-        
       },
     });
-  }
+  };
 
-
-  // Função para recuperar a linha digitável do boleto
   const getIdentificationField = async (paymentId) => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/payments/${paymentId}/identificationField`, {
@@ -375,9 +261,7 @@ function Plans() {
           'Content-Type': 'application/json',
         },
       });
-
       const data = await response.json();
-
       if (response.ok) {
         return data.identificationField;
       } else {
@@ -396,52 +280,43 @@ function Plans() {
     getOrCreateCustomerPla();
   };
 
-  const openModal = (plan) => {
-    setSelectedPlan(plan);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setSelectedPlan(null);
-    setIsModalOpen(false);
-    setPayerInfo({ name: '', email: '', cpfCnpj: '', phone: '', address: '' });
-    setPaymentInfo({ cardNumber: '', expiryMonth: '', expiryYear: '', ccv: '' });
-    setPaymentMethod('creditCard');
-    setQrCodeData(null);
-  };
-
   return (
     <section className="plans-container">
       <h2 className="plans-title">Nossos Planos</h2>
       <div className="plans-grid">
-  {plans.map((plan) => (
-    <div className="plan-card" key={plan.id}>
-      <div className="plan-icon">{plan.icon}</div>
-      <h3 className="plan-title">{plan.title}</h3>
-      
-      <div className="plan-price-container">
-        <span className="original-price">
-          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(plan.originalAmount || (plan.amount * 1.5))} {/* Exemplo de cálculo do preço original */}
-        </span>
-        <span className="discount-badge">ECONOMIZE 50%</span>
-      </div>
-      <p className="plan-price">
-        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(plan.amount)} <span className="price-unit">/mês</span>
-      </p>
-
-      <ul className="plan-benefits">
-        {plan.benefits.map((benefit, index) => (
-          <li key={index}>{benefit}</li>
+        {plans.map((plan) => (
+          <div className="plan-card" key={plan.id}>
+            <div className="plan-icon">{plan.icon}</div>
+            <h3 className="plan-title">{plan.title}</h3>
+            <div className="plan-price-container">
+              <span className="original-price">
+                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(plan.originalAmount || (plan.amount * 1.5))}
+              </span>
+              <span className="discount-badge">ECONOMIZE 50%</span>
+            </div>
+            <p className="plan-price">
+              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(plan.amount)}
+              <span className="price-unit">/mês</span>
+            </p>
+            <ul className="plan-benefits">
+              {plan.benefits.map((benefit, index) => (
+                <li key={index}>{benefit}</li>
+              ))}
+            </ul>
+            <div className="plan-price-details">
+              {plan.prices.fidelidade && (
+                <span className="price-detail">{plan.prices.fidelidade}</span>
+              )}
+              {plan.prices.semFidelidade && (
+                <span className="price-detail">{plan.prices.semFidelidade}</span>
+              )}
+            </div>
+            <button onClick={() => openModal(plan)} className="plan-button">
+              Assine Agora
+            </button>
+          </div>
         ))}
-      </ul>
-      <button onClick={() => openModal(plan)} className="plan-button">
-        Assine Agora
-      </button>
-    </div>
-  ))}
-</div>
-
-
+      </div>
       {isModalOpen && selectedPlan && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -449,6 +324,35 @@ function Plans() {
               &times;
             </button>
             <h3>{`Pagamento para o plano ${selectedPlan.title}`}</h3>
+            {selectedPlan.prices.fidelidade && selectedPlan.prices.semFidelidade && (
+              <div className="price-option-selector">
+                <label>
+                  <input
+                    type="radio"
+                    name="priceOption"
+                    value="fidelidade"
+                    checked={selectedPriceOption === 'fidelidade'}
+                    onChange={() => setSelectedPriceOption('fidelidade')}
+                  />
+                  {selectedPlan.prices.fidelidade}
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="priceOption"
+                    value="semFidelidade"
+                    checked={selectedPriceOption === 'semFidelidade'}
+                    onChange={() => setSelectedPriceOption('semFidelidade')}
+                  />
+                  {selectedPlan.prices.semFidelidade}
+                </label>
+              </div>
+            )}
+            {selectedPlan.prices.mensal && (
+              <div className="price-option-selector">
+                <p>{selectedPlan.prices.mensal}</p>
+              </div>
+            )}
             <form onSubmit={handleSubmit}>
               <h4>Informações do Pagador</h4>
               <div className="form-group">
@@ -474,11 +378,7 @@ function Plans() {
               </div>
               <div className="form-group">
                 <InputMask
-                  mask={
-                    payerInfo.cpfCnpj.replace(/\D/g, '').length > 11
-                      ? '99.999.999/9999-99'
-                      : '999.999.999-99'
-                  }
+                  mask={payerInfo.cpfCnpj.replace(/\D/g, '').length > 11 ? '99.999.999/9999-99' : '999.999.999-99'}
                   maskChar=""
                   type="text"
                   name="cpfCnpj"
@@ -511,7 +411,6 @@ function Plans() {
                   required
                 />
               </div>
-
               <button type="submit" disabled={loading} className="submit-button">
                 {loading ? 'Processando...' : 'Processar Pagamento'}
               </button>
