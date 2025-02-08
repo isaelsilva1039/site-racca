@@ -278,6 +278,11 @@ function Plans() {
       email: payerInfo?.email,
       phone: payerInfo?.phone,
       address: formatAddress(),
+      birthdate: payerInfo?.birthdate,
+      postalCode: payerInfo?.cep,
+      addressNumber: payerInfo?.numero,
+      complement: payerInfo?.complemento,
+      province:payerInfo?.bairro,
       onSuccess: (data) => {
         if (data.length > 0) {
           const id = data[0].id;
