@@ -37,6 +37,11 @@ export const createCustomer = async ({
   email,
   phone,
   address,
+  birthdate,
+  postalCode ,
+  addressNumber,
+  complement,
+  province,
   onSuccess,
   onError = () => {},
 }) => {
@@ -59,6 +64,11 @@ export const createCustomer = async ({
         email,
         phone,
         address,
+        birthdate,
+        postalCode ,
+        addressNumber,
+        complement,
+        province,
       }),
     });
 

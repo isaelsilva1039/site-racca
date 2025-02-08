@@ -8,6 +8,6 @@ export const  ASAAS_ACCESS_TOKEN_DEV = '$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5Mz
 // export const  API_DEV = 'http://127.0.0.1:80001/api';
 
 
-export const  API_PROD = 'https://racca.store/api';
+// export const  API_PROD = 'https://racca.store/api';
 
-// export const  API_PROD = 'http://127.0.0.1:80001/api';
+export const  API_PROD = 'http://127.0.0.1:8000/api';
