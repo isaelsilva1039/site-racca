@@ -130,7 +130,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: auto;
+  margin-top: 30px;
 }
 
 .plan-button:hover {
@@ -403,6 +403,8 @@ form h4 {
   .payment-methods label {
     margin-bottom: 10px;
   }
+
+
 
   .card-details {
     flex-direction: column;
