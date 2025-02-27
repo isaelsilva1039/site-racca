@@ -1,5 +1,9 @@
 .App {
   text-align: center;
+  width: 100%; /* Ensure the app takes exactly the viewport width */
+  margin: 0; /* Remove any default margins */
+  padding: 0; /* Remove any default padding */
+  overflow-x: hidden; /* Prevent horizontal scrolling at the app level */
 }
 
 .App-logo {
@@ -22,6 +26,8 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  width: 100%; /* Ensure header fits within viewport */
+  box-sizing: border-box; /* Include padding/margins in width */
 }
 
 .App-link {
@@ -35,4 +41,12 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Ensure the body/html don't cause overflow */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling globally */
 }
