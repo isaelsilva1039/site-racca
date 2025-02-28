@@ -15,6 +15,7 @@ import FAQModal from './components/FaqModal';
 import TermosDeUso from './pages/TermosDeUso';
 import PoliticaDeReembolso from './pages/PoliticaDeReembolso';
 import ServicesSection from './pages/NossosServicos';
+import TestimonialsSection from './pages/Depoimentos';
 
 const MainContainer = styled.div`
   display: flex;
@@ -54,6 +55,9 @@ function App() {
                 </Section>
                 <Section id="services">
                   <ServicesSection/>
+                </Section>
+                <Section id="depoiments">
+                  <TestimonialsSection/>
                 </Section>
                 <Section id="benefits">
                   <Benefits />
