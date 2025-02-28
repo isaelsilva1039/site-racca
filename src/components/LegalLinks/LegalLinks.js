@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaInstagram, FaFacebook, FaLinkedin } from 'react-icons/fa';
+import { FaInstagram, FaFacebook, FaYoutube, FaBlog, FaGooglePlay } from 'react-icons/fa'; // Added FaYoutube, FaBlog, and FaGooglePlay
 
 const LegalSection = styled.div`
   background-color: #f8f9fa; /* Cor de fundo */
@@ -48,16 +48,22 @@ function LegalLinks({ onFAQClick }) {
 
   return (
     <LegalSection>
-      {/* Ícones das Redes Sociais */}
+      {/* Ícones das Redes Sociais e Links Adicionais */}
       <div className="social-icons">
         <a href="https://www.instagram.com/raccasaude/" target="_blank" rel="noopener noreferrer">
           <FaInstagram />
         </a>
+        <a href="https://www.youtube.com/@RACCASAUDE" target="_blank" rel="noopener noreferrer">
+          <FaYoutube />
+        </a>
         <a href="https://www.facebook.com/raccasaude" target="_blank" rel="noopener noreferrer">
           <FaFacebook />
         </a>
-        <a href="https://www.linkedin.com/in/racca-sa%C3%BAde-64a48b2a5/" target="_blank" rel="noopener noreferrer">
-          <FaLinkedin />
+        <a href="https://raccasaude.blogspot.com" target="_blank" rel="noopener noreferrer">
+          <FaBlog />
+        </a>
+        <a href="https://play.google.com/store/apps/details?id=br.com.app.gpu3062692.gpu1d404764e1a7796325d587e2a0a7dc10&hl=pt_BR&pli=1" target="_blank" rel="noopener noreferrer">
+          <FaGooglePlay />
         </a>
       </div>
 
