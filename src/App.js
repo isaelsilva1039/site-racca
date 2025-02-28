@@ -14,6 +14,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import FAQModal from './components/FaqModal';
 import TermosDeUso from './pages/TermosDeUso';
 import PoliticaDeReembolso from './pages/PoliticaDeReembolso';
+import ServicesSection from './pages/NossosServicos';
 
 const MainContainer = styled.div`
   display: flex;
@@ -50,6 +51,9 @@ function App() {
               <>
                 <Section id="home">
                   <Home />
+                </Section>
+                <Section id="services">
+                  <ServicesSection/>
                 </Section>
                 <Section id="benefits">
                   <Benefits />
