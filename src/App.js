@@ -16,6 +16,7 @@ import TermosDeUso from './pages/TermosDeUso';
 import PoliticaDeReembolso from './pages/PoliticaDeReembolso';
 import ServicesSection from './pages/NossosServicos';
 import TestimonialsSection from './pages/Depoimentos';
+import AboutRacca from './pages/Racca';
 
 const MainContainer = styled.div`
   display: flex;
@@ -56,6 +57,10 @@ function App() {
                 <Section id="services">
                   <ServicesSection/>
                 </Section>
+                <Section id="racca">
+                  <AboutRacca/>
+                </Section>
+
                 <Section id="depoiments">
                   <TestimonialsSection/>
                 </Section>
