@@ -1,9 +1,7 @@
 import styled from 'styled-components';
 import { FaStethoscope, FaComments, FaTooth, FaHeartbeat, FaShieldAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import Slider from 'react-slick'; // Import the carousel library
 
-// Styled components remain mostly the same
 const ServicesContainer = styled.section`
   padding: 50px;
   text-align: center;
@@ -23,13 +21,15 @@ const Title = styled.h2`
 `;
 
 const Grid = styled.div`
-  display: flex; /* Changed to flex for single row */
+  display: flex; /* Single row on desktop */
   justify-content: space-between; /* Distribute items evenly */
   gap: 30px;
   padding: 0 20px;
 
   @media (max-width: 768px) {
-    display: none; /* Hide the grid on mobile */
+    flex-direction: column; /* Stack vertically on mobile */
+    gap: 15px; /* Reduced gap for mobile */
+    padding: 0 10px;
   }
 `;
 
@@ -43,7 +43,7 @@ const ServiceCard = styled.div`
   flex-direction: column;
   align-items: center;
   text-align: center;
-  flex: 1; /* Equal width for all cards */
+  flex: 1; /* Equal width for all cards on desktop */
   min-width: 0; /* Prevent overflow */
   box-sizing: border-box;
 
@@ -106,35 +106,7 @@ const ServiceLink = styled(Link)`
   }
 `;
 
-const CarouselWrapper = styled.div`
-  display: none; /* Hidden on desktop */
-  padding: 0 10px;
-
-  @media (max-width: 768px) {
-    display: block; /* Show carousel on mobile */
-  }
-
-  .slick-slide > div {
-    margin: 0 10px; /* Space between carousel items */
-  }
-
-  .slick-list {
-    margin: 0 -10px; /* Offset for margins */
-  }
-`;
-
 function ServicesSection() {
-  // Settings for the react-slick carousel
-  const carouselSettings = {
-    dots: true, // Show pagination dots
-    infinite: true, // Infinite loop
-    speed: 500, // Transition speed
-    slidesToShow: 1, // Show one card at a time on mobile
-    slidesToScroll: 1,
-    arrows: false, // Hide arrows (optional)
-  };
-
-  // Array of services for reusability
   const services = [
     {
       icon: <FaStethoscope />,
@@ -171,7 +143,6 @@ function ServicesSection() {
   return (
     <ServicesContainer>
       <Title>Nossos Serviços</Title>
-      {/* Desktop: Single row */}
       <Grid>
         {services.map((service, index) => (
           <ServiceCard key={index}>
@@ -182,19 +153,6 @@ function ServicesSection() {
           </ServiceCard>
         ))}
       </Grid>
-      {/* Mobile: Carousel */}
-      <CarouselWrapper>
-        <Slider {...carouselSettings}>
-          {services.map((service, index) => (
-            <ServiceCard key={index}>
-              <IconWrapper>{service.icon}</IconWrapper>
-              <h3>{service.title}</h3>
-              <p>{service.description}</p>
-              <ServiceLink to={service.link}>Saiba Mais</ServiceLink>
-            </ServiceCard>
-          ))}
-        </Slider>
-      </CarouselWrapper>
     </ServicesContainer>
   );
 }
