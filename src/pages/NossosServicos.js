@@ -1,18 +1,20 @@
 import styled from 'styled-components';
 import { FaStethoscope, FaComments, FaTooth, FaHeartbeat, FaShieldAlt } from 'react-icons/fa';
-import { Link } from 'react-router-dom'; // Para os links "Saiba Mais"
+import { Link } from 'react-router-dom';
+import Slider from 'react-slick'; // Import the carousel library
 
+// Styled components remain mostly the same
 const ServicesContainer = styled.section`
   padding: 50px;
   text-align: center;
-  background-color: #eaf4ff; /* Mesmo fundo claro do Benefits */
+  background-color: #eaf4ff;
   color: #333;
 `;
 
 const Title = styled.h2`
   font-size: 2.5rem;
   margin-bottom: 40px;
-  color: #a100ff; /* Roxo característico */
+  color: #a100ff;
 
   @media (max-width: 768px) {
     font-size: 1.8rem;
@@ -21,20 +23,13 @@ const Title = styled.h2`
 `;
 
 const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 colunas no desktop */
-  grid-template-rows: auto; /* Apenas 1 linha, já que temos 5 serviços */
-  gap: 30px; /* Mesmo gap do Benefits */
+  display: flex; /* Changed to flex for single row */
+  justify-content: space-between; /* Distribute items evenly */
+  gap: 30px;
   padding: 0 20px;
 
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(3, 1fr); /* 3 colunas em tablets */
-  }
-
   @media (max-width: 768px) {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsivo em mobile */
-    gap: 15px; /* Mesmo gap reduzido do Benefits */
-    padding: 0 10px; /* Mesmo padding reduzido em mobile */
+    display: none; /* Hide the grid on mobile */
   }
 `;
 
@@ -42,18 +37,19 @@ const ServiceCard = styled.div`
   background-color: #ffffff;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra igual ao Benefits */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  height: 100%;
+  flex: 1; /* Equal width for all cards */
+  min-width: 0; /* Prevent overflow */
   box-sizing: border-box;
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Mesmo efeito hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   }
 
   h3 {
@@ -110,51 +106,95 @@ const ServiceLink = styled(Link)`
   }
 `;
 
+const CarouselWrapper = styled.div`
+  display: none; /* Hidden on desktop */
+  padding: 0 10px;
+
+  @media (max-width: 768px) {
+    display: block; /* Show carousel on mobile */
+  }
+
+  .slick-slide > div {
+    margin: 0 10px; /* Space between carousel items */
+  }
+
+  .slick-list {
+    margin: 0 -10px; /* Offset for margins */
+  }
+`;
+
 function ServicesSection() {
+  // Settings for the react-slick carousel
+  const carouselSettings = {
+    dots: true, // Show pagination dots
+    infinite: true, // Infinite loop
+    speed: 500, // Transition speed
+    slidesToShow: 1, // Show one card at a time on mobile
+    slidesToScroll: 1,
+    arrows: false, // Hide arrows (optional)
+  };
+
+  // Array of services for reusability
+  const services = [
+    {
+      icon: <FaStethoscope />,
+      title: "Telemedicina",
+      description: "Planos com consultas médicas online com profissionais qualificados.",
+      link: "/telemedicina",
+    },
+    {
+      icon: <FaComments />,
+      title: "Terapia Online",
+      description: "Sessões de psicoterapia realizadas virtualmente.",
+      link: "/terapia-online",
+    },
+    {
+      icon: <FaTooth />,
+      title: "Planos Odontológicos",
+      description: "Cuidados completos para a saúde bucal.",
+      link: "/planos-odontologicos",
+    },
+    {
+      icon: <FaHeartbeat />,
+      title: "Programa Cuidar Conectado",
+      description: "Acompanhamento preventivo personalizado.",
+      link: "/cuidar-conectado",
+    },
+    {
+      icon: <FaShieldAlt />,
+      title: "Seguros Pessoais",
+      description: "Diversos seguros disponíveis pra você.",
+      link: "/seguros-pessoais",
+    },
+  ];
+
   return (
     <ServicesContainer>
       <Title>Nossos Serviços</Title>
+      {/* Desktop: Single row */}
       <Grid>
-        {/* Telemedicina */}
-        <ServiceCard>
-          <IconWrapper><FaStethoscope /></IconWrapper>
-          <h3>Telemedicina</h3>
-          <p>Planos com consultas médicas online com profissionais qualificados.</p>
-          <ServiceLink to="/telemedicina">Saiba Mais</ServiceLink>
-        </ServiceCard>
-
-        {/* Terapia Online */}
-        <ServiceCard>
-          <IconWrapper><FaComments /></IconWrapper>
-          <h3>Terapia Online</h3>
-          <p>Sessões de psicoterapia realizadas virtualmente.</p>
-          <ServiceLink to="/terapia-online">Saiba Mais</ServiceLink>
-        </ServiceCard>
-
-        {/* Planos Odontológicos */}
-        <ServiceCard>
-          <IconWrapper><FaTooth /></IconWrapper>
-          <h3>Planos Odontológicos</h3>
-          <p>Cuidados completos para a saúde bucal.</p>
-          <ServiceLink to="/planos-odontologicos">Saiba Mais</ServiceLink>
-        </ServiceCard>
-
-        {/* Programa Cuidar Conectado */}
-        <ServiceCard>
-          <IconWrapper><FaHeartbeat /></IconWrapper>
-          <h3>Programa Cuidar Conectado</h3>
-          <p>Acompanhamento preventivo personalizado.</p>
-          <ServiceLink to="/cuidar-conectado">Saiba Mais</ServiceLink>
-        </ServiceCard>
-
-        {/* Seguros Pessoais */}
-        <ServiceCard>
-          <IconWrapper><FaShieldAlt /></IconWrapper>
-          <h3>Seguros Pessoais</h3>
-          <p>Diversos seguros disponíveis pra você.</p>
-          <ServiceLink to="/seguros-pessoais">Saiba Mais</ServiceLink>
-        </ServiceCard>
+        {services.map((service, index) => (
+          <ServiceCard key={index}>
+            <IconWrapper>{service.icon}</IconWrapper>
+            <h3>{service.title}</h3>
+            <p>{service.description}</p>
+            <ServiceLink to={service.link}>Saiba Mais</ServiceLink>
+          </ServiceCard>
+        ))}
       </Grid>
+      {/* Mobile: Carousel */}
+      <CarouselWrapper>
+        <Slider {...carouselSettings}>
+          {services.map((service, index) => (
+            <ServiceCard key={index}>
+              <IconWrapper>{service.icon}</IconWrapper>
+              <h3>{service.title}</h3>
+              <p>{service.description}</p>
+              <ServiceLink to={service.link}>Saiba Mais</ServiceLink>
+            </ServiceCard>
+          ))}
+        </Slider>
+      </CarouselWrapper>
     </ServicesContainer>
   );
 }
