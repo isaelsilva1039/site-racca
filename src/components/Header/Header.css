@@ -1,22 +1,26 @@
-/* Importando uma fonte clean */
+/* Importando a fonte */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
 
-/* Header Container */
+/* =========== HEADER FIXO NO TOPO =========== */
 .header-container {
+  position: fixed;       /* Fica “colado” no topo ao rolar */
+  top: 0;
+  left: 0;
+  width: 100%;           /* Ocupa toda a largura */
+  height: 60px;          /* Altura fixa para facilitar centralização */
   background-color: #ffffff;
-  padding: 5px 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items:flex-start;
-  width: 95%;
-  margin: auto;
-  position: relative; /* Necessário para posicionar o hambúrguer e o logo */
+  z-index: 9999;         /* Fica acima do restante do conteúdo */
+  padding: 5px;
+  font-family: 'Roboto', sans-serif;
+  box-sizing: border-box; /* Garante que padding não gere overflow */
 }
 
-/* Logo Container */
+/* LOGO na lateral esquerda (DESKTOP) */
 .logo-container {
-  display: flex;
-  align-items: center;
+  position: absolute;    /* Posiciona dentro do header fixo */
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .racca-logo {
@@ -24,15 +28,24 @@
   height: auto;
 }
 
-/* Navigation */
+/* MENU centralizado (DESKTOP) */
 .nav-container {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   gap: 15px;
-  font-family: 'Roboto', sans-serif;
+
+  /* FORÇA UMA ÚNICA LINHA NO DESKTOP */
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  /* Se o menu for muito grande e quiser rolagem horizontal no desktop:
+     overflow-x: auto; */
 }
 
-/* Links do Menu */
+/* LINKS do MENU */
 .nav-link {
   position: relative;
   text-decoration: none;
@@ -48,7 +61,7 @@
   color: #8e24aa;
 }
 
-/* Sublinhado animado */
+/* Efeito de sublinhado animado */
 .nav-link::after {
   content: '';
   position: absolute;
@@ -64,7 +77,7 @@
   width: calc(100% - 20px);
 }
 
-/* Estilo do Agende Agora */
+/* Botão "Agende Agora" */
 .agende-agora {
   border: 2px solid #a007f2;
   padding: 8px 20px;
@@ -79,9 +92,9 @@
   color: #ffffff;
 }
 
-/* Dropdown Menu */
+/* =========== DROPDOWN MENU =========== */
 .dropdown-menu {
-  position: absolute;
+  position: absolute; 
   top: 100%;
   left: 0;
   background-color: #ffffff;
@@ -96,13 +109,13 @@
   transition: opacity 0.3s ease;
 }
 
+/* Ao passar mouse no pai .dropdown, mostra submenu */
 .nav-link.dropdown:hover .dropdown-menu,
 .nav-link.dropdown:focus .dropdown-menu {
   opacity: 1;
   visibility: visible;
 }
 
-/* Dropdown Item */
 .dropdown-item {
   padding: 10px 15px;
   text-decoration: none;
@@ -115,9 +128,13 @@
   background-color: #f5f5f5;
 }
 
-/* Hambúrguer Button */
+/* =========== BOTÃO HAMBÚRGUER (Mobile) =========== */
 .hamburger {
-  display: none;
+  display: none; 
+  position: absolute;
+  right: 20px;     /* Fixa no canto direito */
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: none;
   font-size: 28px;
@@ -126,67 +143,81 @@
   padding: 5px;
 }
 
-/* Responsividade */
+/* =========== RESPONSIVIDADE (MAX 768PX) =========== */
 @media (max-width: 768px) {
+  /* Header vira flex para posicionar logo e hambúrguer */
   .header-container {
+    position: fixed;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 10px 20px;
-    position: relative;
-    justify-content: flex-start; /* Alinha o conteúdo à esquerda */
   }
 
-  .racca-logo {
-    width: 100px;
-  }
-
+  /* Logo volta ao fluxo normal e sem margem que gere overflow */
   .logo-container {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%); /* Centraliza o logo */
+    position: static;
+    transform: none;
+    margin: 0; /* Removido margin-left grande */
   }
 
+  /* Mostra o hambúrguer no mobile (sem margem excessiva) */
   .hamburger {
     display: block;
-    position: absolute;
-    left: 20px; /* Posiciona o hambúrguer no canto superior esquerdo */
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1000; /* Garante que fique acima do menu */
+    position: static;
+    transform: none;
+    margin: 0; /* Removido margin-right grande */
   }
 
+  /* Esconde o menu em linha por padrão no mobile */
   .nav-container {
-    display: none;
     position: absolute;
-    top: 60px;
+    top: 60px; /* abaixo do header fixo */
     left: 0;
+    transform: none;
+    display: none; 
+    flex-direction: column;
     width: 100%;
     background-color: #ffffff;
-    flex-direction: column;
     padding: 20px 0;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    align-items: flex-start; /* Alinha os itens à esquerda */
+    align-items: flex-start;
+    z-index: 9999;
+
+    /* Permite quebrar linha no mobile e evita scroll horizontal */
+    flex-wrap: wrap;
+    white-space: normal;
   }
 
+  /* Mostra o menu ao abrir (classe "open") */
   .nav-container.open {
     display: flex;
   }
 
+  /* Links ocupam a largura toda no mobile */
   .nav-link {
     font-size: 16px;
-    padding: 10px 20px; /* Adicionei padding à esquerda para alinhamento */
+    padding: 10px 20px;
     text-align: left;
   }
 
+  /* Dropdown no mobile (estático, sem hover) */
   .dropdown-menu {
     position: static;
     width: 100%;
     box-shadow: none;
-    padding-left: 40px; /* Indentação para subitens */
+    padding-left: 40px;
+    margin-top: 5px;
+    opacity: 1;
+    visibility: visible;
   }
 
+  /* Botão "Agende Agora" no mobile */
   .agende-agora {
     margin-top: 15px;
-    width: 80%; /* Limita a largura para melhor aparência */
-    margin-left: 20px; /* Alinha à esquerda com o menu */
+    width: 80%;
+    margin-left: 10%;
     text-align: center;
   }
 }
