@@ -3,7 +3,6 @@ import { FaLock, FaCreditCard, FaTimes, FaCheck, FaUserMd, FaUniversalAccess } f
 
 const SectionContainer = styled.section`
   background-color: #a100ff; /* Fundo roxo */
-  padding: 50px 20px;
   text-align: center;
 `;
 

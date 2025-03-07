@@ -20,7 +20,7 @@ const float = keyframes`
 `;
 
 const MissionVisionContainer = styled.section`
-  padding: 50px 20px;
+
   text-align: center;
   background: linear-gradient(135deg, #eaf4ff 0%, #d6eaff 100%);
   color: #333;

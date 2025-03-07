@@ -27,7 +27,7 @@ const MainContainer = styled.div`
 `;
 
 const Section = styled.section`
-  padding: 50px 20px;
+  padding: 0px 0px;
 `;
 
 function App() {

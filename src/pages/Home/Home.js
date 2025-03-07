@@ -29,12 +29,8 @@ function Home() {
   return (
     <section className={`banner dynamic-bg`}>
       {/* Overlay com conteúdo */}
-      <div className="overlay">
-        <div className="button-group">
-          <button className="button">Button 1</button>
-          <button className="button">Button 2</button>
-        </div>
-      </div>
+
+ 
     </section>
   );
 }
