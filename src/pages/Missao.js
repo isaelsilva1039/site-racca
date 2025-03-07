@@ -1,7 +1,7 @@
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useState, useEffect } from 'react';
-import { FaHandsHelping, FaHeart, FaShieldAlt, FaSmile, FaEye } from 'react-icons/fa'; // Ícones representativos
 
+// ANIMAÇÕES
 const fadeInScale = keyframes`
   from {
     opacity: 0;
@@ -19,8 +19,8 @@ const float = keyframes`
   100% { transform: translateY(0); }
 `;
 
+// CONTAINERS
 const MissionVisionContainer = styled.section`
-
   text-align: center;
   background: linear-gradient(135deg, #eaf4ff 0%, #d6eaff 100%);
   color: #333;
@@ -53,11 +53,18 @@ const Title = styled.h2`
   }
 `;
 
+/**
+ * GRID:
+ *  - No mobile, 1 coluna (cards empilhados).
+ *  - A partir de 769px, duas colunas na primeira linha (Visão e Missão)
+ *    e o terceiro card (Valores) ocupa a linha de baixo, 2 colunas.
+ */
 const ContentGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: 1fr; /* Padrão (mobile): 1 coluna */
+  grid-auto-rows: auto;
   gap: 30px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 20px;
   position: relative;
@@ -79,7 +86,8 @@ const ContentGrid = styled.div`
   }
 
   @media (min-width: 769px) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
   }
 
   @media (max-width: 768px) {
@@ -90,18 +98,30 @@ const ContentGrid = styled.div`
   @media (max-width: 480px) {
     gap: 15px;
   }
+
+  /* O 3º card (Valores) ocupa as 2 colunas no desktop */
+  & > div:nth-of-type(3) {
+    @media (min-width: 769px) {
+      grid-column: 1 / 3; /* Span nas 2 colunas */
+    }
+  }
 `;
 
 const Card = styled.div`
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(245, 245, 255, 0.9) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(245, 245, 255, 0.9) 100%
+  );
   padding: 25px;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(161, 0, 255, 0.2);
   position: relative;
   overflow: hidden;
-  animation: ${fadeInScale} 1s ease-out ${({ delay }) => delay || '0s'} forwards,
-             ${float} 4s infinite ease-in-out;
+  animation:
+    ${fadeInScale} 1s ease-out ${({ delay }) => delay || '0s'} forwards,
+    ${float} 4s infinite ease-in-out;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 
   &:hover {
@@ -139,11 +159,12 @@ const Card = styled.div`
     }
   }
 
-  p, ul {
+  p,
+  ul {
     font-size: 1.1rem;
     color: #555;
     line-height: 1.8;
-    text-align: left;
+    text-align: center;
     position: relative;
     z-index: 2;
 
@@ -162,42 +183,38 @@ const Card = styled.div`
     padding: 0;
 
     li {
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 30px; /* Aumentei o gap para acomodar ícones maiores */
+      margin-bottom: 5px;
+      display: flex; 
+      align-items: center; 
       position: relative;
 
-      .value-icon {
-        font-size: 4.8rem; /* Aumentado para ícones maiores */
-        color: ${({ color }) => color || '#a100ff'};
-        animation: pulse 2s infinite ease-in-out;
-      }
-
-      @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.2); }
-        100% { transform: scale(1); }
-      }
-
       @media (max-width: 768px) {
+        margin-left: 0;   /* Zera no mobile/tablet */
         margin-bottom: 12px;
-        gap: 12px;
-
-        .value-icon {
-          font-size: 1.5rem; /* Reduzido em tablets */
-        }
       }
 
       @media (max-width: 480px) {
+        margin-left: 0;   /* Zera no mobile menor */
         margin-bottom: 10px;
-        gap: 10px;
-
-        .value-icon {
-          font-size: 1.3rem; /* Reduzido em mobile */
-        }
       }
     }
+  }
+
+  /* A primeira palavra (ex: Respeito) ainda maior */
+  ul li .first-word {
+    font-size: 1.6rem;  /* Aumente conforme desejar */
+    color: #a100ff;
+    font-weight: bold;
+    margin-right: 10px; 
+    position: relative;
+    display: inline-block; 
+  }
+
+  /* A primeira letra (ex: R de Respeito) ainda mais destacada */
+  ul li .first-word .first-letter {
+    font-size: 3.2rem;  /* Aumente conforme desejar */
+    display: inline-block;
+    line-height: 1; /* Para evitar quebra */
   }
 `;
 
@@ -205,43 +222,71 @@ function MissionVisionValues() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setIsVisible(true); // Trigger animation when component mounts
+    // Ativa animação quando o componente é montado
+    setIsVisible(true);
   }, []);
 
   return (
     <MissionVisionContainer>
       <Title>Missão, Visão e Valores</Title>
       <ContentGrid>
+        {/* 1º Card (Visão) */}
         <Card delay="0.2s">
           <h3>Visão</h3>
-          <p>Ser referência em saúde digital, oferecendo acesso seguro e eficiente a terapias online e telemedicina, promovendo o bem-estar de todos.</p>
+          <p>
+            Ser referência em saúde digital, oferecendo acesso seguro e eficiente
+            a terapias online e telemedicina, promovendo o bem-estar de todos.
+          </p>
         </Card>
+
+        {/* 2º Card (Missão) */}
         <Card delay="0.4s">
           <h3>Missão</h3>
-          <p>Proporcionar atendimentos de saúde inovadores e humanizados, por meio de terapia online e telemedicina, com tecnologia de ponta e foco na qualidade.</p>
+          <p>
+            Proporcionar atendimentos de saúde inovadores e humanizados, por meio
+            de terapia online e telemedicina, com tecnologia de ponta e foco na
+            qualidade.
+          </p>
         </Card>
+
+        {/* 3º Card (Valores) - abaixo, ocupando toda a largura no desktop */}
         <Card delay="0.6s">
           <h3>Valores</h3>
           <ul>
             <li>
-              <FaHandsHelping className="value-icon" color="#00ff00" />
-              Respeito – Garantimos que cada pessoa seja tratada com respeito, ética e empatia, promovendo um atendimento humanizado e digno.
+              <span className="first-word">
+                <span className="first-letter">R</span>espeito
+              </span>
+              – Garantimos que cada pessoa seja tratada com respeito, ética e
+              empatia, promovendo um atendimento humanizado e digno.
             </li>
             <li>
-              <FaHeart className="value-icon" color="#ff8000" />
-              Amor – Trabalhamos com dedicação e compromisso, pois acreditamos que a saúde deve ser cuidada com amor e responsabilidade.
+              <span className="first-word">
+                <span className="first-letter">A</span>mor
+              </span>
+              – Trabalhamos com dedicação e compromisso, pois acreditamos que a
+              saúde deve ser cuidada com amor e responsabilidade.
             </li>
             <li>
-              <FaShieldAlt className="value-icon" color="#0000ff" />
-              Cuidado – Utilizamos inovação e tecnologia para oferecer um cuidado contínuo, acessível e eficiente a cada paciente.
+              <span className="first-word">
+                <span className="first-letter">C</span>uidado
+              </span>
+              – Utilizamos inovação e tecnologia para oferecer um cuidado
+              contínuo, acessível e eficiente a cada paciente.
             </li>
             <li>
-              <FaSmile className="value-icon" color="#a100ff" />
-              Carinho – Acolhemos cada pessoa com carinho, proporcionando conforto, segurança e um atendimento humanizado.
+              <span className="first-word">
+                <span className="first-letter">C</span>arinho
+              </span>
+              – Acolhemos cada pessoa com carinho, proporcionando conforto,
+              segurança e um atendimento humanizado.
             </li>
             <li>
-              <FaEye className="value-icon" color="#ffd700" />
-              Atenção – Ouvimos e acompanhamos cada paciente com atenção, priorizando um serviço próximo, empático e eficaz.
+              <span className="first-word">
+                <span className="first-letter">A</span>tenção
+              </span>
+              – Ouvimos e acompanhamos cada paciente com atenção, priorizando um
+              serviço próximo, empático e eficaz.
             </li>
           </ul>
         </Card>
