@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header/Header';
 import Footer from './components/Footer';
 import WhatsAppButton from './components/WhatsApp/WhatsAppButton';
-import Home from './pages/Home';
+import Home from './pages/Home/Home';
 import Benefits from './pages/Benefits';
 import Plans from './pages/Plans/Plans';
 import LegalLinks from './components/LegalLinks/LegalLinks';

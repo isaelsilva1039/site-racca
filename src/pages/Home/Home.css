@@ -1,0 +1,97 @@
+/* Banner Styles */
+.banner {
+    background: no-repeat center center/contain;
+    color: white;
+    text-align: center;
+    width: 100%;
+    height: 100vh;
+    margin: 0;
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  
+  /* Overlay Styles */
+  .overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 3rem;
+    border-radius: 10px;
+    display: inline-block;
+    width: auto;
+    max-width: 90%;
+    box-sizing: border-box;
+  }
+  
+  /* Button Group Styles */
+  .button-group {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  /* Button Styles */
+  .button {
+    background-color: white;
+    color: #a100ff;
+    border: 2px solid #a100ff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 1rem;
+  }
+  
+  .button:hover {
+    background-color: #a100ff;
+    color: white;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .banner {
+      padding: 3rem;
+      height: 80vh;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .banner {
+      padding: 2rem;
+      height: 100%;
+      min-height: 40vh;
+    }
+  
+    .overlay {
+      padding: 2rem;
+    }
+  
+    .button-group {
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .banner {
+      padding: 1.5rem;
+      height: auto;
+      min-height: 40vh;
+    }
+  
+    .overlay {
+      padding: 1rem;
+    }
+  
+    .button {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+  }
+  
+  /* Dynamic Background Image Class (to be applied with JavaScript) */

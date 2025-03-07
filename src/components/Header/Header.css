@@ -1,11 +1,16 @@
+/* Importando uma fonte clean */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+
 /* Header Container */
 .header-container {
   background-color: #ffffff;
-  padding: 10px;
+  padding: 5px 5px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  align-items:flex-start;
+  width: 95%;
+  margin: auto;
+  position: relative; /* Necessário para posicionar o hambúrguer e o logo */
 }
 
 /* Logo Container */
@@ -15,62 +20,63 @@
 }
 
 .racca-logo {
-  width: 190px;
+  width: 120px;
   height: auto;
-  margin-right: -100px;
 }
 
 /* Navigation */
 .nav-container {
   display: flex;
-  justify-content: center; /* Centraliza horizontalmente */
-  gap: 40px; /* Espaçamento entre os itens */
-  flex: 1; /* Garante que o menu ocupe o espaço restante */
+  align-items: center;
+  gap: 15px;
+  font-family: 'Roboto', sans-serif;
 }
 
+/* Links do Menu */
 .nav-link {
   position: relative;
   text-decoration: none;
-  color: #a100ff;
-  font-weight: bold;
-  transition: color 0.3s, text-shadow 0.3s;
-  padding-bottom: 5px;
-  font-size: 22px;
+  color: #a007f2;
+  font-weight: 500;
+  font-size: 16px;
+  transition: color 0.3s;
+  padding: 5px 10px;
   cursor: pointer;
 }
 
-/* Hover Effect - Cor */
 .nav-link:hover {
-  color: #df80fc;
+  color: #8e24aa;
 }
 
-/* Pseudo-elemento para o sublinhado */
+/* Sublinhado animado */
 .nav-link::after {
   content: '';
   position: absolute;
-  left: 0;
-  bottom: 0;
+  left: 10px;
+  bottom: -2px;
   width: 0;
   height: 2px;
-  background-color: #df80fc;
+  background-color: #8e24aa;
   transition: width 0.3s ease-out;
 }
 
-/* Efeito de sublinhado ao passar o mouse */
 .nav-link:hover::after {
-  width: 100%;
+  width: calc(100% - 20px);
 }
 
-/* Highlight para Agende Agora (sombreamento amarelo ao redor do texto) */
-.agende-agora-highlight {
-  text-shadow: 0 0 10px rgba(255, 255, 0, 0.7), /* Sombreamento amarelo com glow */
-               0 0 20px rgba(255, 255, 0, 0.5); /* Efeito de glow mais suave */
+/* Estilo do Agende Agora */
+.agende-agora {
+  border: 2px solid #a007f2;
+  padding: 8px 20px;
+  border-radius: 5px;
+  font-weight: 500;
+  font-size: 16px;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-.agende-agora-highlight:hover {
-  text-shadow: 0 0 15px rgba(255, 255, 0, 0.9), /* Glow mais intenso ao passar o mouse */
-               0 0 25px rgba(255, 255, 0, 0.7);
-  color: #df80fc; /* Mantém a transição de cor ao passar o mouse */
+.agende-agora:hover {
+  background-color: #a007f2;
+  color: #ffffff;
 }
 
 /* Dropdown Menu */
@@ -81,85 +87,106 @@
   background-color: #ffffff;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
   z-index: 999;
   width: 200px;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 
-/* Mostrar o Dropdown ao passar o mouse:
-   OBS: se preferir abrir somente no clique, mantenha
-   a lógica do useState e remova esta linha. */
-.nav-link.dropdown:hover .dropdown-menu {
+.nav-link.dropdown:hover .dropdown-menu,
+.nav-link.dropdown:focus .dropdown-menu {
   opacity: 1;
   visibility: visible;
 }
 
 /* Dropdown Item */
 .dropdown-item {
-  padding: 10px 20px;
+  padding: 10px 15px;
   text-decoration: none;
-  color: #a100ff;
-  cursor: pointer;
+  color: #a007f2;
+  font-size: 14px;
   transition: background-color 0.2s;
-  font-size: 16px;
 }
 
 .dropdown-item:hover {
-  background-color: #f0f0f0;
+  background-color: #f5f5f5;
 }
 
-/* Ícone do Usuário (exemplo, se for usar) */
-.user-icon {
-  color: #a100ff;
-  transition: color 0.3s;
-  display: flex;
-  align-items: center;
+/* Hambúrguer Button */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #a007f2;
   cursor: pointer;
-  height: 50px;
-  width: 50px;
-}
-
-.user-icon:hover {
-  color: #df80fc;
-}
-
-.icon {
-  font-size: 32px;
+  padding: 5px;
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
   .header-container {
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-  }
-
-  .nav-container {
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .btn-restricted {
-    width: 100%;
+    padding: 10px 20px;
+    position: relative;
+    justify-content: flex-start; /* Alinha o conteúdo à esquerda */
   }
 
   .racca-logo {
-    margin-right: 0;
+    width: 100px;
   }
 
-  .agende-agora-highlight {
-    text-shadow: 0 0 8px rgb(255, 255, 0), /* Reduz o glow em telas menores */
-                 0 0 16px rgb(255, 255, 0); /* Mantém legível */
+  .logo-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%); /* Centraliza o logo */
   }
 
-  .agende-agora-highlight:hover {
-    text-shadow: 0 0 12px rgb(255, 255, 0), /* Glow menor, mas ainda visível */
-                 0 0 20px rgb(255, 255, 0);
+  .hamburger {
+    display: block;
+    position: absolute;
+    left: 20px; /* Posiciona o hambúrguer no canto superior esquerdo */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000; /* Garante que fique acima do menu */
+  }
+
+  .nav-container {
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff;
+    flex-direction: column;
+    padding: 20px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    align-items: flex-start; /* Alinha os itens à esquerda */
+  }
+
+  .nav-container.open {
+    display: flex;
+  }
+
+  .nav-link {
+    font-size: 16px;
+    padding: 10px 20px; /* Adicionei padding à esquerda para alinhamento */
+    text-align: left;
+  }
+
+  .dropdown-menu {
+    position: static;
+    width: 100%;
+    box-shadow: none;
+    padding-left: 40px; /* Indentação para subitens */
+  }
+
+  .agende-agora {
+    margin-top: 15px;
+    width: 80%; /* Limita a largura para melhor aparência */
+    margin-left: 20px; /* Alinha à esquerda com o menu */
+    text-align: center;
   }
 }
