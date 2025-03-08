@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
+// Estilização com styled-components
 const StyledPolicy = styled.div`
   padding: 20px;
   max-width: 900px;
@@ -55,13 +56,16 @@ const StyledPolicy = styled.div`
 const PoliticaDeReembolso = () => {
   const navigate = useNavigate();
 
+  // Função para voltar à página anterior
   const handleBackClick = () => {
+    console.log('Botão Voltar clicado'); // Log para debug
     navigate(-1); // Volta para a página anterior
   };
 
   return (
     <StyledPolicy>
-      <button className="back-button" onClick={handleBackClick}>Voltar</button>
+      {/* Botão Voltar destacado */}
+
 
       <h1>Política de Reembolso</h1>
 
@@ -85,9 +89,11 @@ const PoliticaDeReembolso = () => {
           Não serão concedidos reembolsos sob nenhuma hipótese em casos de não comparecimento à consulta agendada sem prévio aviso ou quando os serviços contratados tiverem sido parciais ou totalmente prestados. Além disso, consultas iniciadas, mas não concluídas por questões técnicas não imputáveis à Racca Saúde, não são elegíveis para o reembolso.
         </p>
       </section>
-
+      <button className="back-button" onClick={handleBackClick}>
+        Voltar
+      </button>
       <footer className="footer-note">
-        <p>&copy; {new Date().getFullYear()} Racca Saúde. Todos os direitos reservados.</p>
+        <p>© {new Date().getFullYear()} Racca Saúde. Todos os direitos reservados.</p>
       </footer>
     </StyledPolicy>
   );

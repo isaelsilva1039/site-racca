@@ -136,7 +136,7 @@ const Card = styled.div`
     left: -20%;
     width: 140%;
     height: 140%;
-    background: radial-gradient(circle, rgba(161, 0, 255, 0.05) 0%, transparent 80%);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 80%);
     z-index: 1;
   }
 

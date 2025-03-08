@@ -58,6 +58,10 @@ function App() {
                 <Section id="services">
                   <ServicesSection/>
                 </Section>
+                <BenefitsSection />
+                <Section id="depoiments">
+                  <TestimonialsSection/>
+                </Section>
                 <Section id="missao">
                   <MissionVisionValues/>
                 </Section>
@@ -65,13 +69,11 @@ function App() {
                   <AboutRacca/>
                 </Section>
 
-                <Section id="depoiments">
-                  <TestimonialsSection/>
-                </Section>
+              
                 <Section id="benefits">
                   <Benefits />
                 </Section>
-                <BenefitsSection />
+                
                 <Section id="plans">
                   <Plans />
                 </Section>
