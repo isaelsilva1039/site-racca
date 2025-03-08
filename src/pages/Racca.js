@@ -1,5 +1,5 @@
-import styled, { keyframes, css } from 'styled-components';
-import { useState, useEffect } from 'react'; // Adicionando useEffect para animações
+import styled, { keyframes } from 'styled-components';
+import { useState, useEffect } from 'react';
 
 const fadeInUp = keyframes`
   from {
@@ -13,12 +13,12 @@ const fadeInUp = keyframes`
 `;
 
 const AboutContainer = styled.section`
-  
   text-align: center;
-  background: linear-gradient(135deg, #eaf4ff 0%, #d6eaff 100%);
+  background: #ffffff; /* Alterado para branco puro */
   color: #333;
   position: relative;
   overflow: hidden;
+  padding: 50px 0;
 
   @media (max-width: 768px) {
     padding: 30px 10px;
@@ -26,7 +26,7 @@ const AboutContainer = styled.section`
 `;
 
 const Title = styled.h2`
-  font-size: 2.5rem;
+  font-size: 5.5rem;
   margin-bottom: 40px;
   color: #a100ff;
   text-transform: uppercase;
@@ -47,36 +47,20 @@ const Title = styled.h2`
 `;
 
 const Content = styled.div`
-  max-width: 900px;
+  max-width: 90%;
+  width: 100%;
   margin: 0 auto;
   line-height: 1.8;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 30px;
+  background: #ffffff;
+  padding: 40px;
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(161, 0, 255, 0.2);
   position: relative;
   overflow: hidden;
 
-  &:before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(161, 0, 255, 0.1) 0%, transparent 70%);
-    animation: rotateGradient 10s infinite linear;
-  }
-
-  @keyframes rotateGradient {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
   @media (max-width: 768px) {
     padding: 20px;
-    max-width: 100%;
   }
 
   @media (max-width: 480px) {
@@ -88,30 +72,31 @@ const TextBlock = styled.div`
   opacity: 0;
   animation: ${fadeInUp} 1s ease-out forwards;
   animation-delay: ${({ delay }) => delay || '0s'};
+  text-align: center;
 
   h3 {
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     color: #a100ff;
     margin: 25px 0 15px;
     text-transform: uppercase;
     letter-spacing: 1px;
 
     @media (max-width: 768px) {
-      font-size: 1.4rem;
+      font-size: 1.6rem;
       margin: 20px 0 10px;
     }
 
     @media (max-width: 480px) {
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       margin: 15px 0 8px;
     }
   }
 
   p {
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     color: #555;
     margin-bottom: 25px;
-    text-align: left;
+    text-align: center;
     transition: color 0.3s ease;
 
     &:hover {
@@ -119,12 +104,12 @@ const TextBlock = styled.div`
     }
 
     @media (max-width: 768px) {
-      font-size: 1rem;
+      font-size: 1.2rem;
       margin-bottom: 20px;
     }
 
     @media (max-width: 480px) {
-      font-size: 0.9rem;
+      font-size: 1rem;
       margin-bottom: 15px;
     }
   }
@@ -134,7 +119,7 @@ function AboutRacca() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setIsVisible(true); // Trigger animation when component mounts
+    setIsVisible(true);
   }, []);
 
   return (

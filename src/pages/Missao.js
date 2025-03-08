@@ -26,6 +26,7 @@ const MissionVisionContainer = styled.section`
   color: #333;
   position: relative;
   overflow: hidden;
+  padding: 50px 0; /* Aumentado para mais espaço vertical */
 
   @media (max-width: 768px) {
     padding: 30px 10px;
@@ -33,8 +34,8 @@ const MissionVisionContainer = styled.section`
 `;
 
 const Title = styled.h2`
-  font-size: 2.5rem;
-  margin-bottom: 40px;
+  font-size: 3.5rem; /* Aumentado de 2.5rem */
+  margin-bottom: 50px; /* Aumentado de 40px */
   color: #a100ff;
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -42,31 +43,25 @@ const Title = styled.h2`
   animation: ${fadeInScale} 1s ease-out;
 
   @media (max-width: 768px) {
-    font-size: 1.8rem;
-    margin-bottom: 25px;
+    font-size: 2.2rem; /* Aumentado de 1.8rem */
+    margin-bottom: 30px;
     letter-spacing: 1px;
   }
 
   @media (max-width: 480px) {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
+    font-size: 1.8rem; /* Aumentado de 1.5rem */
+    margin-bottom: 25px;
   }
 `;
 
-/**
- * GRID:
- *  - No mobile, 1 coluna (cards empilhados).
- *  - A partir de 769px, duas colunas na primeira linha (Visão e Missão)
- *    e o terceiro card (Valores) ocupa a linha de baixo, 2 colunas.
- */
 const ContentGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr; /* Padrão (mobile): 1 coluna */
   grid-auto-rows: auto;
-  gap: 30px;
-  max-width: 1400px;
+  gap: 40px; /* Aumentado de 30px */
+  max-width: 95%; /* Aumentado de 1400px para 95% */
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 30px; /* Aumentado de 20px */
   position: relative;
 
   &:after {
@@ -91,18 +86,17 @@ const ContentGrid = styled.div`
   }
 
   @media (max-width: 768px) {
-    gap: 20px;
-    padding: 0 10px;
+    gap: 25px; /* Aumentado de 20px */
+    padding: 0 15px;
   }
 
   @media (max-width: 480px) {
-    gap: 15px;
+    gap: 20px; /* Aumentado de 15px */
   }
 
-  /* O 3º card (Valores) ocupa as 2 colunas no desktop */
   & > div:nth-of-type(3) {
     @media (min-width: 769px) {
-      grid-column: 1 / 3; /* Span nas 2 colunas */
+      grid-column: 1 / 3;
     }
   }
 `;
@@ -113,12 +107,13 @@ const Card = styled.div`
     rgba(255, 255, 255, 0.9) 0%,
     rgba(245, 245, 255, 0.9) 100%
   );
-  padding: 25px;
+  padding: 40px; /* Aumentado de 25px */
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(161, 0, 255, 0.2);
   position: relative;
   overflow: hidden;
+  min-height: 300px; /* Adicionado para ocupar mais espaço vertical */
   animation:
     ${fadeInScale} 1s ease-out ${({ delay }) => delay || '0s'} forwards,
     ${float} 4s infinite ease-in-out;
@@ -141,27 +136,27 @@ const Card = styled.div`
   }
 
   h3 {
-    font-size: 1.8rem;
+    font-size: 2.2rem; /* Aumentado de 1.8rem */
     color: #a100ff;
-    margin-bottom: 20px;
+    margin-bottom: 25px; /* Aumentado de 20px */
     text-transform: uppercase;
     letter-spacing: 1px;
     position: relative;
     z-index: 2;
 
     @media (max-width: 768px) {
-      font-size: 1.4rem;
-      margin-bottom: 15px;
+      font-size: 1.6rem; /* Aumentado de 1.4rem */
+      margin-bottom: 20px;
     }
 
     @media (max-width: 480px) {
-      font-size: 1.2rem;
+      font-size: 1.4rem; /* Aumentado de 1.2rem */
     }
   }
 
   p,
   ul {
-    font-size: 1.1rem;
+    font-size: 1.8rem; /* Aumentado de 1.1rem */
     color: #555;
     line-height: 1.8;
     text-align: center;
@@ -169,12 +164,12 @@ const Card = styled.div`
     z-index: 2;
 
     @media (max-width: 768px) {
-      font-size: 1rem;
+      font-size: 1.2rem; /* Aumentado de 1rem */
       line-height: 1.6;
     }
 
     @media (max-width: 480px) {
-      font-size: 0.9rem;
+      font-size: 1rem; /* Aumentado de 0.9rem */
     }
   }
 
@@ -183,38 +178,36 @@ const Card = styled.div`
     padding: 0;
 
     li {
-      margin-bottom: 5px;
-      display: flex; 
-      align-items: center; 
+      margin-bottom: 8px; /* Aumentado de 5px */
+      display: flex;
+      align-items: center;
       position: relative;
 
       @media (max-width: 768px) {
-        margin-left: 0;   /* Zera no mobile/tablet */
-        margin-bottom: 12px;
+        margin-left: 0;
+        margin-bottom: 15px; /* Aumentado de 12px */
       }
 
       @media (max-width: 480px) {
-        margin-left: 0;   /* Zera no mobile menor */
-        margin-bottom: 10px;
+        margin-left: 0;
+        margin-bottom: 12px; /* Aumentado de 10px */
       }
     }
   }
 
-  /* A primeira palavra (ex: Respeito) ainda maior */
   ul li .first-word {
-    font-size: 1.6rem;  /* Aumente conforme desejar */
+    font-size: 2rem; /* Aumentado de 1.6rem */
     color: #a100ff;
     font-weight: bold;
-    margin-right: 10px; 
+    margin-right: 12px; /* Aumentado de 10px */
     position: relative;
-    display: inline-block; 
+    display: inline-block;
   }
 
-  /* A primeira letra (ex: R de Respeito) ainda mais destacada */
   ul li .first-word .first-letter {
-    font-size: 3.2rem;  /* Aumente conforme desejar */
+    font-size: 4rem; /* Aumentado de 3.2rem */
     display: inline-block;
-    line-height: 1; /* Para evitar quebra */
+    line-height: 1;
   }
 `;
 
@@ -222,7 +215,6 @@ function MissionVisionValues() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Ativa animação quando o componente é montado
     setIsVisible(true);
   }, []);
 
@@ -230,7 +222,6 @@ function MissionVisionValues() {
     <MissionVisionContainer>
       <Title>Missão, Visão e Valores</Title>
       <ContentGrid>
-        {/* 1º Card (Visão) */}
         <Card delay="0.2s">
           <h3>Visão</h3>
           <p>
@@ -239,7 +230,6 @@ function MissionVisionValues() {
           </p>
         </Card>
 
-        {/* 2º Card (Missão) */}
         <Card delay="0.4s">
           <h3>Missão</h3>
           <p>
@@ -249,7 +239,6 @@ function MissionVisionValues() {
           </p>
         </Card>
 
-        {/* 3º Card (Valores) - abaixo, ocupando toda a largura no desktop */}
         <Card delay="0.6s">
           <h3>Valores</h3>
           <ul>

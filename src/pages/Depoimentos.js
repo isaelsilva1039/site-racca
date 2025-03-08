@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { FaQuoteLeft, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 const TestimonialsContainer = styled.section`
-  padding: 10px 0px; /* Reduzido padding lateral para telas menores */
+  padding: 10px 0px;
   text-align: center;
   background: linear-gradient(135deg, #eaf4ff 0%, #d6eaff 100%);
   color: #333;
@@ -15,8 +15,8 @@ const TestimonialsContainer = styled.section`
 `;
 
 const Title = styled.h2`
-  font-size: 2.5rem;
-  margin-bottom: 20px;
+  font-size: 3.7rem;
+  margin-bottom: 30px;
   color: #a100ff;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -33,23 +33,23 @@ const Title = styled.h2`
 `;
 
 const CarouselWrapper = styled.div`
-  max-width: 800px;
+  max-width: 90%;
   width: 100%;
   margin: 0 auto;
   position: relative;
-  height: auto; /* Altura dinâmica para se adaptar ao conteúdo */
-  min-height: 500px; /* Altura mínima para consistência */
+  height: auto; /* Altura dinâmica baseada no conteúdo */
+  min-height: 400px; /* Ajustado para garantir espaço mínimo */
   overflow: hidden;
 
   @media (max-width: 768px) {
-    max-width: 100%;
-    min-height: 300px;
+    max-width: 90%;
+    min-height: 250px; /* Ajustado para mobile */
   }
 `;
 
 const TestimonialCard = styled.div`
   background: #ffffff;
-  padding: 30px;
+  padding: 20px;
   border-radius: 15px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(161, 0, 255, 0.1);
@@ -57,28 +57,30 @@ const TestimonialCard = styled.div`
   opacity: ${({ isActive }) => (isActive ? 1 : 0)};
   transform: ${({ isActive }) => (isActive ? 'translateX(0)' : 'translateX(100%)')};
   position: absolute;
-  width: 100%;
+  width: 90%;
   top: 0;
-  left: 0;
+  left: 5%;
   box-sizing: border-box;
+  height: auto; /* Altura dinâmica */
+  overflow: hidden;
 
   &:hover {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
   }
 
   @media (max-width: 768px) {
-    padding: 20px;
+    padding: 15px;
   }
 
   @media (max-width: 480px) {
-    padding: 15px;
+    padding: 10px;
   }
 `;
 
 const QuoteIcon = styled(FaQuoteLeft)`
   font-size: 2rem;
   color: #a100ff;
-  margin-bottom: 20px; /* Mais espaço abaixo do ícone */
+  margin-bottom: 20px;
 
   @media (max-width: 768px) {
     font-size: 1.5rem;
@@ -87,22 +89,25 @@ const QuoteIcon = styled(FaQuoteLeft)`
 `;
 
 const TestimonialText = styled.p`
-  font-size: 1.1rem;
+  font-size: 1.6rem;
   color: #555;
-  line-height: 1.8; /* Aumentado para mais espaço entre linhas */
-  margin-bottom: 25px; /* Mais espaço abaixo do texto */
-  max-width: 90%; /* Limita largura para melhor legibilidade */
+  line-height: 1.5;
+  margin-bottom: 25px;
+  max-width: 90%;
   margin-left: auto;
   margin-right: auto;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 
   @media (max-width: 768px) {
-    font-size: 1rem;
+    font-size: 1.2rem;
     line-height: 1.6;
     margin-bottom: 20px;
   }
 
   @media (max-width: 480px) {
-    font-size: 0.9rem;
+    font-size: 1rem;
+    line-height: 1.7;
     margin-bottom: 15px;
   }
 `;
@@ -138,8 +143,8 @@ const UserAvatar = styled.img`
 
 const NavButton = styled.button`
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 50%; /* Centraliza verticalmente em relação ao card */
+  transform: translateY(-50%); /* Ajusta para o centro exato */
   background: rgba(161, 0, 255, 0.8);
   color: #fff;
   border: none;
@@ -196,7 +201,7 @@ function TestimonialsSection() {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prevIndex) => (prevIndex + 1) % testimonials.length);
-    }, 15000); // Mantido em 15 segundos como no seu código
+    }, 15000);
     return () => clearInterval(interval);
   }, [testimonials.length]);
 
@@ -219,7 +224,6 @@ function TestimonialsSection() {
           <TestimonialCard key={index} isActive={index === activeIndex}>
             <QuoteIcon />
             <TestimonialText>"{testimonial.text}"</TestimonialText>
-
           </TestimonialCard>
         ))}
         <NavButton direction="right" onClick={handleNext}>
