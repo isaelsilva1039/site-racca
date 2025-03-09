@@ -26,11 +26,21 @@ function Home() {
     return () => clearInterval(interval);
   }, [images.length, currentImageIndex]);
 
-  return (
-    <section className={`banner dynamic-bg`}>
-      {/* Overlay com conteúdo */}
+  // Função para rolar até a seção #plans
+  const handleBannerClick = () => {
+    const plansSection = document.getElementById('plans');
+    if (plansSection) {
+      plansSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
- 
+  return (
+    <section 
+      className={`banner dynamic-bg`} 
+      onClick={handleBannerClick}
+      style={{ cursor: 'pointer' }} // Indica que o elemento é clicável
+    >
+      {/* Overlay com conteúdo (você pode adicionar conteúdo aqui se desejar) */}
     </section>
   );
 }

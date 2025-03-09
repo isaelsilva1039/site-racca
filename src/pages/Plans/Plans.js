@@ -40,7 +40,7 @@ function Plans() {
       id: 471,
       icon: <FaStar />,
       id_plano_sistema_racca: 471,
-      title: 'Plano Confort',
+      title: 'Confort',
       amount: 89.9,
       amountSemFidelidade: 119.9,
       prices: {
@@ -58,7 +58,7 @@ function Plans() {
       id: 3907,
       icon: <FaGem />,
       id_plano_sistema_racca: 3907,
-      title: 'Plano RACCA Proteção Plus',
+      title: 'RACCA Proteção Plus',
       amount: 15.0,
       prices: {
         fidelidade: 'R$ 15,00/mês c/ fidelidade 12 meses',
@@ -74,7 +74,7 @@ function Plans() {
       id: 'ID_DINAMICO',
       icon: <FaCrown />,
       id_plano_sistema_racca: 9999,
-      title: 'Plano Familiar',
+      title: 'Familiar',
       amount: 19.9,
       prices: {
         mensal: 'R$ 19,90/mês s/ fidelidade',
@@ -95,7 +95,7 @@ function Plans() {
       id: 1084,
       icon: <FaGem />,
       id_plano_sistema_racca: 1084,
-      title: 'Plano Confort Extra',
+      title: 'Confort Extra',
       amount: 159.9,
       amountSemFidelidade: 189.9,
       prices: {
@@ -113,7 +113,7 @@ function Plans() {
       id: 500,
       icon: <FaBolt />,
       id_plano_sistema_racca: 500,
-      title: 'Plano Premium',
+      title: 'Premium',
       amount: 109.9,
       amountSemFidelidade: 139.9,
       prices: {
@@ -131,7 +131,7 @@ function Plans() {
       id: 706,
       icon: <FaCrown />,
       id_plano_sistema_racca: 706,
-      title: 'Plano Premium Extra Plus',
+      title: 'Premium Extra Plus',
       amount: 189.9,
       prices: {
         fidelidade: 'R$ 189,90/mês c/ fidelidade 12 meses',
@@ -344,7 +344,7 @@ function Plans() {
 
   return (
     <section className="plans-container">
-      <h2 className="plans-title">Nossos Planos</h2>
+      <h2 className="plans-title">Nossos Produtos</h2>
       <div className="plans-grid">
         {plans.map((plan) => (
           <div className="plan-card" key={plan.id}>

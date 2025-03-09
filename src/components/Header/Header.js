@@ -134,11 +134,6 @@ function Header() {
 
         <div className="nav-link dropdown" onClick={() => setSejaParceiroOpen(!sejaParceiroOpen)}>
           Seja Parceiro
-          {sejaParceiroOpen && (
-            <div className="dropdown-menu">
-              <a href="#formulario-parceiro" className="dropdown-item">Formulário para Parceiros</a>
-            </div>
-          )}
         </div>
 
         <a href="#blog" className="nav-link" onClick={handleBlogClick}>Blog</a>
