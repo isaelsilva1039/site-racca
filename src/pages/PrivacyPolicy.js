@@ -3,60 +3,94 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const PrivacyContainer = styled.div`
-  padding: 20px;
-  max-width: 900px;
+  padding: 40px 20px;
+  max-width: 1000px;
   margin: 0 auto;
   line-height: 1.8;
-  font-family: Arial, sans-serif;
-  color: #333;
+  font-family: 'Poppins', Arial, sans-serif; /* Tipografia moderna */
+  color: #2d2d2d;
+  background: linear-gradient(135deg, #f9f9f9, #ffffff); /* Gradiente sutil no fundo */
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Sombra leve */
+  margin-top: 20px;
+  margin-bottom: 20px;
 
   h1 {
     color: #a100ff;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    font-size: 2.5rem; /* Tamanho maior */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
 
   h2 {
     color: #a100ff;
-    margin-top: 20px;
+    margin-top: 30px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    border-bottom: 2px solid #a100ff; /* Linha decorativa */
+    padding-bottom: 5px;
+    display: inline-block;
   }
 
   p {
-    margin: 10px 0;
+    margin: 15px 0;
     text-align: justify;
+    font-size: 1.1rem;
+    color: #444;
   }
 
   ul {
-    margin: 10px 0 20px 20px;
+    margin: 15px 0 25px 30px;
     list-style-type: disc;
   }
 
   li {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
+    font-size: 1.05rem;
+    color: #555;
   }
 
   .footer-note {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     text-align: center;
-    margin-top: 20px;
-    color: #666;
+    margin-top: 40px;
+    color: #777;
+    font-style: italic;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
   }
 
   .back-button {
-    display: inline-block;
-    margin-bottom: 20px;
-    padding: 10px 20px;
+    display: block;
+    width: 200px; /* Largura fixa para destaque */
+    margin: 0 auto 40px auto; /* Centralizado e com mais espaço */
+    padding: 12px 0;
     background-color: #a100ff;
     color: white;
     border: none;
-    border-radius: 5px;
-    font-size: 16px;
+    border-radius: 50px; /* Bordas arredondadas modernas */
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
     cursor: pointer;
     text-decoration: none;
-    transition: background-color 0.3s ease;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(161, 0, 255, 0.3); /* Sombra roxa suave */
+    transition: all 0.3s ease;
 
     &:hover {
       background-color: #7d00cc;
+      transform: translateY(-2px); /* Efeito de elevação */
+      box-shadow: 0 6px 20px rgba(161, 0, 255, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0); /* Volta ao normal ao clicar */
+      box-shadow: 0 2px 10px rgba(161, 0, 255, 0.2);
     }
   }
 `;
@@ -70,7 +104,7 @@ const PrivacyPolicy = () => {
       </button>
       <h1>Política de Privacidade</h1>
       <p>
-        <h2>1. PREÂMBULO</h2>
+        <h2>1. Preâmbulo</h2>
         <br />
         1.1. A RACCA MONITORAMENTO E GESTÃO DA SAUDE LTDA (“RACCA”), CNPJ:
         50.633.829/0001-08, com sede na Rua Fortuna n. 40, Bairro Industrial,
@@ -106,7 +140,7 @@ const PrivacyPolicy = () => {
         você seja um paciente com prontuário médico armazenado no sistema da
         Racca Saúde, consulte o tópico 9 dessa Política.
       </p>
-      <h2>2. IDENTIFICAÇÃO DO AGENTE DE TRATAMENTO</h2>
+      <h2>2. Identificação do Agente de Tratamento</h2>
       <p>
         2.1. Em relação ao tratamento dos dados pessoais dos representantes de
         nossos clientes (clínicas, profissionais da saúde e empresas
@@ -118,7 +152,7 @@ const PrivacyPolicy = () => {
         pessoais a pessoa natural ou jurídica, de direito público ou privado, a
         quem competem as decisões referentes ao tratamento de dados pessoais.
       </p>
-      <h2>3. DADOS PESSOAIS TRATADOS</h2>
+      <h2>3. Dados Pessoais Tratados</h2>
       <p>
         3.1. A RACCA SAÚDE, quando Controladora dos dados pessoais, poderá
         coletar os seguintes dados pessoais e/ou dados pessoais sensíveis para
@@ -135,7 +169,7 @@ const PrivacyPolicy = () => {
           clientes, criado a partir de suas preferências de consumo.
         </li>
       </ul>
-      <h2>4. FINALIDADES DE TRATAMENTO</h2>
+      <h2>4. Finalidades de Tratamento</h2>
       <p>
         4.1. A RACCA SAÚDE poderá tratar os dados pessoais coletados junto à
         profissional da saúde, clínica e/ou empresa que utiliza a nossa
@@ -161,7 +195,7 @@ const PrivacyPolicy = () => {
           potenciais clientes.
         </li>
       </ul>
-      <h2>5. BASES LEGAIS DE TRATAMENTO</h2>
+      <h2>5. Bases Legais de Tratamento</h2>
       <p>
         5.1. A LGPD nos permite realizar atividades de tratamento de dados
         pessoais para as finalidades acima descritas com fundamento em
@@ -176,7 +210,7 @@ const PrivacyPolicy = () => {
         <li>5.2.3. Execução de contrato ou medidas preliminares;</li>
         <li>5.2.4. Interesse legítimo, desde que respeite os direitos do titular;</li>
       </ul>
-      <h2>6. COM QUEM COMPARTILHAMOS SEUS DADOS PESSOAIS</h2>
+      <h2>6. Com Quem Compartilhamos Seus Dados Pessoais</h2>
       <p>
         6.1. Podemos compartilhar seus dados pessoais com autoridades, parceiros
         e outros agentes conforme necessário para prestação de serviços ou
