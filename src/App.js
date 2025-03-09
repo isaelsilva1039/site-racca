@@ -59,17 +59,16 @@ function App() {
                   <ServicesSection/>
                 </Section>
                 <BenefitsSection />
-                <Section id="depoiments">
+                <Section id="depoimentos">
                   <TestimonialsSection/>
                 </Section>
-                <Section id="missao">
+                <Section id="missao-visao-valores">
                   <MissionVisionValues/>
                 </Section>
-                <Section id="racca">
+                <Section id="grupo-racca">
                   <AboutRacca/>
                 </Section>
-
-              
+             
                 <Section id="benefits">
                   <Benefits />
                 </Section>
