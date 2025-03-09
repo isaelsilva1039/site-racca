@@ -51,7 +51,7 @@ function Plans() {
         'Desconto em farmácias parceiras',
         'Acompanhamento clínico (Grupo CUIDAR CONECTADO)',
         '5% de desconto p/ pagamento antecipado',
-        '2 terapias mensais de 45 minutos cada',
+        
       ],
     },
     {
@@ -86,7 +86,7 @@ function Plans() {
         'R$ 9,90 por vida adicionada',
         '5% de desconto p/ pagamento antecipado',
         'Valor da consulta por especialidade:',
-        'Psicólogo e Nutricionista: R$ 50,00',
+        ' Nutricionista: R$ 50,00',
         'Psiquiatra: R$ 100,00',
         'Médicos Especialistas: R$ 60,00',
       ],
@@ -106,7 +106,7 @@ function Plans() {
         'Desconto em farmácias parceiras',
         'Acompanhamento clínico (Grupo CUIDAR CONECTADO)',
         '5% de desconto p/ pagamento antecipado',
-        '4 terapias mensais de 45 minutos cada',
+        
       ],
     },
     {
@@ -123,7 +123,6 @@ function Plans() {
       benefits: [
         'Desconto em farmácias parceiras',
         '5% de desconto p/ pagamento antecipado',
-        '2 terapias mensais de 45 minutos cada',
         '1 sessão com especialista ao mês',
         'Especialistas Disponíveis: Cardiologista, Dermatologista, Endocrinologista, Geriatria, Ginecologista, Neurologista, Nutricionista, Ortopedista, Otorrinolaringologista, Pediatria, Traumatologia, Urologista.',
       ],
@@ -140,7 +139,6 @@ function Plans() {
       benefits: [
         'Desconto em farmácias parceiras',
         '5% de desconto p/ pagamento antecipado',
-        '4 terapias mensais de 45 minutos cada',
         '1 sessão com especialista ao mês',
         'Assistência Funeral Familiar de R$ 7.000,00',
         'MA - Morte Acidental - Capital Segurado R$ 20.000,00',
@@ -356,7 +354,6 @@ function Plans() {
               <span className="original-price">
                 {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(plan.originalAmount || (plan.amount * 1.5))}
               </span>
-              <span className="discount-badge">ECONOMIZE 50%</span>
             </div>
             <p className="plan-price">
               {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(plan.amount)}

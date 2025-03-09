@@ -15,7 +15,7 @@ const fadeInScale = keyframes`
 
 const float = keyframes`
   0% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-8px); } /* Reduzido de -10px */
   100% { transform: translateY(0); }
 `;
 
@@ -26,31 +26,31 @@ const MissionVisionContainer = styled.section`
   color: #333;
   position: relative;
   overflow: hidden;
-  padding: 50px 0; /* Aumentado para mais espaço vertical */
+  padding: 40px 0; /* Reduzido de 50px */
 
   @media (max-width: 768px) {
-    padding: 30px 10px;
+    padding: 25px 8px; /* Reduzido de 30px 10px */
   }
 `;
 
 const Title = styled.h2`
-  font-size: 3.5rem; /* Aumentado de 2.5rem */
-  margin-bottom: 50px; /* Aumentado de 40px */
+  font-size: 2.8rem; /* Reduzido de 3.5rem */
+  margin-bottom: 40px; /* Reduzido de 50px */
   color: #a100ff;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 1.5px; /* Reduzido de 2px */
   font-weight: bold;
   animation: ${fadeInScale} 1s ease-out;
 
   @media (max-width: 768px) {
-    font-size: 2.2rem; /* Aumentado de 1.8rem */
-    margin-bottom: 30px;
-    letter-spacing: 1px;
+    font-size: 1.8rem; /* Reduzido de 2.2rem */
+    margin-bottom: 25px; /* Reduzido de 30px */
+    letter-spacing: 0.8px; /* Reduzido de 1px */
   }
 
   @media (max-width: 480px) {
-    font-size: 1.8rem; /* Aumentado de 1.5rem */
-    margin-bottom: 25px;
+    font-size: 1.5rem; /* Reduzido de 1.8rem */
+    margin-bottom: 20px; /* Reduzido de 25px */
   }
 `;
 
@@ -58,19 +58,19 @@ const ContentGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr; /* Padrão (mobile): 1 coluna */
   grid-auto-rows: auto;
-  gap: 40px; /* Aumentado de 30px */
-  max-width: 95%; /* Aumentado de 1400px para 95% */
+  gap: 30px; /* Reduzido de 40px */
+  max-width: 90%; /* Reduzido de 95% */
   margin: 0 auto;
-  padding: 0 30px; /* Aumentado de 20px */
+  padding: 0 25px; /* Reduzido de 30px */
   position: relative;
 
   &:after {
     content: '';
     position: absolute;
-    top: -100px;
-    left: -100px;
-    width: 300px;
-    height: 300px;
+    top: -80px; /* Reduzido de -100px */
+    left: -80px; /* Reduzido de -100px */
+    width: 240px; /* Reduzido de 300px */
+    height: 240px; /* Reduzido de 300px */
     background: radial-gradient(circle, rgba(161, 0, 255, 0.1) 0%, transparent 70%);
     animation: rotateGradient 15s infinite linear;
   }
@@ -86,12 +86,12 @@ const ContentGrid = styled.div`
   }
 
   @media (max-width: 768px) {
-    gap: 25px; /* Aumentado de 20px */
-    padding: 0 15px;
+    gap: 20px; /* Reduzido de 25px */
+    padding: 0 12px; /* Reduzido de 15px */
   }
 
   @media (max-width: 480px) {
-    gap: 20px; /* Aumentado de 15px */
+    gap: 15px; /* Reduzido de 20px */
   }
 
   & > div:nth-of-type(3) {
@@ -107,69 +107,69 @@ const Card = styled.div`
     rgba(255, 255, 255, 0.9) 0%,
     rgba(245, 245, 255, 0.9) 100%
   );
-  padding: 40px; /* Aumentado de 25px */
-  border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 30px; /* Reduzido de 40px */
+  border-radius: 12px; /* Reduzido de 15px */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Reduzido de 8px 20px */
   border: 1px solid rgba(161, 0, 255, 0.2);
   position: relative;
   overflow: hidden;
-  min-height: 300px; /* Adicionado para ocupar mais espaço vertical */
+  min-height: 240px; /* Reduzido de 300px */
   animation:
     ${fadeInScale} 1s ease-out ${({ delay }) => delay || '0s'} forwards,
     ${float} 4s infinite ease-in-out;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 
   &:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px) scale(1.015); /* Reduzido de -5px e 1.02 */
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15); /* Reduzido de 12px 30px */
   }
 
   &:before {
     content: '';
     position: absolute;
-    top: -20%;
-    left: -20%;
-    width: 140%;
-    height: 140%;
+    top: -15%; /* Reduzido de -20% */
+    left: -15%; /* Reduzido de -20% */
+    width: 130%; /* Reduzido de 140% */
+    height: 130%; /* Reduzido de 140% */
     background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 80%);
     z-index: 1;
   }
 
   h3 {
-    font-size: 2.2rem; /* Aumentado de 1.8rem */
+    font-size: 1.8rem; /* Reduzido de 2.2rem */
     color: #a100ff;
-    margin-bottom: 25px; /* Aumentado de 20px */
+    margin-bottom: 20px; /* Reduzido de 25px */
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px; /* Reduzido de 1px */
     position: relative;
     z-index: 2;
 
     @media (max-width: 768px) {
-      font-size: 1.6rem; /* Aumentado de 1.4rem */
-      margin-bottom: 20px;
+      font-size: 1.3rem; /* Reduzido de 1.6rem */
+      margin-bottom: 15px; /* Reduzido de 20px */
     }
 
     @media (max-width: 480px) {
-      font-size: 1.4rem; /* Aumentado de 1.2rem */
+      font-size: 1.1rem; /* Reduzido de 1.4rem */
     }
   }
 
   p,
   ul {
-    font-size: 1.8rem; /* Aumentado de 1.1rem */
+    font-size: 1.4rem; /* Reduzido de 1.8rem */
     color: #555;
-    line-height: 1.8;
+    line-height: 1.6; /* Reduzido de 1.8 */
     text-align: center;
     position: relative;
     z-index: 2;
 
     @media (max-width: 768px) {
-      font-size: 1.2rem; /* Aumentado de 1rem */
-      line-height: 1.6;
+      font-size: 1rem; /* Reduzido de 1.2rem */
+      line-height: 1.5; /* Reduzido de 1.6 */
     }
 
     @media (max-width: 480px) {
-      font-size: 1rem; /* Aumentado de 0.9rem */
+      font-size: 0.85rem; /* Reduzido de 1rem */
     }
   }
 
@@ -178,34 +178,34 @@ const Card = styled.div`
     padding: 0;
 
     li {
-      margin-bottom: 8px; /* Aumentado de 5px */
+      margin-bottom: 6px; /* Reduzido de 8px */
       display: flex;
       align-items: center;
       position: relative;
 
       @media (max-width: 768px) {
         margin-left: 0;
-        margin-bottom: 15px; /* Aumentado de 12px */
+        margin-bottom: 12px; /* Reduzido de 15px */
       }
 
       @media (max-width: 480px) {
         margin-left: 0;
-        margin-bottom: 12px; /* Aumentado de 10px */
+        margin-bottom: 10px; /* Reduzido de 12px */
       }
     }
   }
 
   ul li .first-word {
-    font-size: 2rem; /* Aumentado de 1.6rem */
+    font-size: 1.6rem; /* Reduzido de 2rem */
     color: #a100ff;
     font-weight: bold;
-    margin-right: 12px; /* Aumentado de 10px */
+    margin-right: 10px; /* Reduzido de 12px */
     position: relative;
     display: inline-block;
   }
 
   ul li .first-word .first-letter {
-    font-size: 4rem; /* Aumentado de 3.2rem */
+    font-size: 3.2rem; /* Reduzido de 4rem */
     display: inline-block;
     line-height: 1;
   }

@@ -20,6 +20,18 @@ function Header() {
     window.open('https://wa.me/5537999137500', '_blank');
   };
 
+  const handleBlogClick = () => {
+    window.open('https://raccasaude.blogspot.com/', '_blank');
+  };
+
+  const handleContatoClick = () => {
+    window.open('https://wa.me/5537999137500', '_blank');
+  };
+
+  const handleImageOptionsClick = () => {
+    window.open('https://wa.me/5537999137500', '_blank');
+  };
+
   // Fechar dropdowns e menu ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -112,10 +124,10 @@ function Header() {
             <div className="dropdown-menu">
               <div className="dropdown-item" onClick={handleAgendamentoClick}>Agendamento</div>
               <div className="dropdown-item" onClick={handleAtendimentoClick}>Atendimento</div>
-              <a href="#consulta-clinica" className="dropdown-item">Consulta Clínica</a>
-              <a href="#financeiro" className="dropdown-item">Financeiro</a>
-              <a href="#ouvidoria" className="dropdown-item">Ouvidoria</a>
-              <a href="#programa-cuidar-conectado" className="dropdown-item">Programa Cuidar Conectado</a>
+              <div className="dropdown-item" onClick={handleImageOptionsClick}>Consulta Clínica</div>
+              <div className="dropdown-item" onClick={handleImageOptionsClick}>Financeiro</div>
+              <div className="dropdown-item" onClick={handleImageOptionsClick}>Ouvidoria</div>
+              <div className="dropdown-item" onClick={handleImageOptionsClick}>Programa Cuidar Conectado</div>
             </div>
           )}
         </div>
@@ -129,9 +141,9 @@ function Header() {
           )}
         </div>
 
-        <a href="#blog" className="nav-link">Blog</a>
-        <a href="#agende-agora" className="nav-link agende-agora">Agende Agora</a>
-        <a href="#contato" className="nav-link">Contato</a>
+        <a href="#blog" className="nav-link" onClick={handleBlogClick}>Blog</a>
+        <a href="#agende-agora" className="nav-link agende-agora" onClick={handleAgendamentoClick}>Agende Agora</a>
+        <a href="#contato" className="nav-link" onClick={handleContatoClick}>Contato</a>
       </nav>
     </header>
   );
