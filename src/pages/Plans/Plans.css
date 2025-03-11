@@ -62,10 +62,10 @@ body {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   align-items: center;
   text-align: center;
-  height: 100%;
+  min-height: 500px; /* Define uma altura mínima para consistência */
+  position: relative; /* Permite posicionamento absoluto do botão */
   box-sizing: border-box;
 }
 
@@ -130,14 +130,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 30px;
+  position: absolute; /* Fixa o botão no fundo */
+  bottom: 20px; /* Distância do fundo do cartão */
+  width: calc(100% - 40px); /* Largura ajustada com margens laterais */
+  margin: 0; /* Remove margem padrão */
 }
 
 .plan-button:hover {
   background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
   transform: scale(1.05);
 }
-
 .plan-button svg {
   margin-left: 10px;
   font-size: 1.2em;

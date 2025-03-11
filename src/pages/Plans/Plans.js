@@ -14,9 +14,9 @@ function Plans() {
   const [paymentMethod, setPaymentMethod] = useState('creditCard');
   const [loading, setLoading] = useState(false);
   const [qrCodeData, setQrCodeData] = useState(null);
-  const [step, setStep] = useState(1); // Controle das etapas do checkout
+  const [step, setStep] = useState(1);
 
-  // Estado dos dados do pagador (etapas 1 e 2)
+  // Estado dos dados do pagador
   const [payerInfo, setPayerInfo] = useState({
     name: '',
     email: '',
@@ -34,138 +34,131 @@ function Plans() {
 
   const BACKEND_URL = 'https://www.asaas.com/api/v3';
 
-  // Array de planos (exemplo)
-  const plans = [
+  // Array de produtos
+  const products = [
     {
       id: 471,
       icon: <FaStar />,
       id_plano_sistema_racca: 471,
-      title: 'Confort',
-      amount: 89.9,
-      amountSemFidelidade: 119.9,
+      title: 'RACCA Essencial',
+      amount: 39.9,
       prices: {
-        fidelidade: 'R$ 89,90/mês c/ fidelidade 12 meses',
-        semFidelidade: 'R$ 119,90/mês s/ fidelidade',
+        mensal: 'R$ 39,90/mês s/ fidelidade',
       },
       benefits: [
-        'Desconto em farmácias parceiras',
-        'Acompanhamento clínico (Grupo CUIDAR CONECTADO)',
-        '5% de desconto p/ pagamento antecipado',
-        
+        'Consultas ilimitadas com Clínico Geral',
+        '1 consulta mensal com especialista (Cardiologista, Dermatologista, etc.)',
+        'Descontos em farmácias parceiras',
+        'Prescrição de receitas, exames e atestados médicos',
+        'Aplicativo RACCA SAÚDE',
+        'Ativação em até 48 horas',
+        'Agendamento online',
+        'Suporte via WhatsApp',
       ],
     },
     {
-      id: 3907,
-      icon: <FaGem />,
-      id_plano_sistema_racca: 3907,
-      title: 'RACCA Proteção Plus',
-      amount: 15.0,
-      prices: {
-        fidelidade: 'R$ 15,00/mês c/ fidelidade 12 meses',
-      },
-      benefits: [
-        'Assistência Funeral Familiar de R$ 7.000,00',
-        'MA - Morte Acidental - Capital Segurado R$ 20.000,00',
-        'IPA - Invalidez por Acidente - Capital Segurado R$ 20.000,00',
-        'Reembolso de Medicamentos Genéricos Gratuitos até R$ 150,00',
-      ],
-    },
-    {
-      id: 'ID_DINAMICO',
+      id: 472,
       icon: <FaCrown />,
-      id_plano_sistema_racca: 9999,
-      title: 'Familiar',
+      id_plano_sistema_racca: 472,
+      title: 'RACCA Familiar',
       amount: 19.9,
       prices: {
         mensal: 'R$ 19,90/mês s/ fidelidade',
       },
       benefits: [
-        'Clínico Geral',
-        'Desconto em farmácias parceiras',
-        'Acompanhamento clínico (Grupo CUIDAR CONECTADO)',
-        'R$ 9,90 por vida adicionada',
-        '5% de desconto p/ pagamento antecipado',
-        'Valor da consulta por especialidade:',
-        ' Nutricionista: R$ 50,00',
-        'Psiquiatra: R$ 100,00',
-        'Médicos Especialistas: R$ 60,00',
-      ],
-    },
-    {
-      id: 1084,
-      icon: <FaGem />,
-      id_plano_sistema_racca: 1084,
-      title: 'Confort Extra',
-      amount: 159.9,
-      amountSemFidelidade: 189.9,
-      prices: {
-        fidelidade: 'R$ 159,90/mês c/ fidelidade 12 meses',
-        semFidelidade: 'R$ 189,90/mês s/ fidelidade',
-      },
-      benefits: [
-        'Desconto em farmácias parceiras',
-        'Acompanhamento clínico (Grupo CUIDAR CONECTADO)',
-        '5% de desconto p/ pagamento antecipado',
-        
+        'Consultas ilimitadas com Clínico Geral',
+        'Descontos em farmácias parceiras',
+        'Prescrição de receitas, exames e atestados médicos',
+        'Aplicativo RACCA SAÚDE',
+        'Ativação em até 48 horas',
+        'Suporte via WhatsApp',
+        'Adicione mais uma pessoa por R$ 9,90',
       ],
     },
     {
       id: 500,
       icon: <FaBolt />,
       id_plano_sistema_racca: 500,
-      title: 'Premium',
+      title: 'RACCA Premium',
       amount: 109.9,
-      amountSemFidelidade: 139.9,
       prices: {
         fidelidade: 'R$ 109,90/mês c/ fidelidade 12 meses',
-        semFidelidade: 'R$ 139,90/mês s/ fidelidade',
       },
       benefits: [
-        'Desconto em farmácias parceiras',
-        '5% de desconto p/ pagamento antecipado',
-        '1 sessão com especialista ao mês',
-        'Especialistas Disponíveis: Cardiologista, Dermatologista, Endocrinologista, Geriatria, Ginecologista, Neurologista, Nutricionista, Ortopedista, Otorrinolaringologista, Pediatria, Traumatologia, Urologista.',
+        'Consultas ilimitadas com Clínico Geral',
+        '1 consulta mensal com especialista (Cardiologista, Dermatologista, etc.)',
+        'Descontos em farmácias parceiras',
+        'Prescrição de receitas, exames e atestados médicos',
+        '5% de desconto para pagamento antecipado',
+        'Aplicativo RACCA SAÚDE',
+        'Ativação em até 48 horas',
+        'Agendamento online',
+        'Suporte via WhatsApp',
+        'Acesso ao grupo CUIDAR CONECTADO',
       ],
     },
     {
       id: 706,
-      icon: <FaCrown />,
+      icon: <FaGem />,
       id_plano_sistema_racca: 706,
-      title: 'Premium Extra Plus',
+      title: 'RACCA Premium Extra Plus',
       amount: 189.9,
       prices: {
         fidelidade: 'R$ 189,90/mês c/ fidelidade 12 meses',
       },
       benefits: [
-        'Desconto em farmácias parceiras',
-        '5% de desconto p/ pagamento antecipado',
-        '1 sessão com especialista ao mês',
-        'Assistência Funeral Familiar de R$ 7.000,00',
-        'MA - Morte Acidental - Capital Segurado R$ 20.000,00',
-        'IPA - Invalidez por Acidente - Capital Segurado R$ 20.000,00',
-        'Reembolso de Medicamentos Genéricos Gratuitos até R$ 150,00',
-        'Especialistas Disponíveis: Cardiologista, Dermatologista, Endocrinologista, Geriatria, Ginecologista, Neurologista, Nutricionista, Ortopedista, Otorrinolaringologista, Pediatria, Traumatologia, Urologista.',
+        'Consultas ilimitadas com Clínico Geral',
+        '1 consulta mensal com especialista (Cardiologista, Dermatologista, etc.)',
+        '1 consulta com Psiquiatra (20 minutos)',
+        'Descontos em farmácias parceiras',
+        'Prescrição de receitas, exames e atestados médicos',
+        '5% de desconto para pagamento antecipado',
+        'Aplicativo RACCA SAÚDE',
+        'Ativação em até 48 horas',
+        'Agendamento online',
+        'Suporte via WhatsApp',
+        'Acesso ao grupo CUIDAR CONECTADO',
+        'Seguro: Morte Acidental (R$ 20.000,00)',
+        'Invalidez Permanente por Acidente (R$ 20.000,00)',
+        'Assistência Funeral Familiar',
+        'Auxílio Medicamentos Genéricos (até R$ 100,00/mês)',
+        'Clube de Vantagens',
+      ],
+    },
+    {
+      id: 707,
+      icon: <FaStar />,
+      id_plano_sistema_racca: 707,
+      title: 'Consulta com Psiquiatra',
+      amount: 100.0,
+      prices: {
+        mensal: 'R$ 100,00 (avulso) s/ fidelidade',
+      },
+      benefits: [
+        'Consulta avulsa com Psiquiatra (20 minutos)',
+        'Prescrição de receitas, exames e atestados médicos',
+        'Agendamento online',
+        'Suporte via WhatsApp',
       ],
     },
   ];
 
-  // Função para abrir o modal (definida antes do retorno)
-  const openModal = (plan) => {
-    setSelectedPlan(plan);
-    if (plan.prices.fidelidade && plan.prices.semFidelidade) {
+  // Funções de manipulação (mantidas iguais, apenas ajustando referências de "plan" para "product")
+  const openModal = (product) => {
+    setSelectedPlan(product);
+    if (product.prices.fidelidade && product.prices.semFidelidade) {
       setSelectedPriceOption('fidelidade');
-    } else if (plan.prices.fidelidade) {
+    } else if (product.prices.fidelidade) {
       setSelectedPriceOption('fidelidade');
-    } else if (plan.prices.semFidelidade) {
+    } else if (product.prices.semFidelidade) {
       setSelectedPriceOption('semFidelidade');
-    } else if (plan.prices.mensal) {
+    } else if (product.prices.mensal) {
       setSelectedPriceOption('mensal');
     }
     setIsModalOpen(true);
-    setStep(1); // Inicia na etapa 1 do checkout
+    setStep(1);
   };
 
-  // Função para fechar o modal e reiniciar os estados
   const closeModal = () => {
     setSelectedPlan(null);
     setIsModalOpen(false);
@@ -188,7 +181,6 @@ function Plans() {
     setStep(1);
   };
 
-  // Manipulação dos inputs
   const handleInputChange = (e, type) => {
     const { name, value } = e.target;
     if (type === 'payer') {
@@ -200,7 +192,6 @@ function Plans() {
     setPaymentMethod(method);
   };
 
-  // Avançar para a etapa 2 com validação dos campos obrigatórios da etapa 1
   const handleAdvance = () => {
     if (!isStep1Valid) {
       alert('Por favor, preencha todos os campos obrigatórios!');
@@ -209,7 +200,6 @@ function Plans() {
     setStep(2);
   };
 
-  // Tratamento do submit (processar pagamento) com validação dos campos obrigatórios da etapa 2
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isStep2Valid) {
@@ -221,14 +211,12 @@ function Plans() {
     getOrCreateCustomerPla();
   };
 
-  // Função para formatar os campos de endereço em uma única string
   const formatAddress = () => {
     const { cep, rua, numero, complemento, bairro, cidade, estado } = payerInfo;
     if (!cep && !rua && !numero && !bairro && !cidade && !estado) return "";
     return `${rua}, ${numero}${complemento ? ' - ' + complemento : ''}, ${bairro}, ${cidade} - ${estado}, CEP: ${cep}`;
   };
 
-  // Consulta o CEP via API ViaCEP e atualiza os campos de endereço
   const fetchAddressFromCEP = async () => {
     const cep = payerInfo.cep.replace(/\D/g, '');
     if (cep.length !== 8) return;
@@ -249,7 +237,6 @@ function Plans() {
     }
   };
 
-  // Funções para criar ou obter cliente e processar o pagamento
   const getOrCreateCustomerPla = async () => {
     setLoading(true);
     getOrCreateCustomer({
@@ -280,7 +267,7 @@ function Plans() {
       postalCode: payerInfo?.cep,
       addressNumber: payerInfo?.numero,
       complement: payerInfo?.complemento,
-      province:payerInfo?.bairro,
+      province: payerInfo?.bairro,
       onSuccess: (data) => {
         if (data.length > 0) {
           const id = data[0].id;
@@ -307,7 +294,7 @@ function Plans() {
       billingType: 'UNDEFINED',
       dueDate: new Date().toISOString().split("T")[0],
       value: priceValue,
-      description: `Pagamento do plano ${selectedPlan.title} (${selectedPriceOption})`,
+      description: `Pagamento do produto ${selectedPlan.title} (${selectedPriceOption})`,
       cpfCnpj: payerInfo?.cpfCnpj,
       name: payerInfo?.name,
       email: payerInfo?.email,
@@ -326,7 +313,6 @@ function Plans() {
     });
   };
 
-  // Validações para habilitar os botões
   const isStep1Valid =
     payerInfo.name &&
     payerInfo.email &&
@@ -346,33 +332,33 @@ function Plans() {
     <section className="plans-container">
       <h2 className="plans-title">Nossos Produtos</h2>
       <div className="plans-grid">
-        {plans.map((plan) => (
-          <div className="plan-card" key={plan.id}>
-            <div className="plan-icon">{plan.icon}</div>
-            <h3 className="plan-title">{plan.title}</h3>
+        {products.map((product) => (
+          <div className="plan-card" key={product.id}>
+            <div className="plan-icon">{product.icon}</div>
+            <h3 className="plan-title">{product.title}</h3>
             <div className="plan-price-container">
               <span className="original-price">
-                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(plan.originalAmount || (plan.amount * 1.5))}
+                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.amount * 1.5)}
               </span>
             </div>
             <p className="plan-price">
-              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(plan.amount)}
+              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.amount)}
               <span className="price-unit">/mês</span>
             </p>
             <ul className="plan-benefits">
-              {plan.benefits.map((benefit, index) => (
+              {product.benefits.map((benefit, index) => (
                 <li key={index}>{benefit}</li>
               ))}
             </ul>
             <div className="plan-price-details">
-              {plan.prices.fidelidade && (
-                <span className="price-detail">{plan.prices.fidelidade}</span>
+              {product.prices.fidelidade && (
+                <span className="price-detail">{product.prices.fidelidade}</span>
               )}
-              {plan.prices.semFidelidade && (
-                <span className="price-detail">{plan.prices.semFidelidade}</span>
+              {product.prices.mensal && (
+                <span className="price-detail">{product.prices.mensal}</span>
               )}
             </div>
-            <button onClick={() => openModal(plan)} className="plan-button">
+            <button onClick={() => openModal(product)} className="plan-button">
               Assine Agora
             </button>
           </div>
@@ -382,9 +368,9 @@ function Plans() {
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button onClick={closeModal} className="modal-close">
-              &times;
+              ×
             </button>
-            <h3>{`Pagamento para o plano ${selectedPlan.title}`}</h3>
+            <h3>{`Pagamento para o produto ${selectedPlan.title}`}</h3>
             {selectedPlan.prices.fidelidade && selectedPlan.prices.semFidelidade && (
               <div className="price-option-selector">
                 <label>
@@ -592,16 +578,14 @@ function Plans() {
                       onChange={(e) => handleInputChange(e, 'payer')}
                       required
                     />
-                  </div> 
+                  </div>
                   <div>
                     <button type="button" onClick={() => setStep(1)} className="back-button">
                       <FaArrowLeft title="Voltar" />
                       Voltar
                     </button>
-                    </div>
-                 
+                  </div>
                   <div className="form-group buttons-group">
-
                     <button type="submit" className="plan-button">
                       {loading ? 'Processando...' : 'Processar Pagamento'}
                     </button>
