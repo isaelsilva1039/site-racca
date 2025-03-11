@@ -1,0 +1,249 @@
+/* Reutilizando Variáveis do Plans.css */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+.nr1-container {
+  padding: 60px 20px;
+  text-align: center;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  margin: 0;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nr1-header {
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.back-button:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.nr1-title {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  color: var(--primary-color);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--light-text);
+}
+
+/* Layout de Conteúdo */
+.nr1-content {
+  display: flex;
+  gap: 30px;
+}
+
+/* Sidebar */
+.nr1-sidebar {
+  flex: 1;
+  background: var(--card-background);
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+}
+
+.nr1-sidebar h3 {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.nr1-topics {
+  list-style: none;
+  padding: 0;
+}
+
+.nr1-topics li {
+  margin-bottom: 10px;
+}
+
+.nr1-topics a {
+  color: var(--text-color);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.nr1-topics a:hover {
+  color: var(--primary-color);
+}
+
+/* Botão */
+.nr1-button {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease, transform 0.2s ease;
+  font-size: 1rem;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.nr1-button:hover {
+  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+  transform: scale(1.05);
+}
+
+/* Main Content */
+.nr1-main {
+  flex: 3;
+}
+
+.nr1-section {
+  background: var(--card-background);
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px var(--shadow-color);
+  margin-bottom: 30px;
+}
+
+.nr1-section h2 {
+  color: var(--primary-color);
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+}
+
+.nr1-section p {
+  font-size: 1rem;
+  color: var(--light-text);
+  line-height: 1.6;
+}
+
+.nr1-benefits {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+.nr1-benefits li {
+  padding: 8px 0;
+  color: var(--light-text);
+  font-size: 1rem;
+  position: relative;
+  padding-left: 30px;
+}
+
+.nr1-benefits li::before {
+  content: '✔️';
+  position: absolute;
+  left: 0;
+  color: var(--primary-color);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.nr1-section dl dt {
+  font-weight: bold;
+  margin-top: 15px;
+  color: var(--text-color);
+}
+
+.nr1-section dl dd {
+  margin-left: 20px;
+  color: var(--light-text);
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .nr1-title {
+    font-size: 2.2rem;
+  }
+
+  .nr1-section h2 {
+    font-size: 1.6rem;
+  }
+
+  .nr1-button {
+    padding: 13px 28px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .nr1-content {
+    flex-direction: column;
+  }
+
+  .nr1-sidebar {
+    position: static;
+  }
+
+  .nr1-title {
+    font-size: 2rem;
+    margin-bottom: 30px;
+  }
+
+  .nr1-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .nr1-button {
+    padding: 12px 25px;
+    font-size: 0.95rem;
+  }
+
+  .back-button {
+    position: static;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .nr1-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+
+  .nr1-section h2 {
+    font-size: 1.3rem;
+  }
+
+  .nr1-benefits li {
+    font-size: 0.85rem;
+    padding-left: 20px;
+  }
+
+  .nr1-button {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  .back-button {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+}

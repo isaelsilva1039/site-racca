@@ -1,5 +1,6 @@
 import './Header.css';
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom'; // Importe o Link para navegação interna
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false); // Estado para o menu hambúrguer
@@ -111,7 +112,7 @@ function Header() {
           {paraEmpresasOpen && (
             <div className="dropdown-menu">
               <a href="#plano-odontologico" className="dropdown-item">Plano Odontológico</a>
-              <a href="#saude-mental-nr1" className="dropdown-item">Saúde Mental – NR1</a>
+              <Link to="/nr1" className="dropdown-item">Saúde Mental – NR1</Link> {/* Atualizado para Link */}
               <a href="#telemedicina" className="dropdown-item">Telemedicina</a>
               <a href="#terapia-online" className="dropdown-item">Terapia Online</a>
             </div>

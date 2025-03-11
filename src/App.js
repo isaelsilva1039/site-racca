@@ -18,6 +18,7 @@ import ServicesSection from './pages/NossosServicos';
 import TestimonialsSection from './pages/Depoimentos';
 import AboutRacca from './pages/Racca';
 import MissionVisionValues from './pages/Missao';
+import NR1 from './pages/Nr1/Nr1'; // Certifique-se de que o caminho está correto
 
 const MainContainer = styled.div`
   display: flex;
@@ -56,23 +57,21 @@ function App() {
                   <Home />
                 </Section>
                 <Section id="services">
-                  <ServicesSection/>
+                  <ServicesSection />
                 </Section>
                 <BenefitsSection />
                 <Section id="depoimentos">
-                  <TestimonialsSection/>
+                  <TestimonialsSection />
                 </Section>
                 <Section id="missao-visao-valores">
-                  <MissionVisionValues/>
+                  <MissionVisionValues />
                 </Section>
                 <Section id="grupo-racca">
-                  <AboutRacca/>
+                  <AboutRacca />
                 </Section>
-             
                 <Section id="benefits">
                   <Benefits />
                 </Section>
-                
                 <Section id="plans">
                   <Plans />
                 </Section>
@@ -86,8 +85,7 @@ function App() {
           <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
           <Route path="/termos-de-uso" element={<TermosDeUso />} />
           <Route path="/politica-de-reembolso" element={<PoliticaDeReembolso />} />
-
-          {/* Outras rotas podem ser adicionadas aqui */}
+          <Route path="/nr1" element={<NR1 />} /> {/* Nova rota para NR-1 */}
         </Routes>
         <FAQModal isOpen={isModalOpen} onClose={handleCloseModal} />
       </MainContainer>
