@@ -81,9 +81,9 @@ function Header() {
           Para Você
           {paraVoceOpen && (
             <div className="dropdown-menu">
-              <Link to="/cuidar-conectado" className="dropdown-item">Cuidar Conectado</Link> {/* Alterado para Link */}
+              <Link to="/cuidar-conectado" className="dropdown-item">Cuidar Conectado</Link>
               <a href="#especialidades" className="dropdown-item">Especialidades</a>
-              <a href="#seguros-pessoais" className="dropdown-item">Seguros Pessoais</a>
+              <Link to="/seguros-pessoais" className="dropdown-item">Seguros Pessoais</Link> {/* Novo link */}
               <a href="#telemedicina" className="dropdown-item">Telemedicina</a>
               <a href="#terapia-online" className="dropdown-item">Terapia Online</a>
             </div>
@@ -111,7 +111,7 @@ function Header() {
               <div className="dropdown-item" onClick={handleImageOptionsClick}>Consulta Clínica</div>
               <div className="dropdown-item" onClick={handleImageOptionsClick}>Financeiro</div>
               <div className="dropdown-item" onClick={handleImageOptionsClick}>Ouvidoria</div>
-              <Link to="/cuidar-conectado" className="dropdown-item">Programa Cuidar Conectado</Link> {/* Alterado para Link */}
+              <Link to="/cuidar-conectado" className="dropdown-item">Programa Cuidar Conectado</Link>
             </div>
           )}
         </div>

@@ -19,7 +19,8 @@ import TestimonialsSection from './pages/Depoimentos';
 import AboutRacca from './pages/Racca';
 import MissionVisionValues from './pages/Missao';
 import NR1 from './pages/Nr1/Nr1';
-import CuidarConectado from './pages/CuidarConectado'; // Nova página
+import CuidarConectado from './pages/CuidarConectado';
+import SegurosPessoais from './pages/SegurosPessoais'; // Novo import
 
 const MainContainer = styled.div`
   display: flex;
@@ -48,7 +49,7 @@ function App() {
   return (
     <Router>
       <MainContainer>
-        <Header /> {/* Removida a prop onOpenCuidarConectado, pois não é mais necessária */}
+        <Header />
         <Routes>
           <Route
             path="/"
@@ -87,7 +88,8 @@ function App() {
           <Route path="/termos-de-uso" element={<TermosDeUso />} />
           <Route path="/politica-de-reembolso" element={<PoliticaDeReembolso />} />
           <Route path="/nr1" element={<NR1 />} />
-          <Route path="/cuidar-conectado" element={<CuidarConectado />} /> {/* Nova rota */}
+          <Route path="/cuidar-conectado" element={<CuidarConectado />} />
+          <Route path="/seguros-pessoais" element={<SegurosPessoais />} /> {/* Nova rota */}
         </Routes>
         <FAQModal isOpen={isFAQModalOpen} onClose={handleCloseFAQModal} />
       </MainContainer>
