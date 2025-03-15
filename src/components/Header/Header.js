@@ -1,11 +1,10 @@
 import './Header.css';
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom'; // Importe o Link para navegação interna
+import { Link } from 'react-router-dom';
 
 function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Estado para o menu hambúrguer
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [raccaOpen, setRaccaOpen] = useState(false);
-  const [beneficiosOpen, setBeneficiosOpen] = useState(false);
   const [paraVoceOpen, setParaVoceOpen] = useState(false);
   const [paraEmpresasOpen, setParaEmpresasOpen] = useState(false);
   const [souPacienteOpen, setSouPacienteOpen] = useState(false);
@@ -33,17 +32,15 @@ function Header() {
     window.open('https://wa.me/5537999137500', '_blank');
   };
 
-  // Fechar dropdowns e menu ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (navRef.current && !navRef.current.contains(event.target)) {
         setRaccaOpen(false);
-        setBeneficiosOpen(false);
         setParaVoceOpen(false);
         setParaEmpresasOpen(false);
         setSouPacienteOpen(false);
         setSejaParceiroOpen(false);
-        setIsMenuOpen(false); // Fecha o menu hambúrguer também
+        setIsMenuOpen(false);
       }
     };
 
@@ -59,9 +56,8 @@ function Header() {
         <img src="/img/logo-racca.png" alt="Racca Saúde Logo" className="racca-logo" />
       </div>
 
-      {/* Botão Hambúrguer */}
       <button className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-        {isMenuOpen ? '✖' : '☰'} {/* Ícone de abrir/fechar */}
+        {isMenuOpen ? '✖' : '☰'}
       </button>
 
       <nav className={`nav-container ${isMenuOpen ? 'open' : ''}`} ref={navRef}>
@@ -74,31 +70,18 @@ function Header() {
               <a href="#missao-visao-valores" className="dropdown-item">Missão, Visão e Valores</a>
               <a href="#grupo-racca" className="dropdown-item">O Grupo RACCA</a>
               <a href="#depoimentos" className="dropdown-item">Depoimentos</a>
-              <a href="#politica-privacidade" className="dropdown-item">Política de Privacidade</a>
+              <Link to="/politica-de-privacidade" className="dropdown-item">Política de Privacidade</Link>
             </div>
           )}
         </div>
 
-        <div className="nav-link dropdown" onClick={() => setBeneficiosOpen(!beneficiosOpen)}>
-          Benefícios
-          {beneficiosOpen && (
-            <div className="dropdown-menu">
-              <a href="#terapia-online" className="dropdown-item">Terapia Online</a>
-              <a href="#telemedicina" className="dropdown-item">Telemedicina</a>
-              <a href="#acessibilidade-conveniencia" className="dropdown-item">Acessibilidade e Conveniência</a>
-              <a href="#custo-beneficio" className="dropdown-item">Custo-benefício</a>
-              <a href="#privacidade-conforto" className="dropdown-item">Privacidade e Conforto</a>
-              <a href="#continuidade-tratamento" className="dropdown-item">Continuidade do Tratamento</a>
-              <a href="#tecnologia-personalizacao" className="dropdown-item">Tecnologia e Personalização</a>
-            </div>
-          )}
-        </div>
+        <a href="#benefits" className="nav-link">Benefícios</a>
 
         <div className="nav-link dropdown" onClick={() => setParaVoceOpen(!paraVoceOpen)}>
           Para Você
           {paraVoceOpen && (
             <div className="dropdown-menu">
-              <a href="#cuidar-conectado" className="dropdown-item">Cuidar Conectado</a>
+              <Link to="/cuidar-conectado" className="dropdown-item">Cuidar Conectado</Link> {/* Alterado para Link */}
               <a href="#especialidades" className="dropdown-item">Especialidades</a>
               <a href="#seguros-pessoais" className="dropdown-item">Seguros Pessoais</a>
               <a href="#telemedicina" className="dropdown-item">Telemedicina</a>
@@ -112,7 +95,7 @@ function Header() {
           {paraEmpresasOpen && (
             <div className="dropdown-menu">
               <a href="#plano-odontologico" className="dropdown-item">Plano Odontológico</a>
-              <Link to="/nr1" className="dropdown-item">Saúde Mental – NR1</Link> {/* Atualizado para Link */}
+              <Link to="/nr1" className="dropdown-item">Saúde Mental – NR1</Link>
               <a href="#telemedicina" className="dropdown-item">Telemedicina</a>
               <a href="#terapia-online" className="dropdown-item">Terapia Online</a>
             </div>
@@ -128,7 +111,7 @@ function Header() {
               <div className="dropdown-item" onClick={handleImageOptionsClick}>Consulta Clínica</div>
               <div className="dropdown-item" onClick={handleImageOptionsClick}>Financeiro</div>
               <div className="dropdown-item" onClick={handleImageOptionsClick}>Ouvidoria</div>
-              <div className="dropdown-item" onClick={handleImageOptionsClick}>Programa Cuidar Conectado</div>
+              <Link to="/cuidar-conectado" className="dropdown-item">Programa Cuidar Conectado</Link> {/* Alterado para Link */}
             </div>
           )}
         </div>

@@ -18,13 +18,14 @@ import ServicesSection from './pages/NossosServicos';
 import TestimonialsSection from './pages/Depoimentos';
 import AboutRacca from './pages/Racca';
 import MissionVisionValues from './pages/Missao';
-import NR1 from './pages/Nr1/Nr1'; // Certifique-se de que o caminho está correto
+import NR1 from './pages/Nr1/Nr1';
+import CuidarConectado from './pages/CuidarConectado'; // Nova página
 
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  scroll-behavior: smooth; /* Adiciona a rolagem suave */
+  scroll-behavior: smooth;
 `;
 
 const Section = styled.section`
@@ -32,22 +33,22 @@ const Section = styled.section`
 `;
 
 function App() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFAQModalOpen, setIsFAQModalOpen] = useState(false);
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-    console.log('Modal aberta');
+  const handleOpenFAQModal = () => {
+    setIsFAQModalOpen(true);
+    console.log('Modal FAQ aberta');
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    console.log('Modal fechada');
+  const handleCloseFAQModal = () => {
+    setIsFAQModalOpen(false);
+    console.log('Modal FAQ fechada');
   };
 
   return (
     <Router>
       <MainContainer>
-        <Header />
+        <Header /> {/* Removida a prop onOpenCuidarConectado, pois não é mais necessária */}
         <Routes>
           <Route
             path="/"
@@ -75,7 +76,7 @@ function App() {
                 <Section id="plans">
                   <Plans />
                 </Section>
-                <LegalLinks onFAQClick={handleOpenModal} />
+                <LegalLinks onFAQClick={handleOpenFAQModal} />
                 <Footer />
                 <WhatsAppButton />
                 <FloatingVideo />
@@ -85,9 +86,10 @@ function App() {
           <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
           <Route path="/termos-de-uso" element={<TermosDeUso />} />
           <Route path="/politica-de-reembolso" element={<PoliticaDeReembolso />} />
-          <Route path="/nr1" element={<NR1 />} /> {/* Nova rota para NR-1 */}
+          <Route path="/nr1" element={<NR1 />} />
+          <Route path="/cuidar-conectado" element={<CuidarConectado />} /> {/* Nova rota */}
         </Routes>
-        <FAQModal isOpen={isModalOpen} onClose={handleCloseModal} />
+        <FAQModal isOpen={isFAQModalOpen} onClose={handleCloseFAQModal} />
       </MainContainer>
     </Router>
   );
