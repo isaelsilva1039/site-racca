@@ -20,7 +20,8 @@ import AboutRacca from './pages/Racca';
 import MissionVisionValues from './pages/Missao';
 import NR1 from './pages/Nr1/Nr1';
 import CuidarConectado from './pages/CuidarConectado';
-import SegurosPessoais from './pages/SegurosPessoais'; // Novo import
+import SegurosPessoais from './pages/SegurosPessoais';
+import Especialidades from './pages/Especialidades'; // Novo import
 
 const MainContainer = styled.div`
   display: flex;
@@ -89,7 +90,8 @@ function App() {
           <Route path="/politica-de-reembolso" element={<PoliticaDeReembolso />} />
           <Route path="/nr1" element={<NR1 />} />
           <Route path="/cuidar-conectado" element={<CuidarConectado />} />
-          <Route path="/seguros-pessoais" element={<SegurosPessoais />} /> {/* Nova rota */}
+          <Route path="/seguros-pessoais" element={<SegurosPessoais />} />
+          <Route path="/especialidades" element={<Especialidades />} /> {/* Nova rota */}
         </Routes>
         <FAQModal isOpen={isFAQModalOpen} onClose={handleCloseFAQModal} />
       </MainContainer>

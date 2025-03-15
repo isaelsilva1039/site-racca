@@ -61,7 +61,7 @@ function Header() {
       </button>
 
       <nav className={`nav-container ${isMenuOpen ? 'open' : ''}`} ref={navRef}>
-        <a href="#home" className="nav-link">Início</a>
+        <Link to="/" className="nav-link">Início</Link> {/* Atualizado para Link */}
 
         <div className="nav-link dropdown" onClick={() => setRaccaOpen(!raccaOpen)}>
           Racca Saúde
@@ -82,8 +82,8 @@ function Header() {
           {paraVoceOpen && (
             <div className="dropdown-menu">
               <Link to="/cuidar-conectado" className="dropdown-item">Cuidar Conectado</Link>
-              <a href="#especialidades" className="dropdown-item">Especialidades</a>
-              <Link to="/seguros-pessoais" className="dropdown-item">Seguros Pessoais</Link> {/* Novo link */}
+              <Link to="/especialidades" className="dropdown-item">Especialidades</Link> {/* Atualizado para Link */}
+              <Link to="/seguros-pessoais" className="dropdown-item">Seguros Pessoais</Link>
               <a href="#telemedicina" className="dropdown-item">Telemedicina</a>
               <a href="#terapia-online" className="dropdown-item">Terapia Online</a>
             </div>
@@ -118,6 +118,11 @@ function Header() {
 
         <div className="nav-link dropdown" onClick={() => setSejaParceiroOpen(!sejaParceiroOpen)}>
           Seja Parceiro
+          {sejaParceiroOpen && (
+            <div className="dropdown-menu">
+              {/* Adicione itens aqui se necessário */}
+            </div>
+          )}
         </div>
 
         <a href="#blog" className="nav-link" onClick={handleBlogClick}>Blog</a>
