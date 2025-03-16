@@ -61,7 +61,7 @@ function Header() {
       </button>
 
       <nav className={`nav-container ${isMenuOpen ? 'open' : ''}`} ref={navRef}>
-        <Link to="/" className="nav-link">Início</Link> {/* Atualizado para Link */}
+        <Link to="/" className="nav-link">Início</Link>
 
         <div className="nav-link dropdown" onClick={() => setRaccaOpen(!raccaOpen)}>
           Racca Saúde
@@ -82,10 +82,10 @@ function Header() {
           {paraVoceOpen && (
             <div className="dropdown-menu">
               <Link to="/cuidar-conectado" className="dropdown-item">Cuidar Conectado</Link>
-              <Link to="/especialidades" className="dropdown-item">Especialidades</Link> {/* Atualizado para Link */}
+              <Link to="/especialidades" className="dropdown-item">Especialidades</Link>
               <Link to="/seguros-pessoais" className="dropdown-item">Seguros Pessoais</Link>
-              <a href="#telemedicina" className="dropdown-item">Telemedicina</a>
-              <a href="#terapia-online" className="dropdown-item">Terapia Online</a>
+              <a href="#plans" className="dropdown-item">Telemedicina</a> {/* Atualizado para #plans */}
+              <a href="#plans" className="dropdown-item">Terapia Online</a>
             </div>
           )}
         </div>
@@ -94,7 +94,7 @@ function Header() {
           Para Empresas
           {paraEmpresasOpen && (
             <div className="dropdown-menu">
-              <a href="#plano-odontologico" className="dropdown-item">Plano Odontológico</a>
+              <a href="/plano-odonto-empresarial" className="dropdown-item">Plano Odontológico</a>
               <Link to="/nr1" className="dropdown-item">Saúde Mental – NR1</Link>
               <a href="#telemedicina" className="dropdown-item">Telemedicina</a>
               <a href="#terapia-online" className="dropdown-item">Terapia Online</a>
