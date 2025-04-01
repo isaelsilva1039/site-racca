@@ -23,6 +23,7 @@ import CuidarConectado from './pages/CuidarConectado';
 import SegurosPessoais from './pages/SegurosPessoais';
 import Especialidades from './pages/Especialidades';
 import PlanoOdontoEmpresarial from './pages/PlanoOdontoEmpresarial'; // Novo import
+import ConsultaAvulsa from './pages/ConsultaAvulsa';
 
 const MainContainer = styled.div`
   display: flex;
@@ -62,6 +63,9 @@ function App() {
                 </Section>
                 <Section id="services">
                   <ServicesSection />
+                </Section>
+                <Section id="consultaavulsa">
+                  <ConsultaAvulsa />
                 </Section>
                 <BenefitsSection />
                 <Section id="depoimentos">
