@@ -3,21 +3,23 @@
 
 /* =========== HEADER FIXO NO TOPO =========== */
 .header-container {
-  position: fixed;       /* Fica “colado” no topo ao rolar */
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;           /* Ocupa toda a largura */
-  height: 60px;          /* Altura fixa para facilitar centralização */
+  width: 100%;
+  height: 60px;
   background-color: #ffffff;
-  z-index: 9999;         /* Fica acima do restante do conteúdo */
+  z-index: 9999;
   padding: 5px;
   font-family: 'Roboto', sans-serif;
-  box-sizing: border-box; /* Garante que padding não gere overflow */
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
 }
 
 /* LOGO na lateral esquerda (DESKTOP) */
 .logo-container {
-  position: absolute;    /* Posiciona dentro do header fixo */
+  position: absolute;
   left: 20px;
   top: 50%;
   transform: translateY(-50%);
@@ -37,12 +39,8 @@
   display: flex;
   align-items: center;
   gap: 15px;
-
-  /* FORÇA UMA ÚNICA LINHA NO DESKTOP */
   flex-wrap: nowrap;
   white-space: nowrap;
-  /* Se o menu for muito grande e quiser rolagem horizontal no desktop:
-     overflow-x: auto; */
 }
 
 /* LINKS do MENU */
@@ -94,7 +92,7 @@
 
 /* =========== DROPDOWN MENU =========== */
 .dropdown-menu {
-  position: absolute; 
+  position: absolute;
   top: 100%;
   left: 0;
   background-color: #ffffff;
@@ -109,7 +107,6 @@
   transition: opacity 0.3s ease;
 }
 
-/* Ao passar mouse no pai .dropdown, mostra submenu */
 .nav-link.dropdown:hover .dropdown-menu,
 .nav-link.dropdown:focus .dropdown-menu {
   opacity: 1;
@@ -130,9 +127,9 @@
 
 /* =========== BOTÃO HAMBÚRGUER (Mobile) =========== */
 .hamburger {
-  display: none; 
+  display: none;
   position: absolute;
-  right: 20px;     /* Fixa no canto direito */
+  right: 20px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -143,9 +140,140 @@
   padding: 5px;
 }
 
+/* =========== AVATAR DE PERFIL (DESKTOP) =========== */
+.profile-container {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.profile-icon {
+  font-size: 2rem;
+  color: #a007f2;
+  transition: color 0.3s ease;
+}
+
+.profile-icon:hover {
+  color: #8e24aa;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 150px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+
+.profile-container:hover .profile-dropdown,
+.profile-container:focus .profile-dropdown {
+  opacity: 1;
+  visibility: visible;
+}
+
+.profile-dropdown .dropdown-item {
+  padding: 10px 15px;
+  color: #a007f2;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+}
+
+.profile-dropdown .dropdown-item:hover {
+  background-color: #f5f5f5;
+  color: #8e24aa;
+}
+
+/* =========== MODAL DE LOGIN =========== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #a007f2;
+  cursor: pointer;
+}
+
+.modal-content h2 {
+  color: #a007f2;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.modal-input-group {
+  margin-bottom: 15px;
+}
+
+.modal-input-group label {
+  display: block;
+  color: #333;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.modal-input-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.modal-login-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #a007f2;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.modal-login-button:hover {
+  background-color: #8e24aa;
+}
+
 /* =========== RESPONSIVIDADE (MAX 768PX) =========== */
 @media (max-width: 768px) {
-  /* Header vira flex para posicionar logo e hambúrguer */
   .header-container {
     position: fixed;
     height: auto;
@@ -155,28 +283,25 @@
     padding: 10px 20px;
   }
 
-  /* Logo volta ao fluxo normal e sem margem que gere overflow */
   .logo-container {
     position: static;
     transform: none;
-    margin: 0; /* Removido margin-left grande */
+    margin: 0;
   }
 
-  /* Mostra o hambúrguer no mobile (sem margem excessiva) */
   .hamburger {
     display: block;
     position: static;
     transform: none;
-    margin: 0; /* Removido margin-right grande */
+    margin: 0;
   }
 
-  /* Esconde o menu em linha por padrão no mobile */
   .nav-container {
     position: absolute;
-    top: 60px; /* abaixo do header fixo */
+    top: 60px;
     left: 0;
     transform: none;
-    display: none; 
+    display: none;
     flex-direction: column;
     width: 100%;
     background-color: #ffffff;
@@ -184,25 +309,20 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     align-items: flex-start;
     z-index: 9999;
-
-    /* Permite quebrar linha no mobile e evita scroll horizontal */
     flex-wrap: wrap;
     white-space: normal;
   }
 
-  /* Mostra o menu ao abrir (classe "open") */
   .nav-container.open {
     display: flex;
   }
 
-  /* Links ocupam a largura toda no mobile */
   .nav-link {
     font-size: 16px;
     padding: 10px 20px;
     text-align: left;
   }
 
-  /* Dropdown no mobile (estático, sem hover) */
   .dropdown-menu {
     position: static;
     width: 100%;
@@ -213,11 +333,50 @@
     visibility: visible;
   }
 
-  /* Botão "Agende Agora" no mobile */
   .agende-agora {
     margin-top: 15px;
     width: 80%;
     margin-left: 10%;
     text-align: center;
+  }
+
+  .profile-container {
+    position: static;
+    margin-left: auto;
+  }
+
+  .profile-icon {
+    font-size: 1.5rem;
+  }
+
+  .profile-dropdown {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    min-width: 120px;
+    opacity: 1;
+    visibility: visible;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .profile-container:hover .profile-dropdown,
+  .profile-container:focus .profile-dropdown {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 15px;
+  }
+
+  .modal-content h2 {
+    font-size: 1.2rem;
+  }
+
+  .modal-login-button {
+    font-size: 14px;
+    padding: 8px;
   }
 }

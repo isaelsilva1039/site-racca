@@ -98,15 +98,15 @@ const PsicologoCard = styled.div`
   color: #333;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   text-align: left;
-  min-width: 400px; /* Aumentado para cards mais largos */
+  min-width: 400px;
   max-width: 400px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   animation: ${fadeInUp} 1s ease-out ${({ delay }) => delay || '0s'} forwards;
-  border: 1px solid rgba(161, 0, 255, 0.2);
   background: linear-gradient(145deg, #ffffff, #f0f0f5);
+  border: 2px solid ${({ classificacao }) => (classificacao === 'Ouro' ? '#FFD700' : '#C0C0C0')};
 
   &:hover {
-    transform: translateY(-5px); /* Efeito de elevação mais sutil */
+    transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
   }
 `;
@@ -433,6 +433,7 @@ const ConsultaAvulsa = () => {
           6: ['09:00', '11:00'],
         },
       },
+      classificacao: 'Ouro',
     },
     {
       id: 2,
@@ -454,6 +455,7 @@ const ConsultaAvulsa = () => {
           8: ['09:00', '13:00'],
         },
       },
+      classificacao: 'Prata',
     },
     {
       id: 3,
@@ -475,6 +477,7 @@ const ConsultaAvulsa = () => {
           10: ['09:00', '15:00'],
         },
       },
+      classificacao: 'Ouro',
     },
     {
       id: 4,
@@ -496,6 +499,7 @@ const ConsultaAvulsa = () => {
           12: ['09:00', '15:00'],
         },
       },
+      classificacao: 'Prata',
     },
     {
       id: 5,
@@ -517,6 +521,7 @@ const ConsultaAvulsa = () => {
           14: ['09:00', '15:00'],
         },
       },
+      classificacao: 'Ouro',
     },
     {
       id: 6,
@@ -538,6 +543,7 @@ const ConsultaAvulsa = () => {
           16: ['09:00', '15:00'],
         },
       },
+      classificacao: 'Prata',
     },
     {
       id: 7,
@@ -559,6 +565,7 @@ const ConsultaAvulsa = () => {
           18: ['09:00', '15:00'],
         },
       },
+      classificacao: 'Prata',
     },
     {
       id: 8,
@@ -580,6 +587,7 @@ const ConsultaAvulsa = () => {
           20: ['09:00', '15:00'],
         },
       },
+      classificacao: 'Ouro',
     },
     {
       id: 9,
@@ -601,6 +609,7 @@ const ConsultaAvulsa = () => {
           22: ['09:00', '15:00'],
         },
       },
+      classificacao: 'Prata',
     },
     {
       id: 10,
@@ -622,6 +631,7 @@ const ConsultaAvulsa = () => {
           24: ['09:00', '15:00'],
         },
       },
+      classificacao: 'Prata',
     },
   ];
 
@@ -662,11 +672,17 @@ const ConsultaAvulsa = () => {
     : [];
 
   const handleConsultarClick = (psicologo) => {
-    setSelectedPsicologo(psicologo);
-    setSelectedDia(null);
-    setSelectedHorario(null);
-    setMesAtual(4); // Reseta para abril ao abrir o modal
-    setAnoAtual(2025);
+    if (psicologo.classificacao === 'Prata') {
+      const mensagem = `Olá, gostaria de agendar uma consulta com o psicólogo ${psicologo.nome} (CRP: ${psicologo.crp}).`;
+      const url = `https://wa.me/5537999137500?text=${encodeURIComponent(mensagem)}`;
+      window.open(url, '_blank');
+    } else {
+      setSelectedPsicologo(psicologo);
+      setSelectedDia(null);
+      setSelectedHorario(null);
+      setMesAtual(4);
+      setAnoAtual(2025);
+    }
   };
 
   const handleDiaClick = (dia) => {
@@ -681,10 +697,10 @@ const ConsultaAvulsa = () => {
   };
 
   const handleConfirmar = () => {
-    if (selectedDia && selectedHorario) {
-      alert(
-        `Agendamento confirmado com ${selectedPsicologo.nome} no dia ${selectedDia} de ${meses[mesAtual - 1]} de ${anoAtual} às ${selectedHorario}!`
-      );
+    if (selectedDia && selectedHorario && selectedPsicologo.classificacao === 'Ouro') {
+      const mensagem = `Olá, gostaria de agendar uma consulta com o psicólogo ${selectedPsicologo.nome} (CRP: ${selectedPsicologo.crp}) no dia ${selectedDia} de ${meses[mesAtual - 1]} de ${anoAtual} às ${selectedHorario}.`;
+      const url = `https://wa.me/5537999137500?text=${encodeURIComponent(mensagem)}`;
+      window.open(url, '_blank');
       setSelectedPsicologo(null);
     }
   };
@@ -736,7 +752,11 @@ const ConsultaAvulsa = () => {
       </FiltroContainer>
       <PsicologoGrid>
         {psicologosFiltrados.map((psicologo, index) => (
-          <PsicologoCard key={psicologo.id} delay={`${0.2 * (index + 1)}s`}>
+          <PsicologoCard
+            key={psicologo.id}
+            delay={`${0.2 * (index + 1)}s`}
+            classificacao={psicologo.classificacao}
+          >
             <PsicologoHeader>
               <PsicologoFoto>
                 <FaUserCircle />
@@ -773,7 +793,7 @@ const ConsultaAvulsa = () => {
         ))}
       </PsicologoGrid>
 
-      {selectedPsicologo && (
+      {selectedPsicologo && selectedPsicologo.classificacao === 'Ouro' && (
         <ModalOverlay>
           <ModalContent>
             <CloseButton onClick={() => setSelectedPsicologo(null)}>

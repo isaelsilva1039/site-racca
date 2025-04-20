@@ -22,8 +22,9 @@ import NR1 from './pages/Nr1/Nr1';
 import CuidarConectado from './pages/CuidarConectado';
 import SegurosPessoais from './pages/SegurosPessoais';
 import Especialidades from './pages/Especialidades';
-import PlanoOdontoEmpresarial from './pages/PlanoOdontoEmpresarial'; // Novo import
+import PlanoOdontoEmpresarial from './pages/PlanoOdontoEmpresarial';
 import ConsultaAvulsa from './pages/ConsultaAvulsa';
+import AdminPage from './pages/AdminPage'; // Novo import
 
 const MainContainer = styled.div`
   display: flex;
@@ -97,7 +98,8 @@ function App() {
           <Route path="/cuidar-conectado" element={<CuidarConectado />} />
           <Route path="/seguros-pessoais" element={<SegurosPessoais />} />
           <Route path="/especialidades" element={<Especialidades />} />
-          <Route path="/plano-odonto-empresarial" element={<PlanoOdontoEmpresarial />} /> {/* Nova rota */}
+          <Route path="/plano-odonto-empresarial" element={<PlanoOdontoEmpresarial />} />
+          <Route path="/admin" element={<AdminPage />} /> {/* Nova rota */}
         </Routes>
         <FAQModal isOpen={isFAQModalOpen} onClose={handleCloseFAQModal} />
       </MainContainer>
