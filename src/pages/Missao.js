@@ -176,21 +176,20 @@ const Card = styled.div`
   ul {
     list-style: none;
     padding: 0;
+    text-align: left; /* Alinha o texto à esquerda para melhor consistência */
 
     li {
-      margin-bottom: 6px;
+      margin-bottom: 12px;
       display: flex;
-      align-items: center;
+      align-items: flex-start; /* Alinha o conteúdo no topo */
       position: relative;
 
       @media (max-width: 768px) {
-        margin-left: 0;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
       }
 
       @media (max-width: 480px) {
-        margin-left: 0;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
       }
     }
   }
@@ -200,22 +199,59 @@ const Card = styled.div`
     color: #a100ff;
     font-weight: bold;
     margin-right: 10px;
-    position: relative;
     display: inline-block;
+    width: 150px; /* Define uma largura fixa para alinhar uniformemente */
+    text-align: left; /* Alinha à direita para consistência */
+
+    @media (max-width: 768px) {
+      font-size: 1.2rem;
+      width: 90px;
+      margin-right: 8px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1rem;
+      width: 80px;
+      margin-right: 6px;
+    }
   }
 
   ul li .first-word .first-letter {
-    font-size: 3.2rem;
+    font-size: 2.4rem; /* Reduzido para melhor proporção */
     display: inline-block;
     line-height: 1;
+
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1.8rem;
+    }
+  }
+
+  ul li .description {
+    flex: 1; /* O texto de descrição ocupa o espaço restante */
+    font-size: 1.4rem;
+    color: #555;
+    line-height: 1.6;
+
+    @media (max-width: 768px) {
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 0.85rem;
+    }
   }
 
   /* Ajuste de altura dinâmica para Visão e Missão no mobile */
   &:nth-of-type(1),
   &:nth-of-type(2) {
     @media (max-width: 768px) {
-      min-height: auto; /* Altura dinâmica para Visão e Missão */
-      padding: 20px; /* Reduz padding para economizar espaço */
+      min-height: auto;
+      padding: 20px;
     }
 
     @media (max-width: 480px) {
@@ -226,7 +262,7 @@ const Card = styled.div`
   /* Mantém um min-height para Valores, que tem mais conteúdo */
   &:nth-of-type(3) {
     @media (max-width: 768px) {
-      min-height: 300px; /* Um pouco menor que o original, mas suficiente para o conteúdo */
+      min-height: 300px;
       padding: 20px;
     }
 
@@ -272,36 +308,41 @@ function MissionVisionValues() {
               <span className="first-word">
                 <span className="first-letter">R</span>espeito
               </span>
-              – Garantimos que cada pessoa seja tratada com respeito, ética e
-              empatia, promovendo um atendimento humanizado e digno.
+              <span className="description">
+                – Garantimos que cada pessoa seja tratada com respeito, ética e empatia, promovendo um atendimento humanizado e digno.
+              </span>
             </li>
             <li>
               <span className="first-word">
                 <span className="first-letter">A</span>mor
               </span>
-              – Trabalhamos com dedicação e compromisso, pois acreditamos que a
-              saúde deve ser cuidada com amor e responsabilidade.
+              <span className="description">
+                – Trabalhamos com dedicação e compromisso, pois acreditamos que a saúde deve ser cuidada com amor e responsabilidade.
+              </span>
             </li>
             <li>
               <span className="first-word">
                 <span className="first-letter">C</span>uidado
               </span>
-              – Utilizamos inovação e tecnologia para oferecer um cuidado
-              contínuo, acessível e eficiente a cada paciente.
+              <span className="description">
+                – Utilizamos inovação e tecnologia para oferecer um cuidado contínuo, acessível e eficiente a cada paciente.
+              </span>
             </li>
             <li>
               <span className="first-word">
                 <span className="first-letter">C</span>arinho
               </span>
-              – Acolhemos cada pessoa com carinho, proporcionando conforto,
-              segurança e um atendimento humanizado.
+              <span className="description">
+                – Acolhemos cada pessoa com carinho, proporcionando conforto, segurança e um atendimento humanizado.
+              </span>
             </li>
             <li>
               <span className="first-word">
                 <span className="first-letter">A</span>tenção
               </span>
-              – Ouvimos e acompanhamos cada paciente com atenção, priorizando um
-              serviço próximo, empático e eficaz.
+              <span className="description">
+                – Ouvimos e acompanhamos cada paciente com atenção, priorizando um serviço próximo, empático e eficaz.
+              </span>
             </li>
           </ul>
         </Card>

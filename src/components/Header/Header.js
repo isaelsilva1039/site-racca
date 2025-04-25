@@ -17,38 +17,38 @@ function Header() {
   const navRef = useRef(null);
 
   const handleAgendamentoClick = () => {
-    setIsMenuOpen(false); // Close the menu
+    setIsMenuOpen(false);
     window.open('https://app.racca.store/login', '_blank');
   };
 
   const handleAtendimentoClick = () => {
-    setIsMenuOpen(false); // Close the menu
+    setIsMenuOpen(false);
     window.open('https://wa.me/5537999137500', '_blank');
   };
 
   const handleBlogClick = () => {
-    setIsMenuOpen(false); // Close the menu
+    setIsMenuOpen(false);
     window.open('https://raccasaude.blogspot.com/', '_blank');
   };
 
   const handleContatoClick = () => {
-    setIsMenuOpen(false); // Close the menu
+    setIsMenuOpen(false);
     window.open('https://wa.me/5537999137500', '_blank');
   };
 
   const handleImageOptionsClick = () => {
-    setIsMenuOpen(false); // Close the menu
+    setIsMenuOpen(false);
     window.open('https://wa.me/5537999137500', '_blank');
   };
 
   const handleAdminClick = () => {
-    setIsMenuOpen(false); // Close the menu
-    setIsModalOpen(true); // Open the modal
+    setIsMenuOpen(false);
+    setIsModalOpen(true);
   };
 
   const handleLogin = () => {
     if (username === 'admin' && password === '123') {
-      window.location.href = '/admin'; // Redireciona se credenciais corretas
+      window.location.href = '/admin';
       setIsModalOpen(false);
       setUsername('');
       setPassword('');
@@ -162,11 +162,9 @@ function Header() {
         <a href="#blog" className="nav-link" onClick={handleBlogClick}>Blog</a>
         <a href="#agende-agora" className="nav-link agende-agora" onClick={handleAgendamentoClick}>Agende Agora</a>
         <a href="#contato" className="nav-link" onClick={handleContatoClick}>Contato</a>
-
-        <div className="profile-container">
-          <div className="nav-link admin-link" onClick={handleAdminClick}>
-            Área de Administrador
-          </div>
+        
+        <div className="nav-link" onClick={handleAdminClick}>
+          Área Administrativa
         </div>
       </nav>
 

@@ -38,7 +38,7 @@
   transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
   flex-wrap: nowrap;
   white-space: nowrap;
 }
@@ -138,65 +138,6 @@
   color: #a007f2;
   cursor: pointer;
   padding: 5px;
-}
-
-/* =========== AVATAR DE PERFIL (DESKTOP) =========== */
-.profile-container {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-}
-
-.profile-icon {
-  font-size: 2rem;
-  color: #a007f2;
-  transition: color 0.3s ease;
-}
-
-.profile-icon:hover {
-  color: #8e24aa;
-}
-
-.profile-dropdown {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  min-width: 150px;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease;
-}
-
-.profile-container:hover .profile-dropdown,
-.profile-container:focus .profile-dropdown {
-  opacity: 1;
-  visibility: visible;
-}
-
-.profile-dropdown .dropdown-item {
-  padding: 10px 15px;
-  color: #a007f2;
-  text-decoration: none;
-  display: block;
-  font-size: 14px;
-}
-
-.profile-dropdown .dropdown-item:hover {
-  background-color: #f5f5f5;
-  color: #8e24aa;
-}
-
-/* Estilo para o link de admin */
-.admin-link {
-  font-size: 16px;
-  padding: 5px 10px;
 }
 
 /* =========== MODAL DE LOGIN =========== */
@@ -379,32 +320,6 @@
   .agende-agora:hover {
     background-color: transparent;
     color: #8e24aa;
-  }
-
-  .profile-container {
-    position: static;
-    margin: 0;
-    display: none;
-    width: 100%;
-  }
-
-  .nav-container.open .profile-container {
-    display: block;
-  }
-
-  .admin-link {
-    padding: 8px 0;
-    width: 100%;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-  }
-
-  .profile-icon {
-    display: none;
-  }
-
-  .profile-dropdown {
-    display: none;
   }
 
   .modal-content {
