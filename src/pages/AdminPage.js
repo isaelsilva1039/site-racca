@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { FaSignOutAlt, FaUserCircle } from 'react-icons/fa';
@@ -303,44 +303,79 @@ const initialPsicologos = [
 const AdminPage = () => {
   const [psicologos, setPsicologos] = useState(initialPsicologos);
   const [selectedPsicologo, setSelectedPsicologo] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [fotoPreview, setFotoPreview] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setFotoPreview(selectedPsicologo?.foto || null);
+  }, [selectedPsicologo]);
+
+  const handleAdd = () => {
+    setSelectedPsicologo({
+      nome: '',
+      crp: '',
+      preco: 0,
+      areas: [],
+      abordagem: '',
+      publico: '',
+      sobreMim: '',
+      classificacao: 'Prata',
+      foto: null,
+    });
+    setIsAdding(true);
+  };
+
+  const handleEdit = (psicologo) => {
+    setSelectedPsicologo({ ...psicologo });
+    setIsAdding(false);
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm('Tem certeza que deseja excluir este psicólogo?')) {
+      setPsicologos(psicologos.filter(p => p.id !== id));
+    }
+  };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const updatedPsicologo = {
-      id: selectedPsicologo.id,
+    const psicologoData = {
       nome: formData.get('nome'),
       crp: formData.get('crp'),
-      preco: parseFloat(formData.get('preco')) || selectedPsicologo.preco,
+      preco: parseFloat(formData.get('preco')) || 0,
       areas: formData.get('areas').split(',').map(a => a.trim()).filter(a => a),
       abordagem: formData.get('abordagem'),
       publico: formData.get('publico'),
       sobreMim: formData.get('sobreMim'),
       classificacao: formData.get('classificacao'),
-      foto: formData.get('foto') || selectedPsicologo.foto,
+      foto: fotoPreview,
     };
-    setPsicologos(psicologos.map(p => p.id === selectedPsicologo.id ? updatedPsicologo : p));
+
+    if (isAdding) {
+      const newId = psicologos.length > 0 ? Math.max(...psicologos.map(p => p.id)) + 1 : 1;
+      setPsicologos([...psicologos, { id: newId, ...psicologoData }]);
+    } else {
+      setPsicologos(psicologos.map(p => (p.id === selectedPsicologo.id ? { ...p, ...psicologoData } : p)));
+    }
     setSelectedPsicologo(null);
+    setIsAdding(false);
   };
 
-  const handleFotoChange = (e, setFieldValue) => {
+  const handleFotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setFieldValue(reader.result);
+        setFotoPreview(reader.result);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleEdit = (psicologo) => {
-    setSelectedPsicologo({ ...psicologo, foto: psicologo.foto || null });
-  };
-
   const handleCancel = () => {
     setSelectedPsicologo(null);
+    setIsAdding(false);
   };
 
   const handleLogout = () => {
@@ -355,86 +390,101 @@ const AdminPage = () => {
       </LogoutButton>
       <Section>
         <h2>Configuração de Profissionais</h2>
-        {selectedPsicologo ? (
-          <Form onSubmit={handleFormSubmit}>
-            <FormGroup>
-              <label>Nome</label>
-              <Input type="text" name="nome" defaultValue={selectedPsicologo.nome} required />
-            </FormGroup>
-            <FormGroup>
-              <label>CRP</label>
-              <Input type="text" name="crp" defaultValue={selectedPsicologo.crp} required />
-            </FormGroup>
-            <FormGroup>
-              <label>Preço (R$)</label>
-              <Input type="number" name="preco" defaultValue={selectedPsicologo.preco} min="0" step="0.01" required />
-            </FormGroup>
-            <FormGroup>
-              <label>Classificação</label>
-              <Select name="classificacao" defaultValue={selectedPsicologo.classificacao} required>
-                <option value="Ouro">Ouro</option>
-                <option value="Prata">Prata</option>
-              </Select>
-            </FormGroup>
-            <FormGroup>
-              <label>Áreas de Atendimento (separadas por vírgula)</label>
-              <Input type="text" name="areas" defaultValue={selectedPsicologo.areas.join(', ')} required />
-            </FormGroup>
-            <FormGroup>
-              <label>Abordagem</label>
-              <Input type="text" name="abordagem" defaultValue={selectedPsicologo.abordagem} required />
-            </FormGroup>
-            <FormGroup>
-              <label>Público</label>
-              <Input type="text" name="publico" defaultValue={selectedPsicologo.publico} required />
-            </FormGroup>
-            <FormGroup>
-              <label>Sobre Mim</label>
-              <Textarea name="sobreMim" defaultValue={selectedPsicologo.sobreMim} required />
-            </FormGroup>
-            <FormGroup>
-              <label>Foto do Perfil</label>
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFotoChange(e, (value) => setSelectedPsicologo({ ...selectedPsicologo, foto: value }))}
-              />
-              {selectedPsicologo.foto ? (
-                <FotoPreview src={selectedPsicologo.foto} alt="Foto do perfil" />
-              ) : (
-                <FotoPlaceholder>
-                  <FaUserCircle />
-                </FotoPlaceholder>
-              )}
-            </FormGroup>
-            <Button type="submit">Salvar</Button>
-            <Button type="button" onClick={handleCancel}>Cancelar</Button>
-          </Form>
+        {isAdding || selectedPsicologo ? (
+          <div>
+            <h3>{isAdding ? 'Adicionar Psicólogo' : 'Editar Psicólogo'}</h3>
+            <Form onSubmit={handleFormSubmit}>
+              <FormGroup>
+                <label>Nome</label>
+                <Input type="text" name="nome" defaultValue={selectedPsicologo?.nome || ''} required />
+              </FormGroup>
+              <FormGroup>
+                <label>CRP</label>
+                <Input type="text" name="crp" defaultValue={selectedPsicologo?.crp || ''} required />
+              </FormGroup>
+              <FormGroup>
+                <label>Preço (R$)</label>
+                <Input
+                  type="number"
+                  name="preco"
+                  defaultValue={selectedPsicologo?.preco || 0}
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </FormGroup>
+              <FormGroup>
+                <label>Classificação</label>
+                <Select name="classificacao" defaultValue={selectedPsicologo?.classificacao || 'Prata'} required>
+                  <option value="Ouro">Ouro</option>
+                  <option value="Prata">Prata</option>
+                </Select>
+              </FormGroup>
+              <FormGroup>
+                <label>Áreas de Atendimento (separadas por vírgula)</label>
+                <Input
+                  type="text"
+                  name="areas"
+                  defaultValue={selectedPsicologo?.areas?.join(', ') || ''}
+                  required
+                />
+              </FormGroup>
+              <FormGroup>
+                <label>Abordagem</label>
+                <Input type="text" name="abordagem" defaultValue={selectedPsicologo?.abordagem || ''} required />
+              </FormGroup>
+              <FormGroup>
+                <label>Público</label>
+                <Input type="text" name="publico" defaultValue={selectedPsicologo?.publico || ''} required />
+              </FormGroup>
+              <FormGroup>
+                <label>Sobre Mim</label>
+                <Textarea name="sobreMim" defaultValue={selectedPsicologo?.sobreMim || ''} required />
+              </FormGroup>
+              <FormGroup>
+                <label>Foto do Perfil</label>
+                <Input type="file" accept="image/*" onChange={handleFotoChange} />
+                {fotoPreview ? (
+                  <FotoPreview src={fotoPreview} alt="Foto do perfil" />
+                ) : (
+                  <FotoPlaceholder>
+                    <FaUserCircle />
+                  </FotoPlaceholder>
+                )}
+              </FormGroup>
+              <Button type="submit">Salvar</Button>
+              <Button type="button" onClick={handleCancel}>Cancelar</Button>
+            </Form>
+          </div>
         ) : (
-          <Table>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>CRP</th>
-                <th>Preço (R$)</th>
-                <th>Classificação</th>
-                <th>Ação</th>
-              </tr>
-            </thead>
-            <tbody>
-              {psicologos.map(p => (
-                <tr key={p.id}>
-                  <td>{p.nome}</td>
-                  <td>{p.crp}</td>
-                  <td>{p.preco.toFixed(2)}</td>
-                  <td>{p.classificacao}</td>
-                  <td>
-                    <Button onClick={() => handleEdit(p)}>Editar</Button>
-                  </td>
+          <div>
+            <Button onClick={handleAdd}>Adicionar Psicólogo</Button>
+            <Table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>CRP</th>
+                  <th>Preço (R$)</th>
+                  <th>Classificação</th>
+                  <th>Ação</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {psicologos.map(p => (
+                  <tr key={p.id}>
+                    <td>{p.nome}</td>
+                    <td>{p.crp}</td>
+                    <td>{p.preco.toFixed(2)}</td>
+                    <td>{p.classificacao}</td>
+                    <td>
+                      <Button onClick={() => handleEdit(p)}>Editar</Button>
+                      <Button onClick={() => handleDelete(p.id)}>Excluir</Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         )}
       </Section>
     </AdminContainer>
