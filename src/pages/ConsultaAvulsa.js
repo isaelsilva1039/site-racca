@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { FaUserCircle, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
@@ -22,6 +23,10 @@ const ConsultaContainer = styled.section`
   @media (max-width: 768px) {
     padding: 30px 10px;
   }
+
+  @media (max-width: 480px) {
+    padding: 20px 8px;
+  }
 `;
 
 const Title = styled.h2`
@@ -36,6 +41,11 @@ const Title = styled.h2`
   @media (max-width: 768px) {
     font-size: 1.8rem;
     margin-bottom: 25px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
   }
 `;
 
@@ -64,30 +74,149 @@ const FiltroContainer = styled.div`
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
   }
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    gap: 8px;
+
+    label {
+      font-size: 1rem;
+    }
+
+    select {
+      font-size: 1rem;
+      padding: 8px;
+      max-width: 200px;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 10px;
+
+    label {
+      font-size: 0.9rem;
+    }
+
+    select {
+      font-size: 0.9rem;
+      padding: 6px;
+    }
+  }
+`;
+
+const GridContainer = styled.div`
+  position: relative;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 40px;
+
+  @media (max-width: 768px) {
+    padding: 0 20px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 0 10px;
+  }
 `;
 
 const PsicologoGrid = styled.div`
   display: flex;
   flex-direction: row;
   gap: 30px;
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 0 10px;
   overflow-x: auto;
-  scrollbar-width: thin;
+  scrollbar-width: thick;
   scrollbar-color: #a100ff #e6d6ff;
 
   &::-webkit-scrollbar {
-    height: 8px;
+    height: 12px;
   }
 
   &::-webkit-scrollbar-track {
     background: #e6d6ff;
+    border-radius: 6px;
   }
 
   &::-webkit-scrollbar-thumb {
     background: #a100ff;
-    border-radius: 4px;
+    border-radius: 6px;
+    border: 2px solid #e6d6ff;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #8a00e6;
+  }
+
+  @media (max-width: 768px) {
+    gap: 20px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  @media (max-width: 480px) {
+    gap: 15px;
+    padding: 0 5px;
+  }
+`;
+
+const NavButton = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(161, 0, 255, 0.8);
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.5rem;
+  transition: background 0.3s ease;
+  z-index: 10;
+
+  &:hover {
+    background: #8a00e6;
+  }
+
+  &:first-child {
+    left: 0;
+  }
+
+  &:last-child {
+    right: 0;
+  }
+
+  @media (max-width: 768px) {
+    width: 35px;
+    height: 35px;
+    font-size: 1.2rem;
+
+    &:first-child {
+      left: 5px;
+    }
+
+    &:last-child {
+      right: 5px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+
+    &:first-child {
+      left: 5px;
+    }
+
+    &:last-child {
+      right: 5px;
+    }
   }
 `;
 
@@ -109,6 +238,19 @@ const PsicologoCard = styled.div`
     transform: translateY(-5px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
   }
+
+  @media (max-width: 768px) {
+    min-width: 300px;
+    max-width: 320px;
+    padding: 15px;
+    scroll-snap-align: start;
+  }
+
+  @media (max-width: 480px) {
+    min-width: 260px;
+    max-width: 280px;
+    padding: 12px;
+  }
 `;
 
 const PsicologoHeader = styled.div`
@@ -116,6 +258,11 @@ const PsicologoHeader = styled.div`
   align-items: center;
   gap: 15px;
   margin-bottom: 15px;
+
+  @media (max-width: 480px) {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
 `;
 
 const PsicologoFoto = styled.div`
@@ -129,6 +276,12 @@ const PsicologoFoto = styled.div`
   font-size: 2.5rem;
   color: #a100ff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 480px) {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+  }
 `;
 
 const PsicologoInfo = styled.div`
@@ -146,6 +299,26 @@ const PsicologoInfo = styled.div`
     color: #555;
     margin: 2px 0;
   }
+
+  @media (max-width: 768px) {
+    h3 {
+      font-size: 1.2rem;
+    }
+
+    p {
+      font-size: 0.85rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    h3 {
+      font-size: 1rem;
+    }
+
+    p {
+      font-size: 0.75rem;
+    }
+  }
 `;
 
 const TagsContainer = styled.div`
@@ -153,6 +326,11 @@ const TagsContainer = styled.div`
   flex-wrap: wrap;
   gap: 8px;
   margin: 10px 0;
+
+  @media (max-width: 480px) {
+    gap: 6px;
+    margin: 8px 0;
+  }
 `;
 
 const Tag = styled.span`
@@ -163,6 +341,11 @@ const Tag = styled.span`
   font-size: 0.9rem;
   text-transform: capitalize;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
 `;
 
 const Abordagem = styled.p`
@@ -174,12 +357,22 @@ const Abordagem = styled.p`
   span {
     font-weight: normal;
   }
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    margin: 8px 0;
+  }
 `;
 
 const Publico = styled.p`
   font-size: 0.9rem;
   color: #555;
   margin: 10px 0;
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    margin: 8px 0;
+  }
 `;
 
 const SobreMim = styled.div`
@@ -201,6 +394,15 @@ const SobreMim = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
+    line-height: 1.4;
+
+    .texto {
+      -webkit-line-clamp: ${({ expandido }) => (expandido ? 'unset' : '5')};
+    }
+  }
 `;
 
 const VerMaisButton = styled.button`
@@ -217,6 +419,10 @@ const VerMaisButton = styled.button`
 
   &:hover {
     color: #8a00e6;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.8rem;
   }
 `;
 
@@ -237,6 +443,18 @@ const ConsultarButton = styled.button`
   &:hover {
     background: #8a00e6;
     transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    max-width: 180px;
+    font-size: 1rem;
+    padding: 8px;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 160px;
+    font-size: 0.9rem;
+    padding: 7px;
   }
 `;
 
@@ -263,6 +481,18 @@ const ModalContent = styled.div`
   overflow-y: auto;
   position: relative;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 768px) {
+    width: 95%;
+    padding: 15px;
+    max-width: 600px;
+  }
+
+  @media (max-width: 480px) {
+    width: 90%;
+    padding: 12px;
+    max-height: 85vh;
+  }
 `;
 
 const CloseButton = styled.button`
@@ -274,6 +504,12 @@ const CloseButton = styled.button`
   font-size: 1.5rem;
   color: #a100ff;
   cursor: pointer;
+
+  @media (max-width: 480px) {
+    font-size: 1.2rem;
+    top: 8px;
+    right: 8px;
+  }
 `;
 
 const ModalTitle = styled.h3`
@@ -281,6 +517,16 @@ const ModalTitle = styled.h3`
   color: #a100ff;
   text-align: center;
   margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
 `;
 
 const CalendarioHeader = styled.div`
@@ -288,11 +534,19 @@ const CalendarioHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+
+  @media (max-width: 480px) {
+    margin-bottom: 15px;
+  }
 `;
 
 const MesAno = styled.h4`
   font-size: 1.2rem;
   color: #333;
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 const NavegacaoButton = styled.button`
@@ -306,6 +560,10 @@ const NavegacaoButton = styled.button`
   &:hover {
     color: #8a00e6;
   }
+
+  @media (max-width: 480px) {
+    font-size: 1rem;
+  }
 `;
 
 const DiasGrid = styled.div`
@@ -313,6 +571,18 @@ const DiasGrid = styled.div`
   grid-template-columns: repeat(7, 1fr);
   gap: 10px;
   margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+  }
 `;
 
 const DiaCard = styled.div`
@@ -344,6 +614,22 @@ const DiaCard = styled.div`
     margin: 0;
     font-size: 1rem;
   }
+
+  @media (max-width: 768px) {
+    padding: 8px;
+
+    p {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 6px;
+
+    p {
+      font-size: 0.8rem;
+    }
+  }
 `;
 
 const HorariosGrid = styled.div`
@@ -352,6 +638,16 @@ const HorariosGrid = styled.div`
   gap: 10px;
   justify-content: center;
   margin-bottom: 20px;
+
+  @media (max-width: 768px) {
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 6px;
+    margin-bottom: 12px;
+  }
 `;
 
 const HorarioButton = styled.button`
@@ -375,6 +671,16 @@ const HorarioButton = styled.button`
     background: #a100ff;
     color: #ffffff;
   `}
+
+  @media (max-width: 768px) {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  @media (max-width: 480px) {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+  }
 `;
 
 const ConfirmarButton = styled.button`
@@ -400,6 +706,18 @@ const ConfirmarButton = styled.button`
     background: #cccccc;
     cursor: not-allowed;
   }
+
+  @media (max-width: 768px) {
+    max-width: 180px;
+    padding: 8px;
+    font-size: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 160px;
+    padding: 7px;
+    font-size: 0.9rem;
+  }
 `;
 
 const ConsultaAvulsa = () => {
@@ -410,6 +728,7 @@ const ConsultaAvulsa = () => {
   const [expandedSobreMim, setExpandedSobreMim] = useState({});
   const [mesAtual, setMesAtual] = useState(4); // Mês inicial: abril (1-12)
   const [anoAtual, setAnoAtual] = useState(2025); // Ano inicial: 2025
+  const gridRef = useRef(null);
 
   const psicologos = [
     {
@@ -734,6 +1053,20 @@ const ConsultaAvulsa = () => {
     }
   };
 
+  const scrollLeft = () => {
+    if (gridRef.current) {
+      const scrollAmount = window.innerWidth <= 480 ? -280 : window.innerWidth <= 768 ? -320 : -400;
+      gridRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (gridRef.current) {
+      const scrollAmount = window.innerWidth <= 480 ? 280 : window.innerWidth <= 768 ? 320 : 400;
+      gridRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  };
+
   return (
     <ConsultaContainer>
       <Title>Consulta Avulsa</Title>
@@ -750,48 +1083,56 @@ const ConsultaAvulsa = () => {
           ))}
         </select>
       </FiltroContainer>
-      <PsicologoGrid>
-        {psicologosFiltrados.map((psicologo, index) => (
-          <PsicologoCard
-            key={psicologo.id}
-            delay={`${0.2 * (index + 1)}s`}
-            classificacao={psicologo.classificacao}
-          >
-            <PsicologoHeader>
-              <PsicologoFoto>
-                <FaUserCircle />
-              </PsicologoFoto>
-              <PsicologoInfo>
-                <h3>{psicologo.nome}</h3>
-                <p>Psicólogo</p>
-                <p>CRP: {psicologo.crp}</p>
-                <p>Valor da consulta: R${psicologo.preco}</p>
-              </PsicologoInfo>
-            </PsicologoHeader>
-            <TagsContainer>
-              {psicologo.areas.map((area) => (
-                <Tag key={area}>{area}</Tag>
-              ))}
-            </TagsContainer>
-            <Abordagem>
-              Abordagem: <span>{psicologo.abordagem}</span>
-            </Abordagem>
-            <Publico>👥 {psicologo.publico}</Publico>
-            <SobreMim expandido={expandedSobreMim[psicologo.id]}>
-              <strong>Sobre mim:</strong>
-              <div className="texto">{psicologo.sobreMim}</div>
-              {psicologo.sobreMim.split('\n').length > 7 && (
-                <VerMaisButton onClick={() => toggleExpandSobreMim(psicologo.id)}>
-                  {expandedSobreMim[psicologo.id] ? 'Ver menos' : 'Ver mais'}
-                </VerMaisButton>
-              )}
-            </SobreMim>
-            <ConsultarButton onClick={() => handleConsultarClick(psicologo)}>
-              Quero me consultar
-            </ConsultarButton>
-          </PsicologoCard>
-        ))}
-      </PsicologoGrid>
+      <GridContainer>
+        <NavButton onClick={scrollLeft}>
+          <FaChevronLeft />
+        </NavButton>
+        <PsicologoGrid ref={gridRef}>
+          {psicologosFiltrados.map((psicologo, index) => (
+            <PsicologoCard
+              key={psicologo.id}
+              delay={`${0.2 * (index + 1)}s`}
+              classificacao={psicologo.classificacao}
+            >
+              <PsicologoHeader>
+                <PsicologoFoto>
+                  <FaUserCircle />
+                </PsicologoFoto>
+                <PsicologoInfo>
+                  <h3>{psicologo.nome}</h3>
+                  <p>Psicólogo</p>
+                  <p>CRP: {psicologo.crp}</p>
+                  <p>Valor da consulta: R${psicologo.preco}</p>
+                </PsicologoInfo>
+              </PsicologoHeader>
+              <TagsContainer>
+                {psicologo.areas.map((area) => (
+                  <Tag key={area}>{area}</Tag>
+                ))}
+              </TagsContainer>
+              <Abordagem>
+                Abordagem: <span>{psicologo.abordagem}</span>
+              </Abordagem>
+              <Publico>👥 {psicologo.publico}</Publico>
+              <SobreMim expandido={expandedSobreMim[psicologo.id]}>
+                <strong>Sobre mim:</strong>
+                <div className="texto">{psicologo.sobreMim}</div>
+                {psicologo.sobreMim.split('\n').length > 7 && (
+                  <VerMaisButton onClick={() => toggleExpandSobreMim(psicologo.id)}>
+                    {expandedSobreMim[psicologo.id] ? 'Ver menos' : 'Ver mais'}
+                  </VerMaisButton>
+                )}
+              </SobreMim>
+              <ConsultarButton onClick={() => handleConsultarClick(psicologo)}>
+                Quero me consultar
+              </ConsultarButton>
+            </PsicologoCard>
+          ))}
+        </PsicologoGrid>
+        <NavButton onClick={scrollRight}>
+          <FaChevronRight />
+        </NavButton>
+      </GridContainer>
 
       {selectedPsicologo && selectedPsicologo.classificacao === 'Ouro' && (
         <ModalOverlay>
