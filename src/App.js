@@ -9,7 +9,6 @@ import Benefits from './pages/Benefits';
 import Plans from './pages/Plans/Plans';
 import LegalLinks from './components/LegalLinks/LegalLinks';
 import BenefitsSection from './pages/BenefitsSection';
-import FloatingVideo from './components/FloatingVideo';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import FAQModal from './components/FaqModal';
 import TermosDeUso from './pages/TermosDeUso';
@@ -87,7 +86,6 @@ function App() {
                 <LegalLinks onFAQClick={handleOpenFAQModal} />
                 <Footer />
                 <WhatsAppButton />
-                <FloatingVideo />
               </>
             }
           />

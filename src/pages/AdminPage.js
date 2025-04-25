@@ -153,7 +153,7 @@ const FotoPlaceholder = styled.div`
 
 const LogoutButton = styled.button`
   position: fixed;
-  top: 80px;
+  top: 100px;
   right: 20px;
   padding: 10px;
   background: #a100ff;
@@ -171,7 +171,7 @@ const LogoutButton = styled.button`
   }
 
   @media (max-width: 768px) {
-    top: 60px;
+    top: 130px;
     right: 10px;
     padding: 8px;
   }
@@ -181,120 +181,13 @@ const initialPsicologos = [
   {
     id: 1,
     nome: 'Fábio da Silva Ferreira',
+    cpf: '123.456.789-00',
     crp: '04/70777',
     preco: 30,
     areas: ['adolescência', 'casais', 'depressão', 'ansiedade', 'identidade'],
     abordagem: 'Terapia Cognitivo Comportamental - TCC',
     publico: 'Adolescentes, Adultos, Casais, Idosos',
-    sobreMim: 'Psicólogo clínico especialista em TCC, terapia cognitiva comportamental. Intervenção em crise de Ansiedade; Tratamento da Depressão; Problemas conjugais; Relacionamentos tóxicos; Dependência emocional; Abuso psicológico; Crises de Pânico; Traumas e Luto; Transtornos de Personalidade; Bipolar; Borderline; Obsessivo Compulsivo; TDAH; Crises Dependentes Químicas; Suicídio; Luto; Perdas e Morte; Transtorno de Automutilação; Suicídio; Prevenção ao Suicídio (diagnóstico e tratamento). Intervenções Mentais, e pacientes, dificuldades de relacionamento interpessoal. Auxílio no processo de evolução pessoal em busca da reestruturação cognitiva, autoestima e autoconhecimento. Priorizo identificar e modificar pensamentos disfuncionais, cognitives distorcidas e alterar padrões destrutivos e desencadeadores de comportamentos causadores de sofrimento psíquico. Disponho de um processo terapêutico eficaz, com ética, sigilo, confiança e sem julgamentos.',
-    classificacao: 'Prata',
-    foto: null,
-  },
-  {
-    id: 2,
-    nome: 'Igor Leonardo da Silva Pinheiro',
-    crp: '17/7389',
-    preco: 30,
-    areas: ['abuso infantil', 'adolescência', 'ansiedade', 'bullying', 'depressão', 'LGBTQIA+', 'relacionamento'],
-    abordagem: 'Psicologia Transpessoal',
-    publico: 'Adolescentes, Adultos',
-    sobreMim: 'Psicólogo com foco em Psicologia Transpessoal, atuo com adolescentes e adultos, especialmente em questões de abuso infantil, bullying e identidade de gênero. Trabalho com ansiedade, depressão e relacionamentos, promovendo o autoconhecimento e a expansão da consciência. Meu objetivo é ajudar os pacientes a encontrarem um sentido maior em suas vidas, superando traumas e desafios emocionais com uma abordagem integrativa e acolhedora.',
-    classificacao: 'Prata',
-    foto: null,
-  },
-  {
-    id: 3,
-    nome: 'Mariana Oliveira',
-    crp: '05/12345',
-    preco: 40,
-    areas: ['ansiedade', 'depressão', 'estresse', 'carreira'],
-    abordagem: 'Terapia Cognitivo Comportamental - TCC',
-    publico: 'Adultos, Idosos',
-    sobreMim: 'Psicóloga clínica com especialização em TCC, atuo com adultos e idosos enfrentando ansiedade, depressão e estresse, especialmente em questões relacionadas à carreira. Ajudo meus pacientes a desenvolverem estratégias práticas para lidar com pressões do dia a dia, promovendo equilíbrio emocional e bem-estar. Minha abordagem é focada em resultados, com ênfase em técnicas baseadas em evidências.',
-    classificacao: 'Prata',
-    foto: null,
-  },
-  {
-    id: 4,
-    nome: 'Clara Souza',
-    crp: '06/54321',
-    preco: 35,
-    areas: ['relacionamento', 'autoestima', 'ansiedade', 'depressão'],
-    abordagem: 'Psicoterapia Humanista',
-    publico: 'Adolescentes, Adultos',
-    sobreMim: 'Psicóloga humanista, trabalho com adolescentes e adultos que buscam melhorar seus relacionamentos e autoestima. Atuo em casos de ansiedade e depressão, oferecendo um espaço seguro para o autoconhecimento e o desenvolvimento pessoal. Minha abordagem valoriza a experiência única de cada indivíduo, promovendo aceitação e crescimento emocional.',
-    classificacao: 'Prata',
-    foto: null,
-  },
-  {
-    id: 5,
-    nome: 'Lucas Almeida',
-    crp: '07/98765',
-    preco: 50,
-    areas: ['trauma', 'ansiedade', 'depressão', 'luto'],
-    abordagem: 'EMDR',
-    publico: 'Adultos, Idosos',
-    sobreMim: 'Psicólogo especializado em EMDR, atuo com adultos e idosos que enfrentam traumas, luto, ansiedade e depressão. Utilizo técnicas avançadas para ajudar na reprocessamento de experiências traumáticas, promovendo alívio emocional e recuperação. Meu trabalho é focado em criar um ambiente seguro e acolhedor para que os pacientes possam superar suas dificuldades.',
-    classificacao: 'Prata',
-    foto: null,
-  },
-  {
-    id: 6,
-    nome: 'Beatriz Lima',
-    crp: '08/45678',
-    preco: 45,
-    areas: ['adolescência', 'bullying', 'autoestima', 'ansiedade'],
-    abordagem: 'Terapia Cognitivo Comportamental - TCC',
-    publico: 'Adolescentes',
-    sobreMim: 'Psicóloga clínica com foco em adolescentes, utilizo a TCC para tratar questões como bullying, ansiedade e baixa autoestima. Meu objetivo é ajudar jovens a desenvolverem resiliência emocional e habilidades para enfrentar os desafios da adolescência. Trabalho com empatia e acolhimento, criando um espaço seguro para o crescimento pessoal.',
-    classificacao: 'Prata',
-    foto: null,
-  },
-  {
-    id: 7,
-    nome: 'Rafael Costa',
-    crp: '09/11223',
-    preco: 30,
-    areas: ['casais', 'relacionamento', 'conflitos familiares'],
-    abordagem: 'Terapia Sistêmica',
-    publico: 'Casais, Adultos',
-    sobreMim: 'Psicólogo especializado em Terapia Sistêmica, atuo com casais e adultos que enfrentam conflitos familiares e dificuldades nos relacionamentos. Meu trabalho foca em compreender as dinâmicas familiares e promover uma comunicação mais saudável entre os envolvidos. Ofereço um espaço de escuta e reflexão para construir relações mais harmoniosas.',
-    classificacao: 'Prata',
-    foto: null,
-  },
-  {
-    id: 8,
-    nome: 'Sofia Mendes',
-    crp: '10/33445',
-    preco: 40,
-    areas: ['LGBTQIA+', 'identidade', 'depressão', 'ansiedade'],
-    abordagem: 'Psicologia Analítica',
-    publico: 'Adolescentes, Adultos',
-    sobreMim: 'Psicóloga com abordagem em Psicologia Analítica, atuo com adolescentes e adultos, especialmente da comunidade LGBTQIA+, em questões de identidade, depressão e ansiedade. Meu trabalho é focado em explorar o inconsciente e promover o autoconhecimento, ajudando os pacientes a encontrarem equilíbrio e autenticidade em suas vidas.',
-    classificacao: 'Prata',
-    foto: null,
-  },
-  {
-    id: 9,
-    nome: 'Pedro Henrique',
-    crp: '11/55667',
-    preco: 35,
-    areas: ['carreira', 'estresse', 'ansiedade', 'depressão'],
-    abordagem: 'Terapia Cognitivo Comportamental - TCC',
-    publico: 'Adultos',
-    sobreMim: 'Psicólogo clínico com especialização em TCC, atuo com adultos que enfrentam estresse, ansiedade e depressão relacionados à carreira. Ajudo meus pacientes a desenvolverem estratégias para lidar com pressões profissionais e encontrar um equilíbrio entre vida pessoal e trabalho. Minha abordagem é prática e focada em resultados.',
-    classificacao: 'Prata',
-    foto: null,
-  },
-  {
-    id: 10,
-    nome: 'Ana Clara Ribeiro',
-    crp: '12/77889',
-    preco: 50,
-    areas: ['trauma', 'luto', 'ansiedade', 'depressão'],
-    abordagem: 'Psicoterapia Psicanalítica',
-    publico: 'Adultos, Idosos',
-    sobreMim: 'Psicóloga com formação em Psicoterapia Psicanalítica, atuo com adultos e idosos que enfrentam traumas, luto, ansiedade e depressão. Meu trabalho é focado em explorar os processos inconscientes que influenciam o comportamento e as emoções, promovendo autoconhecimento e transformação pessoal em um ambiente acolhedor e seguro.',
+    sobreMim: 'Psicólogo clínico especialista em TCC...',
     classificacao: 'Prata',
     foto: null,
   },
@@ -314,6 +207,7 @@ const AdminPage = () => {
   const handleAdd = () => {
     setSelectedPsicologo({
       nome: '',
+      cpf: '',
       crp: '',
       preco: 0,
       areas: [],
@@ -342,6 +236,7 @@ const AdminPage = () => {
     const formData = new FormData(e.target);
     const psicologoData = {
       nome: formData.get('nome'),
+      cpf: formData.get('cpf'),
       crp: formData.get('crp'),
       preco: parseFloat(formData.get('preco')) || 0,
       areas: formData.get('areas').split(',').map(a => a.trim()).filter(a => a),
@@ -397,6 +292,10 @@ const AdminPage = () => {
               <FormGroup>
                 <label>Nome</label>
                 <Input type="text" name="nome" defaultValue={selectedPsicologo?.nome || ''} required />
+              </FormGroup>
+              <FormGroup>
+                <label>CPF</label>
+                <Input type="text" name="cpf" defaultValue={selectedPsicologo?.cpf || ''} required />
               </FormGroup>
               <FormGroup>
                 <label>CRP</label>
@@ -463,6 +362,7 @@ const AdminPage = () => {
               <thead>
                 <tr>
                   <th>Nome</th>
+                  <th>CPF</th>
                   <th>CRP</th>
                   <th>Preço (R$)</th>
                   <th>Classificação</th>
@@ -473,6 +373,7 @@ const AdminPage = () => {
                 {psicologos.map(p => (
                   <tr key={p.id}>
                     <td>{p.nome}</td>
+                    <td>{p.cpf}</td>
                     <td>{p.crp}</td>
                     <td>{p.preco.toFixed(2)}</td>
                     <td>{p.classificacao}</td>
