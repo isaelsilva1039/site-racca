@@ -193,6 +193,12 @@
   color: #8e24aa;
 }
 
+/* Estilo para o link de admin */
+.admin-link {
+  font-size: 16px;
+  padding: 5px 10px;
+}
+
 /* =========== MODAL DE LOGIN =========== */
 .modal-overlay {
   position: fixed;
@@ -305,7 +311,7 @@
     flex-direction: column;
     width: 100%;
     background-color: #ffffff;
-    padding: 20px 0;
+    padding: 10px 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     align-items: flex-start;
     z-index: 9999;
@@ -319,51 +325,86 @@
 
   .nav-link {
     font-size: 16px;
-    padding: 10px 20px;
+    padding: 8px 0;
     text-align: left;
+    width: 100%;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .nav-link:last-child {
+    border-bottom: none;
+  }
+
+  .nav-link::after {
+    left: 0;
+    width: 0;
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
   }
 
   .dropdown-menu {
     position: static;
     width: 100%;
     box-shadow: none;
-    padding-left: 40px;
-    margin-top: 5px;
+    padding-left: 20px;
+    margin-top: 0;
     opacity: 1;
     visibility: visible;
+    background-color: #f9f9f9;
+  }
+
+  .dropdown-item {
+    padding: 6px 15px;
+    font-size: 14px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .dropdown-item:last-child {
+    border-bottom: none;
   }
 
   .agende-agora {
-    margin-top: 15px;
-    width: 80%;
-    margin-left: 10%;
-    text-align: center;
+    margin-top: 0;
+    width: 100%;
+    margin-left: 0;
+    text-align: left;
+    border: none;
+    padding: 8px 0;
+    border-radius: 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .agende-agora:hover {
+    background-color: transparent;
+    color: #8e24aa;
   }
 
   .profile-container {
     position: static;
-    margin-left: auto;
+    margin: 0;
+    display: none;
+    width: 100%;
+  }
+
+  .nav-container.open .profile-container {
+    display: block;
+  }
+
+  .admin-link {
+    padding: 8px 0;
+    width: 100%;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
   }
 
   .profile-icon {
-    font-size: 1.5rem;
+    display: none;
   }
 
   .profile-dropdown {
-    position: absolute;
-    top: 60px;
-    right: 20px;
-    min-width: 120px;
-    opacity: 1;
-    visibility: visible;
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .profile-container:hover .profile-dropdown,
-  .profile-container:focus .profile-dropdown {
-    opacity: 1;
-    visibility: visible;
+    display: none;
   }
 
   .modal-content {

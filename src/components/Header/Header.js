@@ -14,31 +14,36 @@ function Header() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const modalRef = useRef(null);
-
   const navRef = useRef(null);
 
   const handleAgendamentoClick = () => {
+    setIsMenuOpen(false); // Close the menu
     window.open('https://app.racca.store/login', '_blank');
   };
 
   const handleAtendimentoClick = () => {
+    setIsMenuOpen(false); // Close the menu
     window.open('https://wa.me/5537999137500', '_blank');
   };
 
   const handleBlogClick = () => {
+    setIsMenuOpen(false); // Close the menu
     window.open('https://raccasaude.blogspot.com/', '_blank');
   };
 
   const handleContatoClick = () => {
+    setIsMenuOpen(false); // Close the menu
     window.open('https://wa.me/5537999137500', '_blank');
   };
 
   const handleImageOptionsClick = () => {
+    setIsMenuOpen(false); // Close the menu
     window.open('https://wa.me/5537999137500', '_blank');
   };
 
   const handleAdminClick = () => {
-    setIsModalOpen(true); // Abre a modal
+    setIsMenuOpen(false); // Close the menu
+    setIsModalOpen(true); // Open the modal
   };
 
   const handleLogin = () => {
@@ -60,7 +65,7 @@ function Header() {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (navRef.current && !navRef.current.contains(event.target)) {
+      if (navRef.current && !navRef.current.contains(event.target) && !event.target.closest('.hamburger')) {
         setRaccaOpen(false);
         setParaVoceOpen(false);
         setParaEmpresasOpen(false);
@@ -90,31 +95,31 @@ function Header() {
       </button>
 
       <nav className={`nav-container ${isMenuOpen ? 'open' : ''}`} ref={navRef}>
-        <Link to="/" className="nav-link">Início</Link>
+        <Link to="/" className="nav-link" onClick={() => setIsMenuOpen(false)}>Início</Link>
 
         <div className="nav-link dropdown" onClick={() => setRaccaOpen(!raccaOpen)}>
           Racca Saúde
           {raccaOpen && (
             <div className="dropdown-menu">
-              <a href="#missao-visao-valores" className="dropdown-item">Missão, Visão e Valores</a>
-              <a href="#grupo-racca" className="dropdown-item">O Grupo RACCA</a>
-              <a href="#depoimentos" className="dropdown-item">Depoimentos</a>
-              <Link to="/politica-de-privacidade" className="dropdown-item">Política de Privacidade</Link>
+              <a href="#missao-visao-valores" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Missão, Visão e Valores</a>
+              <a href="#grupo-racca" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>O Grupo RACCA</a>
+              <a href="#depoimentos" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Depoimentos</a>
+              <Link to="/politica-de-privacidade" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Política de Privacidade</Link>
             </div>
           )}
         </div>
 
-        <a href="#benefits" className="nav-link">Benefícios</a>
+        <a href="#benefits" className="nav-link" onClick={() => setIsMenuOpen(false)}>Benefícios</a>
 
         <div className="nav-link dropdown" onClick={() => setParaVoceOpen(!paraVoceOpen)}>
           Para Você
           {paraVoceOpen && (
             <div className="dropdown-menu">
-              <Link to="/cuidar-conectado" className="dropdown-item">Cuidar Conectado</Link>
-              <Link to="/especialidades" className="dropdown-item">Especialidades</Link>
-              <Link to="/seguros-pessoais" className="dropdown-item">Seguros Pessoais</Link>
-              <a href="#plans" className="dropdown-item">Telemedicina</a>
-              <a href="#plans" className="dropdown-item">Terapia Online</a>
+              <Link to="/cuidar-conectado" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Cuidar Conectado</Link>
+              <Link to="/especialidades" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Especialidades</Link>
+              <Link to="/seguros-pessoais" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Seguros Pessoais</Link>
+              <a href="#plans" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Telemedicina</a>
+              <a href="#plans" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Terapia Online</a>
             </div>
           )}
         </div>
@@ -123,10 +128,10 @@ function Header() {
           Para Empresas
           {paraEmpresasOpen && (
             <div className="dropdown-menu">
-              <a href="/plano-odonto-empresarial" className="dropdown-item">Plano Odontológico</a>
-              <Link to="/nr1" className="dropdown-item">Saúde Mental – NR1</Link>
-              <a href="#telemedicina" className="dropdown-item">Telemedicina</a>
-              <a href="#terapia-online" className="dropdown-item">Terapia Online</a>
+              <a href="/plano-odonto-empresarial" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Plano Odontológico</a>
+              <Link to="/nr1" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Saúde Mental – NR1</Link>
+              <a href="#telemedicina" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Telemedicina</a>
+              <a href="#terapia-online" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Terapia Online</a>
             </div>
           )}
         </div>
@@ -140,7 +145,7 @@ function Header() {
               <div className="dropdown-item" onClick={handleImageOptionsClick}>Consulta Clínica</div>
               <div className="dropdown-item" onClick={handleImageOptionsClick}>Financeiro</div>
               <div className="dropdown-item" onClick={handleImageOptionsClick}>Ouvidoria</div>
-              <Link to="/cuidar-conectado" className="dropdown-item">Programa Cuidar Conectado</Link>
+              <Link to="/cuidar-conectado" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Programa Cuidar Conectado</Link>
             </div>
           )}
         </div>
@@ -157,16 +162,13 @@ function Header() {
         <a href="#blog" className="nav-link" onClick={handleBlogClick}>Blog</a>
         <a href="#agende-agora" className="nav-link agende-agora" onClick={handleAgendamentoClick}>Agende Agora</a>
         <a href="#contato" className="nav-link" onClick={handleContatoClick}>Contato</a>
-      </nav>
 
-      <div className="profile-container">
-        <AccountCircle className="profile-icon" />
-        <div className="profile-dropdown">
-          <div className="dropdown-item" onClick={handleAdminClick}>
+        <div className="profile-container">
+          <div className="nav-link admin-link" onClick={handleAdminClick}>
             Área de Administrador
           </div>
         </div>
-      </div>
+      </nav>
 
       {isModalOpen && (
         <div className="modal-overlay">
