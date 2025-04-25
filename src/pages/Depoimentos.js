@@ -37,13 +37,11 @@ const CarouselWrapper = styled.div`
   width: 100%;
   margin: 0 auto;
   position: relative;
-  height: auto; /* Altura dinâmica baseada no conteúdo */
-  min-height: 400px; /* Ajustado para garantir espaço mínimo */
-  overflow: hidden;
+  height: auto; /* Altura dinâmica */
+  padding-bottom: 40px; /* Espaço para os botões de navegação */
 
   @media (max-width: 768px) {
     max-width: 90%;
-    min-height: 250px; /* Ajustado para mobile */
   }
 `;
 
@@ -53,16 +51,13 @@ const TestimonialCard = styled.div`
   border-radius: 15px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(161, 0, 255, 0.1);
-  transition: all 0.5s ease;
+  transition: opacity 0.5s ease;
   opacity: ${({ isActive }) => (isActive ? 1 : 0)};
-  transform: ${({ isActive }) => (isActive ? 'translateX(0)' : 'translateX(100%)')};
-  position: absolute;
+  display: ${({ isActive }) => (isActive ? 'block' : 'none')}; /* Mostra apenas o card ativo */
   width: 90%;
-  top: 0;
-  left: 5%;
+  margin: 0 auto;
   box-sizing: border-box;
   height: auto; /* Altura dinâmica */
-  overflow: hidden;
 
   &:hover {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
@@ -112,35 +107,6 @@ const TestimonialText = styled.p`
   }
 `;
 
-const UserInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  justify-content: center;
-
-  @media (max-width: 480px) {
-    gap: 10px;
-  }
-`;
-
-const UserAvatar = styled.img`
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #a100ff;
-
-  @media (max-width: 768px) {
-    width: 40px;
-    height: 40px;
-  }
-
-  @media (max-width: 480px) {
-    width: 35px;
-    height: 35px;
-  }
-`;
-
 const NavButton = styled.button`
   position: absolute;
   top: 50%; /* Centraliza verticalmente em relação ao card */
@@ -159,7 +125,7 @@ const NavButton = styled.button`
     background: #a100ff;
   }
 
-  ${({ direction }) => (direction === 'left' ? 'left: 10px;' : 'right: 10px;')}
+  ${({ direction }) => (direction === 'left' ? 'left: 0px;' : 'right: 0px;')}
 
   @media (max-width: 768px) {
     padding: 8px;
