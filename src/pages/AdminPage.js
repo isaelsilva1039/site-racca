@@ -303,7 +303,7 @@ const Button = styled.button`
   font-size: 1rem;
   cursor: pointer;
   transition: background 0.3s ease;
-  min-height: 44px; /* Touch-friendly height */
+  min-height: 44px;
 
   &:hover {
     background: #8a00e6;
@@ -534,6 +534,34 @@ const initialPlans = [
   },
 ];
 
+// Novo array para planos de profissionais
+const initialProfessionalPlans = [
+  {
+    id: 1,
+    title: 'Plano Prata para Profissionais',
+    price: 'R$ 30,00/mês',
+    benefits: [
+      'Acesso a plataforma de agendamento',
+      'Suporte básico via WhatsApp',
+      'Visibilidade padrão no site',
+    ],
+    classificacao: 'Prata',
+  },
+  {
+    id: 2,
+    title: 'Plano Ouro para Profissionais',
+    price: 'R$ 50,00/mês',
+    benefits: [
+      'Acesso a plataforma de agendamento',
+      'Suporte prioritário via WhatsApp',
+      'Visibilidade destacada no site',
+      'Relatórios de desempenho',
+      'Selo de profissional Ouro',
+    ],
+    classificacao: 'Ouro',
+  },
+];
+
 // Lista de ícones disponíveis
 const iconOptions = [
   { name: 'FaStar', component: <FaStar /> },
@@ -562,10 +590,13 @@ const iconOptions = [
 const AdminPage = () => {
   const [psicologos, setPsicologos] = useState(initialPsicologos);
   const [plans, setPlans] = useState(initialPlans);
+  const [professionalPlans, setProfessionalPlans] = useState(initialProfessionalPlans);
   const [selectedPsicologo, setSelectedPsicologo] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
+  const [selectedProfessionalPlan, setSelectedProfessionalPlan] = useState(null);
   const [isAddingPsicologo, setIsAddingPsicologo] = useState(false);
   const [isAddingPlan, setIsAddingPlan] = useState(false);
+  const [isAddingProfessionalPlan, setIsAddingProfessionalPlan] = useState(false);
   const [fotoPreview, setFotoPreview] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -575,7 +606,6 @@ const AdminPage = () => {
     setFotoPreview(selectedPsicologo?.foto || null);
   }, [selectedPsicologo]);
 
-  // Handle clicks outside the dropdown to close it
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -712,11 +742,56 @@ const AdminPage = () => {
     setIsDropdownOpen(false);
   };
 
+  // Professional Plans Handlers
+  const handleAddProfessionalPlan = () => {
+    setSelectedProfessionalPlan({
+      id: 0,
+      title: '',
+      price: '',
+      benefits: [],
+      classificacao: 'Prata',
+    });
+    setIsAddingProfessionalPlan(true);
+  };
+
+  const handleEditProfessionalPlan = (plan) => {
+    setSelectedProfessionalPlan({ ...plan });
+    setIsAddingProfessionalPlan(false);
+  };
+
+  const handleDeleteProfessionalPlan = (id) => {
+    if (window.confirm('Tem certeza que deseja excluir este plano para profissionais?')) {
+      setProfessionalPlans(professionalPlans.filter(p => p.id !== id));
+    }
+  };
+
+  const handleProfessionalPlanFormSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const planData = {
+      id: parseInt(formData.get('id')) || (professionalPlans.length > 0 ? Math.max(...professionalPlans.map(p => p.id)) + 1 : 1),
+      title: formData.get('title'),
+      price: formData.get('price'),
+      benefits: formData.get('benefits').split('\n').map(b => b.trim()).filter(b => b),
+      classificacao: formData.get('classificacao'),
+    };
+
+    if (isAddingProfessionalPlan) {
+      setProfessionalPlans([...professionalPlans, planData]);
+    } else {
+      setProfessionalPlans(professionalPlans.map(p => (p.id === selectedProfessionalPlan.id ? planData : p)));
+    }
+    setSelectedProfessionalPlan(null);
+    setIsAddingProfessionalPlan(false);
+  };
+
   const handleCancel = () => {
     setSelectedPsicologo(null);
     setSelectedPlan(null);
+    setSelectedProfessionalPlan(null);
     setIsAddingPsicologo(false);
     setIsAddingPlan(false);
+    setIsAddingProfessionalPlan(false);
   };
 
   const handleLogout = () => {
@@ -924,7 +999,6 @@ const AdminPage = () => {
                     </Dropdown>
                   )}
                 </SelectContainer>
-                {/* Hidden input to ensure the form captures the selected icon */}
                 <input type="hidden" name="icon" value={selectedPlan?.icon || 'FaStar'} />
               </FormGroup>
               <FormGroup>
@@ -965,6 +1039,93 @@ const AdminPage = () => {
                       <td>
                         <Button onClick={() => handleEditPlan(p)}>Editar</Button>
                         <Button onClick={() => handleDeletePlan(p.id)}>Excluir</Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </TableContainer>
+          </div>
+        )}
+      </Section>
+
+      {/* Nova Seção de Configuração de Planos para Profissionais */}
+      <Section>
+        <h2>Configuração de Planos para Profissionais</h2>
+        {isAddingProfessionalPlan || selectedProfessionalPlan ? (
+          <div>
+            <h3>{isAddingProfessionalPlan ? 'Adicionar Plano para Profissionais' : 'Editar Plano para Profissionais'}</h3>
+            <Form onSubmit={handleProfessionalPlanFormSubmit}>
+              <FormGroup>
+                <label>ID</label>
+                <Input
+                  type="number"
+                  name="id"
+                  defaultValue={selectedProfessionalPlan?.id || ''}
+                  required
+                />
+              </FormGroup>
+              <FormGroup>
+                <label>Título</label>
+                <Input
+                  type="text"
+                  name="title"
+                  defaultValue={selectedProfessionalPlan?.title || ''}
+                  required
+                />
+              </FormGroup>
+              <FormGroup>
+                <label>Preço (ex: R$ 30,00/mês)</label>
+                <Input
+                  type="text"
+                  name="price"
+                  defaultValue={selectedProfessionalPlan?.price || ''}
+                  required
+                />
+              </FormGroup>
+              <FormGroup>
+                <label>Classificação</label>
+                <select name="classificacao" defaultValue={selectedProfessionalPlan?.classificacao || 'Prata'} required>
+                  <option value="Ouro">Ouro</option>
+                  <option value="Prata">Prata</option>
+                </select>
+              </FormGroup>
+              <FormGroup>
+                <label>Benefícios (um por linha)</label>
+                <Textarea
+                  name="benefits"
+                  defaultValue={selectedProfessionalPlan?.benefits?.join('\n') || ''}
+                  required
+                />
+              </FormGroup>
+              <Button type="submit">Salvar</Button>
+              <Button type="button" onClick={handleCancel}>Cancelar</Button>
+            </Form>
+          </div>
+        ) : (
+          <div>
+            <Button onClick={handleAddProfessionalPlan}>Adicionar Plano para Profissionais</Button>
+            <TableContainer>
+              <Table>
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Preço</th>
+                    <th>Classificação</th>
+                    <th>Ação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {professionalPlans.map(p => (
+                    <tr key={p.id}>
+                      <td>{p.id}</td>
+                      <td>{p.title}</td>
+                      <td>{p.price}</td>
+                      <td>{p.classificacao}</td>
+                      <td>
+                        <Button onClick={() => handleEditProfessionalPlan(p)}>Editar</Button>
+                        <Button onClick={() => handleDeleteProfessionalPlan(p.id)}>Excluir</Button>
                       </td>
                     </tr>
                   ))}
