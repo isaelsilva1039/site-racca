@@ -23,7 +23,8 @@ import SegurosPessoais from './pages/SegurosPessoais';
 import Especialidades from './pages/Especialidades';
 import PlanoOdontoEmpresarial from './pages/PlanoOdontoEmpresarial';
 import ConsultaAvulsa from './pages/ConsultaAvulsa';
-import AdminPage from './pages/AdminPage'; // Novo import
+import AdminPage from './pages/AdminPage';
+import TrabalheConosco from './pages/TrabalheConosco'; // Novo import
 
 const MainContainer = styled.div`
   display: flex;
@@ -67,7 +68,9 @@ function App() {
                 <Section id="consultaavulsa">
                   <ConsultaAvulsa />
                 </Section>
-                <BenefitsSection />
+                <Section id="benefits-section">
+                  <BenefitsSection />
+                </Section>
                 <Section id="depoimentos">
                   <TestimonialsSection />
                 </Section>
@@ -97,7 +100,8 @@ function App() {
           <Route path="/seguros-pessoais" element={<SegurosPessoais />} />
           <Route path="/especialidades" element={<Especialidades />} />
           <Route path="/plano-odonto-empresarial" element={<PlanoOdontoEmpresarial />} />
-          <Route path="/admin" element={<AdminPage />} /> {/* Nova rota */}
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/trabalhe-conosco" element={<TrabalheConosco />} /> {/* Nova rota */}
         </Routes>
         <FAQModal isOpen={isFAQModalOpen} onClose={handleCloseFAQModal} />
       </MainContainer>

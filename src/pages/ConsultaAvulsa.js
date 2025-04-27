@@ -1,7 +1,9 @@
-
 import React, { useState, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { FaUserCircle, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaUserCircle, FaTimes, FaChevronLeft, FaChevronRight, FaEnvelope, FaWhatsapp } from 'react-icons/fa';
+import InputMask from 'react-input-mask';
+import { createCustomer, createPayment, getOrCreateCustomer } from '../services/server';
+import './Plans/Plans.css'; // Import Plans.css for consistent modal and form styling
 
 const fadeInUp = keyframes`
   from {
@@ -728,7 +730,25 @@ const ConsultaAvulsa = () => {
   const [expandedSobreMim, setExpandedSobreMim] = useState({});
   const [mesAtual, setMesAtual] = useState(4); // Mês inicial: abril (1-12)
   const [anoAtual, setAnoAtual] = useState(2025); // Ano inicial: 2025
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const gridRef = useRef(null);
+
+  const [payerInfo, setPayerInfo] = useState({
+    name: '',
+    email: '',
+    cpfCnpj: '',
+    phone: '',
+    birthdate: '',
+    cep: '',
+    rua: '',
+    numero: '',
+    complemento: '',
+    bairro: '',
+    cidade: '',
+    estado: '',
+  });
 
   const psicologos = [
     {
@@ -991,12 +1011,11 @@ const ConsultaAvulsa = () => {
     : [];
 
   const handleConsultarClick = (psicologo) => {
+    setSelectedPsicologo(psicologo);
     if (psicologo.classificacao === 'Prata') {
-      const mensagem = `Olá, gostaria de agendar uma consulta com o psicólogo ${psicologo.nome} (CRP: ${psicologo.crp}).`;
-      const url = `https://wa.me/5537999137500?text=${encodeURIComponent(mensagem)}`;
-      window.open(url, '_blank');
+      setIsPaymentModalOpen(true);
+      setStep(1);
     } else {
-      setSelectedPsicologo(psicologo);
       setSelectedDia(null);
       setSelectedHorario(null);
       setMesAtual(4);
@@ -1017,11 +1036,175 @@ const ConsultaAvulsa = () => {
 
   const handleConfirmar = () => {
     if (selectedDia && selectedHorario && selectedPsicologo.classificacao === 'Ouro') {
-      const mensagem = `Olá, gostaria de agendar uma consulta com o psicólogo ${selectedPsicologo.nome} (CRP: ${selectedPsicologo.crp}) no dia ${selectedDia} de ${meses[mesAtual - 1]} de ${anoAtual} às ${selectedHorario}.`;
-      const url = `https://wa.me/5537999137500?text=${encodeURIComponent(mensagem)}`;
-      window.open(url, '_blank');
-      setSelectedPsicologo(null);
+      setIsPaymentModalOpen(true);
+      setStep(1);
     }
+  };
+
+  const closePaymentModal = () => {
+    setIsPaymentModalOpen(false);
+    setPayerInfo({
+      name: '',
+      email: '',
+      cpfCnpj: '',
+      phone: '',
+      birthdate: '',
+      cep: '',
+      rua: '',
+      numero: '',
+      complemento: '',
+      bairro: '',
+      cidade: '',
+      estado: '',
+    });
+    setStep(1);
+    setLoading(false);
+    setSelectedPsicologo(null);
+    setSelectedDia(null);
+    setSelectedHorario(null);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPayerInfo((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAdvance = () => {
+    if (!isStep1Valid) {
+      alert('Por favor, preencha todos os campos obrigatórios!');
+      return;
+    }
+    setStep(2);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!isStep2Valid) {
+      alert('Por favor, preencha todos os campos obrigatórios!');
+      return;
+    }
+    setLoading(true);
+    getOrCreateCustomerPla();
+  };
+
+  const isStep1Valid =
+    payerInfo.name &&
+    payerInfo.email &&
+    payerInfo.cpfCnpj &&
+    payerInfo.phone &&
+    payerInfo.birthdate;
+
+  const isStep2Valid =
+    payerInfo.cep &&
+    payerInfo.rua &&
+    payerInfo.numero &&
+    payerInfo.bairro &&
+    payerInfo.cidade &&
+    payerInfo.estado;
+
+  const formatAddress = () => {
+    const { cep, rua, numero, complemento, bairro, cidade, estado } = payerInfo;
+    if (!cep && !rua && !numero && !bairro && !cidade && !estado) return "";
+    return `${rua}, ${numero}${complemento ? ' - ' + complemento : ''}, ${bairro}, ${cidade} - ${estado}, CEP: ${cep}`;
+  };
+
+  const fetchAddressFromCEP = async () => {
+    const cep = payerInfo.cep.replace(/\D/g, '');
+    if (cep.length !== 8) return;
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await response.json();
+      if (!data.erro) {
+        setPayerInfo((prev) => ({
+          ...prev,
+          rua: data.logradouro || '',
+          bairro: data.bairro || '',
+          cidade: data.localidade || '',
+          estado: data.uf || '',
+        }));
+      }
+    } catch (err) {
+      console.error("Erro ao buscar CEP:", err);
+    }
+  };
+
+  const getOrCreateCustomerPla = async () => {
+    setLoading(true);
+    getOrCreateCustomer({
+      cpfCnpj: payerInfo?.cpfCnpj,
+      onSuccess: (data) => {
+        if (data.length > 0) {
+          const id = data[0].id;
+          payment(id);
+        } else {
+          create();
+        }
+      },
+      onError: (message) => {
+        console.error("onError chamado com:", message);
+        setLoading(false);
+      },
+    });
+  };
+
+  const create = () => {
+    createCustomer({
+      name: payerInfo?.name,
+      cpfCnpj: payerInfo?.cpfCnpj,
+      email: payerInfo?.email,
+      phone: payerInfo?.phone,
+      address: formatAddress(),
+      birthdate: payerInfo?.birthdate,
+      postalCode: payerInfo?.cep,
+      addressNumber: payerInfo?.numero,
+      complement: payerInfo?.complemento,
+      province: payerInfo?.bairro,
+      onSuccess: (data) => {
+        if (data.length > 0) {
+          const id = data[0].id;
+          payment(id);
+        }
+      },
+      onError: (message) => {
+        console.error("onError chamado com:", message);
+        setLoading(false);
+      },
+    });
+  };
+
+  const payment = (id_cliente_assas) => {
+    createPayment({
+      externalReference: selectedPsicologo.id, // Using psychologist ID as external reference
+      customer: id_cliente_assas,
+      billingType: 'UNDEFINED',
+      dueDate: new Date().toISOString().split("T")[0],
+      value: selectedPsicologo.preco,
+      description: `Consulta avulsa com o psicólogo ${selectedPsicologo.nome}`,
+      cpfCnpj: payerInfo?.cpfCnpj,
+      name: payerInfo?.name,
+      email: payerInfo?.email,
+      phone: payerInfo?.phone,
+      address: formatAddress(),
+      onSuccess: (data) => {
+        const invoiceUrl = data?.original?.invoiceUrl;
+        if (invoiceUrl) {
+          window.location.href = invoiceUrl;
+        }
+        // After payment, redirect to WhatsApp
+        const mensagem = selectedPsicologo.classificacao === 'Ouro' && selectedDia && selectedHorario
+          ? `Olá, gostaria de agendar uma consulta com o psicólogo ${selectedPsicologo.nome} (CRP: ${selectedPsicologo.crp}) no dia ${selectedDia} de ${meses[mesAtual - 1]} de ${anoAtual} às ${selectedHorario}.`
+          : `Olá, gostaria de agendar uma consulta com o psicólogo ${selectedPsicologo.nome} (CRP: ${selectedPsicologo.crp}).`;
+        const url = `https://wa.me/5537999137500?text=${encodeURIComponent(mensagem)}`;
+        setTimeout(() => {
+          window.open(url, '_blank');
+          closePaymentModal();
+        }, 1000); // Small delay to ensure payment redirect completes
+      },
+      onError: (message) => {
+        setLoading(false);
+        console.error("onError chamado com:", message);
+      },
+    });
   };
 
   const toggleExpandSobreMim = (id) => {
@@ -1134,7 +1317,7 @@ const ConsultaAvulsa = () => {
         </NavButton>
       </GridContainer>
 
-      {selectedPsicologo && selectedPsicologo.classificacao === 'Ouro' && (
+      {selectedPsicologo && selectedPsicologo.classificacao === 'Ouro' && !isPaymentModalOpen && (
         <ModalOverlay>
           <ModalContent>
             <CloseButton onClick={() => setSelectedPsicologo(null)}>
@@ -1191,6 +1374,214 @@ const ConsultaAvulsa = () => {
             )}
           </ModalContent>
         </ModalOverlay>
+      )}
+
+      {isPaymentModalOpen && selectedPsicologo && (
+        <div className="modal-overlay" onClick={closePaymentModal}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button onClick={closePaymentModal} className="modal-close">
+              ×
+            </button>
+            <h3>{`Pagamento para consulta com ${selectedPsicologo.nome}`}</h3>
+            <div className="price-option-selector">
+              <p>{`R$ ${selectedPsicologo.preco},00 (avulso)`}</p>
+            </div>
+            <form onSubmit={handleSubmit}>
+              {step === 1 && (
+                <div className="step step-1">
+                  <h4>Informações do Pagador</h4>
+                  <div className="form-group">
+                    <label>
+                      Nome Completo <span className="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Nome Completo"
+                      value={payerInfo.name}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>
+                      E-mail <span className="required">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="E-mail"
+                      value={payerInfo.email}
+                      onChange={handleInputChange}
+                      required
+                    />
+                    <FaEnvelope className="input-icon" />
+                  </div>
+                  <div className="form-group">
+                    <label>
+                      CPF <span className="required">*</span>
+                    </label>
+                    <InputMask
+                      mask="999.999.999-99"
+                      maskChar=""
+                      type="text"
+                      name="cpfCnpj"
+                      placeholder="CPF"
+                      value={payerInfo.cpfCnpj}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>
+                      WhatsApp <span className="required">*</span>
+                    </label>
+                    <InputMask
+                      mask="(99) 99999-9999"
+                      maskChar=""
+                      type="text"
+                      name="phone"
+                      placeholder="WhatsApp"
+                      value={payerInfo.phone}
+                      onChange={handleInputChange}
+                      required
+                    />
+                    <FaWhatsapp className="input-icon" />
+                  </div>
+                  <div className="form-group">
+                    <label>
+                      Data de Nascimento <span className="required">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      name="birthdate"
+                      value={payerInfo.birthdate}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group button-container">
+                    <button
+                      type="button"
+                      onClick={handleAdvance}
+                      className="plan-button"
+                    >
+                      Avançar
+                    </button>
+                  </div>
+                </div>
+              )}
+              {step === 2 && (
+                <div className="step step-2">
+                  <h4>Endereço</h4>
+                  <div className="form-group">
+                    <label>
+                      CEP <span className="required">*</span>
+                    </label>
+                    <InputMask
+                      mask="99999-999"
+                      maskChar=""
+                      type="text"
+                      name="cep"
+                      placeholder="CEP"
+                      value={payerInfo.cep}
+                      onChange={handleInputChange}
+                      onBlur={fetchAddressFromCEP}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>
+                      Rua <span className="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="rua"
+                      placeholder="Rua"
+                      value={payerInfo.rua}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>
+                      Número da Casa <span className="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="numero"
+                      placeholder="Número da Casa"
+                      value={payerInfo.numero}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Complemento</label>
+                    <input
+                      type="text"
+                      name="complemento"
+                      placeholder="Complemento (opcional)"
+                      value={payerInfo.complemento}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>
+                      Bairro <span className="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="bairro"
+                      placeholder="Bairro"
+                      value={payerInfo.bairro}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>
+                      Cidade <span className="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="cidade"
+                      placeholder="Cidade"
+                      value={payerInfo.cidade}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>
+                      Estado <span className="required">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="estado"
+                      placeholder="Estado"
+                      value={payerInfo.estado}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <button type="button" onClick={() => setStep(1)} className="back-button">
+                      <FaChevronLeft title="Voltar" />
+                      Voltar
+                    </button>
+                  </div>
+                  <div className="form-group button-container">
+                    <button type="submit" className="plan-button">
+                      {loading ? 'Processando...' : 'Processar Pagamento'}
+                    </button>
+                  </div>
+                </div>
+              )}
+              {loading && <p className="loading-message">Por favor, aguarde...</p>}
+            </form>
+          </div>
+        </div>
       )}
     </ConsultaContainer>
   );

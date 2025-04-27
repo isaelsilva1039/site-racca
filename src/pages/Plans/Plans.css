@@ -130,16 +130,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute; /* Fixa o botão no fundo */
-  bottom: 20px; /* Distância do fundo do cartão */
-  width: calc(100% - 40px); /* Largura ajustada com margens laterais */
-  margin: 0; /* Remove margem padrão */
+  width: 100%; /* Garante que o botão ocupe a largura total */
+  margin-top: 10px; /* Espaço acima do botão */
 }
 
 .plan-button:hover {
   background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
   transform: scale(1.05);
 }
+
 .plan-button svg {
   margin-left: 10px;
   font-size: 1.2em;
@@ -268,80 +267,27 @@ form h4 {
   pointer-events: none;
 }
 
-/* Forma de Pagamento */
-.payment-methods {
+/* Botão Avançar no Formulário */
+.form-group.button-container {
+  margin-top: 20px; /* Espaço acima do botão */
   display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
+  justify-content: center; /* Centraliza o botão */
 }
 
-.payment-methods label {
+/* Botão Voltar */
+.back-button {
   display: flex;
   align-items: center;
-  cursor: pointer;
-  font-size: 1rem;
-  color: var(--text-color);
-  transition: color 0.3s ease;
-}
-
-.payment-methods input {
-  margin-right: 8px;
-}
-
-.payment-methods label:hover {
-  color: var(--primary-color);
-}
-
-/* Informações do Cartão */
-.card-details {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.card-details .form-group {
-  flex: 1 1 30%;
-  min-width: 100px;
-}
-
-/* QR Code Container */
-.qr-code-container {
-  text-align: center;
-  margin: 20px 0;
-}
-
-.qr-code-container p {
-  margin-top: 10px;
-  color: var(--light-text);
-  word-break: break-all;
-}
-
-/* Botão de Submissão */
-.submit-button {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
+  background: none;
   border: none;
-  padding: 14px 30px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background 0.3s ease, transform 0.2s ease;
+  color: var(--primary-color);
   font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 10px;
+  cursor: pointer;
+  margin-bottom: 15px;
 }
 
-.submit-button:hover {
-  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-  transform: scale(1.05);
-}
-
-.submit-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
+.back-button svg {
+  margin-right: 5px;
 }
 
 /* Mensagem de Carregamento */
@@ -350,12 +296,6 @@ form h4 {
   color: var(--light-text);
   margin-top: 10px;
   text-align: center;
-}
-
-/* QR Code Responsivo */
-.qr-code-container svg {
-  max-width: 100%;
-  height: auto;
 }
 
 /* Responsividade Geral */
@@ -396,26 +336,6 @@ form h4 {
   .form-group select {
     font-size: 0.95rem;
   }
-
-  .payment-methods {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .payment-methods label {
-    margin-bottom: 10px;
-  }
-
-
-
-  .card-details {
-    flex-direction: column;
-  }
-
-  .card-details .form-group {
-    flex: 1 1 100%;
-    min-width: 100%;
-  }
 }
 
 @media (max-width: 768px) {
@@ -454,24 +374,6 @@ form h4 {
   .form-group input,
   .form-group select {
     font-size: 0.95rem;
-  }
-
-  .payment-methods {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .payment-methods label {
-    margin-bottom: 10px;
-  }
-
-  .card-details {
-    flex-direction: column;
-  }
-
-  .card-details .form-group {
-    flex: 1 1 100%;
-    min-width: 100%;
   }
 }
 
@@ -514,37 +416,10 @@ form h4 {
     font-size: 0.9rem;
   }
 
-  .payment-methods {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .payment-methods label {
-    margin-bottom: 8px;
-  }
-
-  .card-details {
-    flex-direction: column;
-  }
-
-  .card-details .form-group {
-    flex: 1 1 100%;
-    min-width: 100%;
-  }
-
-  .submit-button {
-    padding: 10px 20px;
+  .back-button {
     font-size: 0.9rem;
-    width: 100%;
-  }
-
-  .submit-button svg {
-    margin-left: 6px;
-    font-size: 1em;
   }
 }
-
-
 
 .plan-price-container {
   display: flex;

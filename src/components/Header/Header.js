@@ -1,7 +1,6 @@
 import './Header.css';
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { AccountCircle } from '@mui/icons-material';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -158,6 +157,8 @@ function Header() {
             </div>
           )}
         </div>
+
+        <Link to="/trabalhe-conosco" className="nav-link" onClick={() => setIsMenuOpen(false)}>Trabalhe Conosco</Link>
 
         <a href="#blog" className="nav-link" onClick={handleBlogClick}>Blog</a>
         <a href="#agende-agora" className="nav-link agende-agora" onClick={handleAgendamentoClick}>Agende Agora</a>
