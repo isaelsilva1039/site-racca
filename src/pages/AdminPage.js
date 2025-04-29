@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -534,35 +535,6 @@ const initialPlans = [
   },
 ];
 
-// Novo array para planos de profissionais
-const initialProfessionalPlans = [
-  {
-    id: 1,
-    title: 'Plano Prata para Profissionais',
-    price: 'R$ 30,00/mês',
-    benefits: [
-      'Acesso a plataforma de agendamento',
-      'Suporte básico via WhatsApp',
-      'Visibilidade padrão no site',
-    ],
-    classificacao: 'Prata',
-  },
-  {
-    id: 2,
-    title: 'Plano Ouro para Profissionais',
-    price: 'R$ 50,00/mês',
-    benefits: [
-      'Acesso a plataforma de agendamento',
-      'Suporte prioritário via WhatsApp',
-      'Visibilidade destacada no site',
-      'Relatórios de desempenho',
-      'Selo de profissional Ouro',
-    ],
-    classificacao: 'Ouro',
-  },
-];
-
-// Lista de ícones disponíveis
 const iconOptions = [
   { name: 'FaStar', component: <FaStar /> },
   { name: 'FaCrown', component: <FaCrown /> },
@@ -587,10 +559,12 @@ const iconOptions = [
   { name: 'FaUmbrella', component: <FaUmbrella /> },
 ];
 
+const BASE_URL = 'https://racca.store';
+
 const AdminPage = () => {
   const [psicologos, setPsicologos] = useState(initialPsicologos);
   const [plans, setPlans] = useState(initialPlans);
-  const [professionalPlans, setProfessionalPlans] = useState(initialProfessionalPlans);
+  const [professionalPlans, setProfessionalPlans] = useState([]);
   const [selectedPsicologo, setSelectedPsicologo] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [selectedProfessionalPlan, setSelectedProfessionalPlan] = useState(null);
@@ -599,8 +573,28 @@ const AdminPage = () => {
   const [isAddingProfessionalPlan, setIsAddingProfessionalPlan] = useState(false);
   const [fotoPreview, setFotoPreview] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [error, setError] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProfessionalPlans = async () => {
+      try {
+        console.log('Fetching professional plans from:', `${BASE_URL}/api/profissionais/planos/all`);
+        const response = await fetch(`${BASE_URL}/api/profissionais/planos/all`);
+        if (!response.ok) {
+          throw new Error(`Erro ao buscar planos para profissionais: ${response.status} ${response.statusText}`);
+        }
+        const data = await response.json();
+        console.log('Professional Plans Response:', data);
+        setProfessionalPlans(data);
+      } catch (err) {
+        console.error('Error fetching professional plans:', err);
+        setError(err.message);
+      }
+    };
+    fetchProfessionalPlans();
+  }, []);
 
   useEffect(() => {
     setFotoPreview(selectedPsicologo?.foto || null);
@@ -622,6 +616,7 @@ const AdminPage = () => {
   // Psicologos Handlers
   const handleAddPsicologo = () => {
     setSelectedPsicologo({
+      id: 0,
       nome: '',
       cpf: '',
       crp: '',
@@ -651,6 +646,7 @@ const AdminPage = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const psicologoData = {
+      id: selectedPsicologo?.id || 0,
       nome: formData.get('nome'),
       cpf: formData.get('cpf'),
       crp: formData.get('crp'),
@@ -665,7 +661,7 @@ const AdminPage = () => {
 
     if (isAddingPsicologo) {
       const newId = psicologos.length > 0 ? Math.max(...psicologos.map(p => p.id)) + 1 : 1;
-      setPsicologos([...psicologos, { id: newId, ...psicologoData }]);
+      setPsicologos([...psicologos, { ...psicologoData, id: newId }]);
     } else {
       setPsicologos(psicologos.map(p => (p.id === selectedPsicologo.id ? { ...p, ...psicologoData } : p)));
     }
@@ -742,7 +738,7 @@ const AdminPage = () => {
     setIsDropdownOpen(false);
   };
 
-  // Professional Plans Handlers
+  // Professional Plans Handlers with API
   const handleAddProfessionalPlan = () => {
     setSelectedProfessionalPlan({
       id: 0,
@@ -754,35 +750,87 @@ const AdminPage = () => {
     setIsAddingProfessionalPlan(true);
   };
 
-  const handleEditProfessionalPlan = (plan) => {
-    setSelectedProfessionalPlan({ ...plan });
-    setIsAddingProfessionalPlan(false);
-  };
-
-  const handleDeleteProfessionalPlan = (id) => {
-    if (window.confirm('Tem certeza que deseja excluir este plano para profissionais?')) {
-      setProfessionalPlans(professionalPlans.filter(p => p.id !== id));
+  const handleEditProfessionalPlan = async (plan) => {
+    try {
+      console.log('Fetching plan details from:', `${BASE_URL}/api/profissionais/planos/${plan.id}`);
+      const response = await fetch(`${BASE_URL}/api/profissionais/planos/${plan.id}`);
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar plano para profissional: ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      console.log('Plan Details Response:', data);
+      setSelectedProfessionalPlan(data);
+      setIsAddingProfessionalPlan(false);
+    } catch (err) {
+      console.error('Error fetching plan details:', err);
+      setError(err.message);
     }
   };
 
-  const handleProfessionalPlanFormSubmit = (e) => {
+  const handleDeleteProfessionalPlan = async (id) => {
+    if (window.confirm('Tem certeza que deseja excluir este plano para profissionais?')) {
+      try {
+        console.log('Deleting plan at:', `${BASE_URL}/api/profissionais/planos/delete/${id}`);
+        const response = await fetch(`${BASE_URL}/api/profissionais/planos/delete/${id}`, {
+          method: 'DELETE',
+        });
+        if (!response.ok) {
+          throw new Error(`Erro ao excluir plano para profissional: ${response.status} ${response.statusText}`);
+        }
+        console.log('Plan deleted successfully, ID:', id);
+        setProfessionalPlans(professionalPlans.filter(p => p.id !== id));
+      } catch (err) {
+        console.error('Error deleting plan:', err);
+        setError(err.message);
+      }
+    }
+  };
+
+  const handleProfessionalPlanFormSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const planData = {
-      id: parseInt(formData.get('id')) || (professionalPlans.length > 0 ? Math.max(...professionalPlans.map(p => p.id)) + 1 : 1),
       title: formData.get('title'),
       price: formData.get('price'),
       benefits: formData.get('benefits').split('\n').map(b => b.trim()).filter(b => b),
       classificacao: formData.get('classificacao'),
     };
+    console.log('Submitting Professional Plan Data:', planData);
 
-    if (isAddingProfessionalPlan) {
-      setProfessionalPlans([...professionalPlans, planData]);
-    } else {
-      setProfessionalPlans(professionalPlans.map(p => (p.id === selectedProfessionalPlan.id ? planData : p)));
+    try {
+      if (isAddingProfessionalPlan) {
+        console.log('Creating new plan at:', `${BASE_URL}/api/profissionais/planos/create`);
+        const response = await fetch(`${BASE_URL}/api/profissionais/planos/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(planData),
+        });
+        if (!response.ok) {
+          throw new Error(`Erro ao criar plano para profissional: ${response.status} ${response.statusText}`);
+        }
+        const newPlan = await response.json();
+        console.log('New Plan Created:', newPlan);
+        setProfessionalPlans([...professionalPlans, newPlan]);
+      } else {
+        console.log('Updating plan at:', `${BASE_URL}/api/profissionais/planos/update/${selectedProfessionalPlan.id}`);
+        const response = await fetch(`${BASE_URL}/api/profissionais/planos/update/${selectedProfessionalPlan.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(planData),
+        });
+        if (!response.ok) {
+          throw new Error(`Erro ao atualizar plano para profissional: ${response.status} ${response.statusText}`);
+        }
+        const updatedPlan = await response.json();
+        console.log('Plan Updated:', updatedPlan);
+        setProfessionalPlans(professionalPlans.map(p => (p.id === selectedProfessionalPlan.id ? updatedPlan : p)));
+      }
+      setSelectedProfessionalPlan(null);
+      setIsAddingProfessionalPlan(false);
+    } catch (err) {
+      console.error('Error submitting professional plan:', err);
+      setError(err.message);
     }
-    setSelectedProfessionalPlan(null);
-    setIsAddingProfessionalPlan(false);
   };
 
   const handleCancel = () => {
@@ -803,6 +851,7 @@ const AdminPage = () => {
   return (
     <AdminContainer>
       <Title>Painel de Administração</Title>
+      {error && <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
       <LogoutButton onClick={handleLogout}>
         <FaSignOutAlt /> Sair
       </LogoutButton>
@@ -1049,22 +1098,13 @@ const AdminPage = () => {
         )}
       </Section>
 
-      {/* Nova Seção de Configuração de Planos para Profissionais */}
+      {/* Seção de Configuração de Planos para Profissionais */}
       <Section>
         <h2>Configuração de Planos para Profissionais</h2>
         {isAddingProfessionalPlan || selectedProfessionalPlan ? (
           <div>
             <h3>{isAddingProfessionalPlan ? 'Adicionar Plano para Profissionais' : 'Editar Plano para Profissionais'}</h3>
             <Form onSubmit={handleProfessionalPlanFormSubmit}>
-              <FormGroup>
-                <label>ID</label>
-                <Input
-                  type="number"
-                  name="id"
-                  defaultValue={selectedProfessionalPlan?.id || ''}
-                  required
-                />
-              </FormGroup>
               <FormGroup>
                 <label>Título</label>
                 <Input
