@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
@@ -385,6 +384,19 @@ const LogoutButton = styled.button`
   }
 `;
 
+const ErrorMessage = styled.div`
+  color: red;
+  text-align: center;
+  margin-bottom: 15px;
+`;
+
+const LoadingMessage = styled.div`
+  text-align: center;
+  font-size: 1rem;
+  color: #a100ff;
+  margin-bottom: 15px;
+`;
+
 const initialPsicologos = [
   {
     id: 1,
@@ -574,23 +586,39 @@ const AdminPage = () => {
   const [fotoPreview, setFotoPreview] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfessionalPlans = async () => {
+      setIsLoading(true);
       try {
-        console.log('Fetching professional plans from:', `${BASE_URL}/api/profissionais/planos/all`);
-        const response = await fetch(`${BASE_URL}/api/profissionais/planos/all`);
+        const response = await fetch(`${BASE_URL}/api/profissionais/planos/all`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
         if (!response.ok) {
           throw new Error(`Erro ao buscar planos para profissionais: ${response.status} ${response.statusText}`);
         }
         const data = await response.json();
-        console.log('Professional Plans Response:', data);
-        setProfessionalPlans(data);
+        const mappedData = data.map(plan => ({
+          id: plan.id,
+          title: plan.titulo,
+          price: parseFloat(plan.preco).toFixed(2),
+          benefits: plan.beneficios.split(',').map(b => b.trim()),
+          classificacao: plan.classificacao,
+          icon: plan.icon || 'FaStar', // Default icon if API doesn't provide one
+          created_at: plan.created_at,
+          updated_at: plan.updated_at,
+        }));
+        setProfessionalPlans(mappedData);
+        setError(null);
       } catch (err) {
-        console.error('Error fetching professional plans:', err);
         setError(err.message);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchProfessionalPlans();
@@ -639,18 +667,37 @@ const AdminPage = () => {
   const handleDeletePsicologo = (id) => {
     if (window.confirm('Tem certeza que deseja excluir este psicólogo?')) {
       setPsicologos(psicologos.filter(p => p.id !== id));
+      setError(null);
     }
   };
 
   const handlePsicologoFormSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    const cpf = formData.get('cpf');
+    const crp = formData.get('crp');
+    const preco = parseFloat(formData.get('preco'));
+
+    // Basic validation
+    if (!/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(cpf)) {
+      setError('CPF deve estar no formato 123.456.789-00');
+      return;
+    }
+    if (!/^\d{2}\/\d{5}$/.test(crp)) {
+      setError('CRP deve estar no formato 04/70777');
+      return;
+    }
+    if (isNaN(preco) || preco <= 0) {
+      setError('Preço deve ser um número maior que 0');
+      return;
+    }
+
     const psicologoData = {
       id: selectedPsicologo?.id || 0,
       nome: formData.get('nome'),
-      cpf: formData.get('cpf'),
-      crp: formData.get('crp'),
-      preco: parseFloat(formData.get('preco')) || 0,
+      cpf,
+      crp,
+      preco,
       areas: formData.get('areas').split(',').map(a => a.trim()).filter(a => a),
       abordagem: formData.get('abordagem'),
       publico: formData.get('publico'),
@@ -667,6 +714,7 @@ const AdminPage = () => {
     }
     setSelectedPsicologo(null);
     setIsAddingPsicologo(false);
+    setError(null);
   };
 
   const handleFotoChange = (e) => {
@@ -705,18 +753,37 @@ const AdminPage = () => {
   const handleDeletePlan = (id) => {
     if (window.confirm('Tem certeza que deseja excluir este plano?')) {
       setPlans(plans.filter(p => p.id !== id));
+      setError(null);
     }
   };
 
   const handlePlanFormSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    const id = parseInt(formData.get('id'));
+    const id_plano_sistema_racca = parseInt(formData.get('id_plano_sistema_racca'));
+    const amount = parseFloat(formData.get('amount'));
+
+    // Basic validation
+    if (isNaN(id) || id <= 0) {
+      setError('ID deve ser um número maior que 0');
+      return;
+    }
+    if (isNaN(id_plano_sistema_racca) || id_plano_sistema_racca <= 0) {
+      setError('ID do plano RACCA deve ser um número maior que 0');
+      return;
+    }
+    if (isNaN(amount) || amount <= 0) {
+      setError('Valor deve ser um número maior que 0');
+      return;
+    }
+
     const planData = {
-      id: parseInt(formData.get('id')) || (plans.length > 0 ? Math.max(...plans.map(p => p.id)) + 1 : 1),
+      id,
       icon: formData.get('icon'),
-      id_plano_sistema_racca: parseInt(formData.get('id_plano_sistema_racca')) || (plans.length > 0 ? Math.max(...plans.map(p => p.id_plano_sistema_racca)) + 1 : 1),
+      id_plano_sistema_racca,
       title: formData.get('title'),
-      amount: parseFloat(formData.get('amount')) || 0,
+      amount,
       prices: {
         mensal: formData.get('pricesMensal') || '',
         fidelidade: formData.get('pricesFidelidade') || '',
@@ -731,10 +798,15 @@ const AdminPage = () => {
     }
     setSelectedPlan(null);
     setIsAddingPlan(false);
+    setError(null);
   };
 
-  const handleIconSelect = (iconName) => {
-    setSelectedPlan({ ...selectedPlan, icon: iconName });
+  const handleIconSelect = (iconName, isProfessionalPlan = false) => {
+    if (isProfessionalPlan) {
+      setSelectedProfessionalPlan({ ...selectedProfessionalPlan, icon: iconName });
+    } else {
+      setSelectedPlan({ ...selectedPlan, icon: iconName });
+    }
     setIsDropdownOpen(false);
   };
 
@@ -746,42 +818,62 @@ const AdminPage = () => {
       price: '',
       benefits: [],
       classificacao: 'Prata',
+      icon: 'FaStar',
     });
     setIsAddingProfessionalPlan(true);
   };
 
   const handleEditProfessionalPlan = async (plan) => {
+    setIsLoading(true);
     try {
-      console.log('Fetching plan details from:', `${BASE_URL}/api/profissionais/planos/${plan.id}`);
-      const response = await fetch(`${BASE_URL}/api/profissionais/planos/${plan.id}`);
+      const response = await fetch(`${BASE_URL}/api/profissionais/planos/${plan.id}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
       if (!response.ok) {
         throw new Error(`Erro ao buscar plano para profissional: ${response.status} ${response.statusText}`);
       }
       const data = await response.json();
-      console.log('Plan Details Response:', data);
-      setSelectedProfessionalPlan(data);
+      const mappedData = {
+        id: data.id,
+        title: data.titulo,
+        price: parseFloat(data.preco).toFixed(2),
+        benefits: data.beneficios.split(',').map(b => b.trim()),
+        classificacao: data.classificacao,
+        icon: data.icon || 'FaStar',
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+      };
+      setSelectedProfessionalPlan(mappedData);
       setIsAddingProfessionalPlan(false);
+      setError(null);
     } catch (err) {
-      console.error('Error fetching plan details:', err);
       setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleDeleteProfessionalPlan = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este plano para profissionais?')) {
+      setIsLoading(true);
       try {
-        console.log('Deleting plan at:', `${BASE_URL}/api/profissionais/planos/delete/${id}`);
         const response = await fetch(`${BASE_URL}/api/profissionais/planos/delete/${id}`, {
           method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
         });
         if (!response.ok) {
           throw new Error(`Erro ao excluir plano para profissional: ${response.status} ${response.statusText}`);
         }
-        console.log('Plan deleted successfully, ID:', id);
         setProfessionalPlans(professionalPlans.filter(p => p.id !== id));
+        setError(null);
       } catch (err) {
-        console.error('Error deleting plan:', err);
         setError(err.message);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -789,47 +881,80 @@ const AdminPage = () => {
   const handleProfessionalPlanFormSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const planData = {
-      title: formData.get('title'),
-      price: formData.get('price'),
-      benefits: formData.get('benefits').split('\n').map(b => b.trim()).filter(b => b),
-      classificacao: formData.get('classificacao'),
-    };
-    console.log('Submitting Professional Plan Data:', planData);
+    const price = formData.get('price');
 
+    // Basic validation
+    if (!/^\d+(\.\d{2})?$/.test(price)) {
+      setError('O preço deve estar no formato 30.00');
+      return;
+    }
+
+    const planData = {
+      titulo: formData.get('title'),
+      preco: price,
+      beneficios: formData.get('benefits').split('\n').map(b => b.trim()).join(','),
+      classificacao: formData.get('classificacao'),
+      icon: formData.get('icon'),
+    };
+
+    setIsLoading(true);
     try {
       if (isAddingProfessionalPlan) {
-        console.log('Creating new plan at:', `${BASE_URL}/api/profissionais/planos/create`);
         const response = await fetch(`${BASE_URL}/api/profissionais/planos/create`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
           body: JSON.stringify(planData),
         });
         if (!response.ok) {
           throw new Error(`Erro ao criar plano para profissional: ${response.status} ${response.statusText}`);
         }
         const newPlan = await response.json();
-        console.log('New Plan Created:', newPlan);
-        setProfessionalPlans([...professionalPlans, newPlan]);
+        const mappedNewPlan = {
+          id: newPlan.id,
+          title: newPlan.titulo,
+          price: parseFloat(newPlan.preco).toFixed(2),
+          benefits: newPlan.beneficios.split(',').map(b => b.trim()),
+          classificacao: newPlan.classificacao,
+          icon: newPlan.icon || 'FaStar',
+          created_at: newPlan.created_at,
+          updated_at: newPlan.updated_at,
+        };
+        setProfessionalPlans([...professionalPlans, mappedNewPlan]);
       } else {
-        console.log('Updating plan at:', `${BASE_URL}/api/profissionais/planos/update/${selectedProfessionalPlan.id}`);
         const response = await fetch(`${BASE_URL}/api/profissionais/planos/update/${selectedProfessionalPlan.id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
           body: JSON.stringify(planData),
         });
         if (!response.ok) {
           throw new Error(`Erro ao atualizar plano para profissional: ${response.status} ${response.statusText}`);
         }
         const updatedPlan = await response.json();
-        console.log('Plan Updated:', updatedPlan);
-        setProfessionalPlans(professionalPlans.map(p => (p.id === selectedProfessionalPlan.id ? updatedPlan : p)));
+        const mappedUpdatedPlan = {
+          id: updatedPlan.id,
+          title: updatedPlan.titulo,
+          price: parseFloat(updatedPlan.preco).toFixed(2),
+          benefits: updatedPlan.beneficios.split(',').map(b => b.trim()),
+          classificacao: updatedPlan.classificacao,
+          icon: updatedPlan.icon || 'FaStar',
+          created_at: updatedPlan.created_at,
+          updated_at: updatedPlan.updated_at,
+        };
+        setProfessionalPlans(professionalPlans.map(p => (p.id === selectedProfessionalPlan.id ? mappedUpdatedPlan : p)));
       }
       setSelectedProfessionalPlan(null);
       setIsAddingProfessionalPlan(false);
+      setError(null);
     } catch (err) {
-      console.error('Error submitting professional plan:', err);
       setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -840,6 +965,7 @@ const AdminPage = () => {
     setIsAddingPsicologo(false);
     setIsAddingPlan(false);
     setIsAddingProfessionalPlan(false);
+    setError(null);
   };
 
   const handleLogout = () => {
@@ -847,11 +973,13 @@ const AdminPage = () => {
   };
 
   const selectedIcon = iconOptions.find(opt => opt.name === selectedPlan?.icon)?.component || <FaStar />;
+  const selectedProfessionalIcon = iconOptions.find(opt => opt.name === selectedProfessionalPlan?.icon)?.component || <FaStar />;
 
   return (
     <AdminContainer>
       <Title>Painel de Administração</Title>
-      {error && <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+      {isLoading && <LoadingMessage>Carregando...</LoadingMessage>}
       <LogoutButton onClick={handleLogout}>
         <FaSignOutAlt /> Sair
       </LogoutButton>
@@ -864,21 +992,22 @@ const AdminPage = () => {
             <h3>{isAddingPsicologo ? 'Adicionar Psicólogo' : 'Editar Psicólogo'}</h3>
             <Form onSubmit={handlePsicologoFormSubmit}>
               <FormGroup>
-                <label>Nome</label>
-                <Input type="text" name="nome" defaultValue={selectedPsicologo?.nome || ''} required />
+                <label htmlFor="nome">Nome</label>
+                <Input type="text" id="nome" name="nome" defaultValue={selectedPsicologo?.nome || ''} required />
               </FormGroup>
               <FormGroup>
-                <label>CPF</label>
-                <Input type="text" name="cpf" defaultValue={selectedPsicologo?.cpf || ''} required />
+                <label htmlFor="cpf">CPF</label>
+                <Input type="text" id="cpf" name="cpf" defaultValue={selectedPsicologo?.cpf || ''} required />
               </FormGroup>
               <FormGroup>
-                <label>CRP</label>
-                <Input type="text" name="crp" defaultValue={selectedPsicologo?.crp || ''} required />
+                <label htmlFor="crp">CRP</label>
+                <Input type="text" id="crp" name="crp" defaultValue={selectedPsicologo?.crp || ''} required />
               </FormGroup>
               <FormGroup>
-                <label>Preço (R$)</label>
+                <label htmlFor="preco">Preço (R$)</label>
                 <Input
                   type="number"
+                  id="preco"
                   name="preco"
                   defaultValue={selectedPsicologo?.preco || 0}
                   min="0"
@@ -887,36 +1016,37 @@ const AdminPage = () => {
                 />
               </FormGroup>
               <FormGroup>
-                <label>Classificação</label>
-                <select name="classificacao" defaultValue={selectedPsicologo?.classificacao || 'Prata'} required>
+                <label htmlFor="classificacao">Classificação</label>
+                <select id="classificacao" name="classificacao" defaultValue={selectedPsicologo?.classificacao || 'Prata'} required>
                   <option value="Ouro">Ouro</option>
                   <option value="Prata">Prata</option>
                 </select>
               </FormGroup>
               <FormGroup>
-                <label>Áreas de Atendimento (separadas por vírgula)</label>
+                <label htmlFor="areas">Áreas de Atendimento (separadas por vírgula)</label>
                 <Input
                   type="text"
+                  id="areas"
                   name="areas"
                   defaultValue={selectedPsicologo?.areas?.join(', ') || ''}
                   required
                 />
               </FormGroup>
               <FormGroup>
-                <label>Abordagem</label>
-                <Input type="text" name="abordagem" defaultValue={selectedPsicologo?.abordagem || ''} required />
+                <label htmlFor="abordagem">Abordagem</label>
+                <Input type="text" id="abordagem" name="abordagem" defaultValue={selectedPsicologo?.abordagem || ''} required />
               </FormGroup>
               <FormGroup>
-                <label>Público</label>
-                <Input type="text" name="publico" defaultValue={selectedPsicologo?.publico || ''} required />
+                <label htmlFor="publico">Público</label>
+                <Input type="text" id="publico" name="publico" defaultValue={selectedPsicologo?.publico || ''} required />
               </FormGroup>
               <FormGroup>
-                <label>Sobre Mim</label>
-                <Textarea name="sobreMim" defaultValue={selectedPsicologo?.sobreMim || ''} required />
+                <label htmlFor="sobreMim">Sobre Mim</label>
+                <Textarea id="sobreMim" name="sobreMim" defaultValue={selectedPsicologo?.sobreMim || ''} required />
               </FormGroup>
               <FormGroup>
-                <label>Foto do Perfil</label>
-                <Input type="file" accept="image/*" onChange={handleFotoChange} />
+                <label htmlFor="foto">Foto do Perfil</label>
+                <Input id="foto" type="file" accept="image/*" onChange={handleFotoChange} />
                 {fotoPreview ? (
                   <FotoPreview src={fotoPreview} alt="Foto do perfil" />
                 ) : (
@@ -973,36 +1103,40 @@ const AdminPage = () => {
             <h3>{isAddingPlan ? 'Adicionar Plano' : 'Editar Plano'}</h3>
             <Form onSubmit={handlePlanFormSubmit}>
               <FormGroup>
-                <label>ID</label>
+                <label htmlFor="id">ID</label>
                 <Input
                   type="number"
+                  id="id"
                   name="id"
                   defaultValue={selectedPlan?.id || ''}
                   required
                 />
               </FormGroup>
               <FormGroup>
-                <label>ID Plano Sistema RACCA</label>
+                <label htmlFor="id_plano_sistema_racca">ID Plano Sistema RACCA</label>
                 <Input
                   type="number"
+                  id="id_plano_sistema_racca"
                   name="id_plano_sistema_racca"
                   defaultValue={selectedPlan?.id_plano_sistema_racca || ''}
                   required
                 />
               </FormGroup>
               <FormGroup>
-                <label>Título</label>
+                <label htmlFor="title">Título</label>
                 <Input
                   type="text"
+                  id="title"
                   name="title"
                   defaultValue={selectedPlan?.title || ''}
                   required
                 />
               </FormGroup>
               <FormGroup>
-                <label>Valor (R$)</label>
+                <label htmlFor="amount">Valor (R$)</label>
                 <Input
                   type="number"
+                  id="amount"
                   name="amount"
                   defaultValue={selectedPlan?.amount || 0}
                   min="0"
@@ -1011,23 +1145,25 @@ const AdminPage = () => {
                 />
               </FormGroup>
               <FormGroup>
-                <label>Preço Mensal (ex: R$ 39,90/mês s/ fidelidade)</label>
+                <label htmlFor="pricesMensal">Preço Mensal (ex: R$ 39,90/mês s/ fidelidade)</label>
                 <Input
                   type="text"
+                  id="pricesMensal"
                   name="pricesMensal"
                   defaultValue={selectedPlan?.prices?.mensal || ''}
                 />
               </FormGroup>
               <FormGroup>
-                <label>Preço com Fidelidade (ex: R$ 109,90/mês c/ fidelidade 12 meses)</label>
+                <label htmlFor="pricesFidelidade">Preço com Fidelidade (ex: R$ 109,90/mês c/ fidelidade 12 meses)</label>
                 <Input
                   type="text"
+                  id="pricesFidelidade"
                   name="pricesFidelidade"
                   defaultValue={selectedPlan?.prices?.fidelidade || ''}
                 />
               </FormGroup>
               <FormGroup>
-                <label>Ícone</label>
+                <label htmlFor="icon">Ícone</label>
                 <SelectContainer ref={dropdownRef}>
                   <SelectedOption onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -1051,8 +1187,9 @@ const AdminPage = () => {
                 <input type="hidden" name="icon" value={selectedPlan?.icon || 'FaStar'} />
               </FormGroup>
               <FormGroup>
-                <label>Benefícios (um por linha)</label>
+                <label htmlFor="benefits">Benefícios (um por linha)</label>
                 <Textarea
+                  id="benefits"
                   name="benefits"
                   defaultValue={selectedPlan?.benefits?.join('\n') || ''}
                   required
@@ -1106,33 +1243,60 @@ const AdminPage = () => {
             <h3>{isAddingProfessionalPlan ? 'Adicionar Plano para Profissionais' : 'Editar Plano para Profissionais'}</h3>
             <Form onSubmit={handleProfessionalPlanFormSubmit}>
               <FormGroup>
-                <label>Título</label>
+                <label htmlFor="title">Título</label>
                 <Input
                   type="text"
+                  id="title"
                   name="title"
                   defaultValue={selectedProfessionalPlan?.title || ''}
                   required
                 />
               </FormGroup>
               <FormGroup>
-                <label>Preço (ex: R$ 30,00/mês)</label>
+                <label htmlFor="price">Preço (ex: 30.00)</label>
                 <Input
                   type="text"
+                  id="price"
                   name="price"
                   defaultValue={selectedProfessionalPlan?.price || ''}
                   required
                 />
               </FormGroup>
               <FormGroup>
-                <label>Classificação</label>
-                <select name="classificacao" defaultValue={selectedProfessionalPlan?.classificacao || 'Prata'} required>
+                <label htmlFor="classificacao">Classificação</label>
+                <select id="classificacao" name="classificacao" defaultValue={selectedProfessionalPlan?.classificacao || 'Prata'} required>
                   <option value="Ouro">Ouro</option>
                   <option value="Prata">Prata</option>
                 </select>
               </FormGroup>
               <FormGroup>
-                <label>Benefícios (um por linha)</label>
+                <label htmlFor="icon">Ícone</label>
+                <SelectContainer ref={dropdownRef}>
+                  <SelectedOption onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      {selectedProfessionalIcon} {selectedProfessionalPlan?.icon || 'Selecione um ícone'}
+                    </span>
+                    <FaChevronDown />
+                  </SelectedOption>
+                  {isDropdownOpen && (
+                    <Dropdown>
+                      {iconOptions.map((option) => (
+                        <Option
+                          key={option.name}
+                          onClick={() => handleIconSelect(option.name, true)}
+                        >
+                          {option.component} {option.name}
+                        </Option>
+                      ))}
+                    </Dropdown>
+                  )}
+                </SelectContainer>
+                <input type="hidden" name="icon" value={selectedProfessionalPlan?.icon || 'FaStar'} />
+              </FormGroup>
+              <FormGroup>
+                <label htmlFor="benefits">Benefícios (um por linha)</label>
                 <Textarea
+                  id="benefits"
                   name="benefits"
                   defaultValue={selectedProfessionalPlan?.benefits?.join('\n') || ''}
                   required
