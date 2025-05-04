@@ -13,6 +13,18 @@ const fadeInUp = keyframes`
   }
 `;
 
+const pulse = keyframes`
+  0% {
+    box-shadow: 0 0 0 0 rgba(161, 0, 255, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(161, 0, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(161, 0, 255, 0);
+  }
+`;
+
 const Section = styled.div`
   max-width: 100%;
   width: 100%;
@@ -62,6 +74,15 @@ const Table = styled.table`
     background: #f9f9f9;
   }
 
+  tr {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  tr:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(161, 0, 255, 0.2);
+  }
+
   @media (max-width: 768px) {
     font-size: 0.85rem;
     th, td {
@@ -73,6 +94,80 @@ const Table = styled.table`
     th, td {
       padding: 6px;
     }
+  }
+`;
+
+const ProfileImage = styled.img`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 480px) {
+    width: 30px;
+    height: 30px;
+  }
+`;
+
+const ImagePlaceholder = styled.div`
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #e6d6ff, #d6eaff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #a100ff;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 480px) {
+    width: 30px;
+    height: 30px;
+    font-size: 1.2rem;
+  }
+`;
+
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+`;
+
+const PaginationButton = styled.button`
+  padding: 8px 16px;
+  background: #a100ff;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  animation: ${pulse} 2s infinite;
+
+  &:hover {
+    background: #8a00e6;
+  }
+
+  &:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    animation: none;
+  }
+
+  @media (max-width: 480px) {
+    padding: 6px 12px;
+    font-size: 0.9rem;
   }
 `;
 
@@ -258,9 +353,16 @@ const Button = styled.button`
   cursor: pointer;
   transition: background 0.3s ease;
   min-height: 44px;
+  animation: ${pulse} 2s infinite;
 
   &:hover {
     background: #8a00e6;
+  }
+
+  &:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    animation: none;
   }
 
   @media (max-width: 768px) {
@@ -318,166 +420,10 @@ const LoadingMessage = styled.div`
   margin-bottom: 15px;
 `;
 
-const initialPsicologos = [
-  {
-    id: 1,
-    nome: 'Fábio da Silva Ferreira',
-    cpf: '123.456.789-00',
-    crp: '04/70777',
-    preco: 30,
-    areas: ['adolescência', 'casais', 'depressão', 'ansiedade', 'identidade'],
-    abordagem: ['Terapia Cognitivo Comportamental - TCC'],
-    publico: 'Adolescentes, Adultos, Casais, Idosos',
-    sobreMim: 'Psicólogo clínico especialista em TCC...',
-    classificacao: 'Prata',
-    foto: null,
-    email: 'fabio@example.com',
-    data_nascimento: '2000-02-01',
-    especialidade: 'Psicologia',
-    avatar: null,
-    fk_anexo: null,
-    created_at: null,
-    updated_at: null,
-    deleted_at: null,
-    fk_especialidade: null,
-    link_sala: null,
-  },
-  {
-    id: 2,
-    nome: 'Ana Clara Souza',
-    cpf: '987.654.321-00',
-    crp: '04/80888',
-    preco: 50,
-    areas: ['trauma', 'ansiedade', 'depressão', 'luto'],
-    abordagem: ['Psicanálise'],
-    publico: 'Adultos, Idosos',
-    sobreMim: 'Psicanalista com 10 anos de experiência...',
-    classificacao: 'Ouro',
-    foto: null,
-    email: 'ana@example.com',
-    data_nascimento: '1985-05-15',
-    especialidade: 'Psicanálise',
-    avatar: null,
-    fk_anexo: null,
-    created_at: null,
-    updated_at: null,
-    deleted_at: null,
-    fk_especialidade: null,
-    link_sala: null,
-  },
-  {
-    id: 3,
-    nome: 'Lucas Mendes Oliveira',
-    cpf: '456.789.123-00',
-    crp: '04/90999',
-    preco: 40,
-    areas: ['carreira', 'estresse', 'relacionamentos'],
-    abordagem: ['Terapia Sistêmica'],
-    publico: 'Jovens Adultos, Adultos',
-    sobreMim: 'Especialista em coaching e terapia sistêmica...',
-    classificacao: 'Prata',
-    foto: null,
-    email: 'lucas@example.com',
-    data_nascimento: '1990-08-20',
-    especialidade: 'Terapia Sistêmica',
-    avatar: null,
-    fk_anexo: null,
-    created_at: null,
-    updated_at: null,
-    deleted_at: null,
-    fk_especialidade: null,
-    link_sala: null,
-  },
-];
-
-const areasOptions = [
-  'adolescência',
-  'ansiedade',
-  'carreira',
-  'casais',
-  'depressão',
-  'estresse',
-  'identidade',
-  'luto',
-  'relacionamentos',
-  'trauma',
-  'alimentação',
-  'autoestima',
-  'burnout',
-  'dependência química',
-  'desenvolvimento pessoal',
-  'educação',
-  'família',
-  'fobias',
-  'gestação',
-  'infância',
-  'sexualidade',
-  'sono',
-  'tdah',
-  'toc',
-  'transtornos alimentares',
-  'violência',
-  'idosos',
-  'neuropsicologia',
-  'saúde mental',
-  'orientação vocacional',
-  'divórcio',
-  'grief',
-  'parentalidade',
-  'autismo',
-  'crises existenciais',
-  'lgbtqia+',
-  'conflitos interpessoais',
-  'timidez',
-  'assertividade',
-  'mindfulness',
-  'estresse pós-traumático'
-];
-
-const abordagemOptions = [
-  'Terapia Cognitivo Comportamental - TCC',
-  'Psicanálise',
-  'Terapia Sistêmica',
-  'Terapia Humanista',
-  'Terapia Comportamental',
-  'Terapia Junguiana',
-  'Terapia Gestalt',
-  'Terapia Familiar',
-  'Terapia de Aceitação e Compromisso - ACT',
-  'Terapia Dialética Comportamental - DBT',
-  'Terapia Focada nas Emoções - EFT',
-  'Terapia Breve',
-  'Terapia Centrada na Pessoa',
-  'Terapia Existencial',
-  'Terapia Psicanalítica',
-  'Terapia Integrativa',
-  'Terapia de Esquemas',
-  'Terapia Corporal',
-  'Terapia Transpessoal',
-  'Terapia Analítico-Comportamental',
-  'Terapia de Casal Sistêmica',
-  'Terapia Fenomenológica',
-  'Terapia Narrativa',
-  'Terapia Comportamental Dialética',
-  'Terapia de Reprocessamento Traumático',
-  'Terapia Psicodinâmica',
-  'Terapia de Grupo',
-  'Terapia Cognitiva',
-  'Terapia Baseada em Mindfulness',
-  'Terapia Experiencial',
-  'Terapia de Solução de Problemas',
-  'Terapia de Apoio',
-  'Terapia Comportamental Integrativa',
-  'Terapia de Autocompaixão',
-  'Terapia de Exposição',
-  'Terapia Metacognitiva',
-  'Terapia de Resolução de Conflitos'
-];
-
 const BASE_URL = 'https://racca.store';
 
 const ProfissionaisConfig = () => {
-  const [psicologos, setPsicologos] = useState(initialPsicologos);
+  const [psicologos, setPsicologos] = useState([]);
   const [selectedPsicologo, setSelectedPsicologo] = useState(null);
   const [isAddingPsicologo, setIsAddingPsicologo] = useState(false);
   const [fotoPreview, setFotoPreview] = useState(null);
@@ -485,8 +431,62 @@ const ProfissionaisConfig = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAreasDropdownOpen, setIsAreasDropdownOpen] = useState(false);
   const [isAbordagemDropdownOpen, setIsAbordagemDropdownOpen] = useState(false);
+  const [areasOptions, setAreasOptions] = useState([]);
+  const [abordagemOptions, setAbordagemOptions] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const areasDropdownRef = useRef(null);
   const abordagemDropdownRef = useRef(null);
+
+  // Fetch professionals from API on component mount
+  useEffect(() => {
+    const fetchProfissionais = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`${BASE_URL}/api/profissionais/all`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Accept': 'application/json',
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`Erro ao buscar profissionais: ${response.status} ${response.statusText}`);
+        }
+        const data = await response.json();
+        // Map API data to match component's expected structure
+        const mappedData = data.map(profissional => ({
+          id: profissional.id,
+          nome: profissional.nome,
+          cpf: profissional.cpf,
+          crp: profissional.crp || '',
+          preco: profissional.preco || 0,
+          areasAtendimento: profissional.areasAtendimento ? JSON.parse(profissional.areasAtendimento) : [],
+          abordagem: profissional.abordagem ? JSON.parse(profissional.abordagem) : [],
+          publico: profissional.publico || '',
+          sobreMim: profissional.sobreMim || '',
+          classificacao: profissional.classificacao || 'Prata',
+          foto: profissional.fotoUrl || null,
+          email: profissional.email || '', // Email not provided in API, default to empty
+          data_nascimento: profissional.data_nascimento || '', // Not provided, default to empty
+          especialidade: profissional.especialidade || '', // Not provided, default to empty
+          avatar: profissional.fotoUrl || null,
+          fk_anexo: null,
+          created_at: null,
+          updated_at: null,
+          deleted_at: null,
+          fk_especialidade: null,
+          link_sala: null,
+        }));
+        setPsicologos(mappedData);
+        setError(null);
+      } catch (err) {
+        setError('Erro ao carregar profissionais: ' + err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProfissionais();
+  }, []);
 
   useEffect(() => {
     setFotoPreview(selectedPsicologo?.foto || null);
@@ -508,6 +508,24 @@ const ProfissionaisConfig = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/api/profissionais/options`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const data = await response.json();
+        setAreasOptions(data.areas_atendimento || []);
+        setAbordagemOptions(data.abordagens || []);
+      } catch (err) {
+        setError('Erro ao carregar opções: ' + err.message);
+      }
+    };
+    fetchOptions();
+  }, []);
+
   const handleAddPsicologo = () => {
     setSelectedPsicologo({
       id: 0,
@@ -515,7 +533,7 @@ const ProfissionaisConfig = () => {
       cpf: '',
       crp: '',
       preco: 0,
-      areas: [],
+      areasAtendimento: [],
       abordagem: [],
       publico: '',
       sobreMim: '',
@@ -536,7 +554,10 @@ const ProfissionaisConfig = () => {
   };
 
   const handleEditPsicologo = (psicologo) => {
-    setSelectedPsicologo({ ...psicologo, abordagem: Array.isArray(psicologo.abordagem) ? psicologo.abordagem : [psicologo.abordagem] });
+    setSelectedPsicologo({
+      ...psicologo,
+      abordagem: Array.isArray(psicologo.abordagem) ? psicologo.abordagem : [psicologo.abordagem].filter(Boolean),
+    });
     setIsAddingPsicologo(false);
   };
 
@@ -570,8 +591,8 @@ const ProfissionaisConfig = () => {
     const crp = formData.get('crp');
     const preco = parseFloat(formData.get('preco'));
     const avatarFile = formData.get('avatar');
-    const areas = formData.getAll('areas');
-    const abordagem = formData.getAll('abordagem');
+    const areasAtendimento = JSON.stringify(formData.getAll('areasAtendimento')[0] || []);
+    const abordagem = JSON.stringify(formData.getAll('abordagem')[0] || []);
 
     if (!/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(cpf)) {
       setError('CPF deve estar no formato 123.456.789-00');
@@ -585,30 +606,17 @@ const ProfissionaisConfig = () => {
       setError('Preço deve ser um número maior que 0');
       return;
     }
-    if (areas.length === 0) {
+    if (JSON.parse(areasAtendimento).length === 0) {
       setError('Selecione pelo menos uma área de atendimento');
       return;
     }
-    if (abordagem.length === 0) {
+    if (JSON.parse(abordagem).length === 0) {
       setError('Selecione pelo menos uma abordagem');
       return;
     }
 
-    const psicologoData = {
-      nome: formData.get('nome'),
-      email: formData.get('email'),
-      cpf,
-      crp,
-      preco,
-      areas,
-      abordagem,
-      publico: formData.get('publico'),
-      sobreMim: formData.get('sobreMim'),
-      classificacao: formData.get('classificacao'),
-      data_nascimento: formData.get('data_nascimento'),
-      especialidade: formData.get('especialidade'),
-      avatar: avatarFile,
-    };
+    formData.set('areasAtendimento', areasAtendimento);
+    formData.set('abordagem', abordagem);
 
     setIsLoading(true);
     try {
@@ -625,7 +633,18 @@ const ProfissionaisConfig = () => {
           throw new Error(`Erro ao criar psicólogo: ${response.status} ${response.statusText}`);
         }
         const newPsicologo = await response.json();
-        setPsicologos([...psicologos, newPsicologo]);
+        const updatedPsicologo = {
+          ...newPsicologo,
+          preco: newPsicologo.preco || 0,
+          areasAtendimento: newPsicologo.areasAtendimento ? JSON.parse(newPsicologo.areasAtendimento) : [],
+          abordagem: newPsicologo.abordagem ? JSON.parse(newPsicologo.abordagem) : [],
+          email: newPsicologo.email || '',
+          data_nascimento: newPsicologo.data_nascimento || '',
+          especialidade: newPsicologo.especialidade || '',
+          foto: newPsicologo.fotoUrl || null,
+          avatar: newPsicologo.fotoUrl || null,
+        };
+        setPsicologos([...psicologos, updatedPsicologo]);
       } else {
         const response = await fetch(`${BASE_URL}/api/profissionais/update/${selectedPsicologo.id}`, {
           method: 'POST',
@@ -639,11 +658,23 @@ const ProfissionaisConfig = () => {
           throw new Error(`Erro ao atualizar psicólogo: ${response.status} ${response.statusText}`);
         }
         const updatedPsicologo = await response.json();
-        setPsicologos(psicologos.map(p => (p.id === selectedPsicologo.id ? updatedPsicologo : p)));
+        const mergedPsicologo = {
+          ...updatedPsicologo,
+          preco: updatedPsicologo.preco || 0,
+          areasAtendimento: updatedPsicologo.areasAtendimento ? JSON.parse(updatedPsicologo.areasAtendimento) : [],
+          abordagem: updatedPsicologo.abordagem ? JSON.parse(updatedPsicologo.abordagem) : [],
+          email: updatedPsicologo.email || '',
+          data_nascimento: updatedPsicologo.data_nascimento || '',
+          especialidade: updatedPsicologo.especialidade || '',
+          foto: updatedPsicologo.fotoUrl || null,
+          avatar: updatedPsicologo.fotoUrl || null,
+        };
+        setPsicologos(psicologos.map(p => (p.id === selectedPsicologo.id ? mergedPsicologo : p)));
       }
       setSelectedPsicologo(null);
       setIsAddingPsicologo(false);
       setError(null);
+      setCurrentPage(1); // Reset to first page after adding/updating
     } catch (err) {
       setError(err.message);
     } finally {
@@ -669,16 +700,16 @@ const ProfissionaisConfig = () => {
   };
 
   const toggleArea = (area) => {
-    const currentAreas = selectedPsicologo.areas || [];
+    const currentAreas = selectedPsicologo.areasAtendimento || [];
     if (currentAreas.includes(area)) {
       setSelectedPsicologo({
         ...selectedPsicologo,
-        areas: currentAreas.filter(a => a !== area),
+        areasAtendimento: currentAreas.filter(a => a !== area),
       });
     } else {
       setSelectedPsicologo({
         ...selectedPsicologo,
-        areas: [...currentAreas, area],
+        areasAtendimento: [...currentAreas, area],
       });
     }
   };
@@ -696,6 +727,16 @@ const ProfissionaisConfig = () => {
         abordagem: [...currentAbordagem, abordagemOption],
       });
     }
+  };
+
+  // Pagination logic
+  const totalPages = Math.ceil(psicologos.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentPsicologos = psicologos.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -743,11 +784,11 @@ const ProfissionaisConfig = () => {
               </select>
             </FormGroup>
             <FormGroup>
-              <label htmlFor="areas">Áreas de Atendimento</label>
+              <label htmlFor="areasAtendimento">Áreas de Atendimento</label>
               <SelectContainer ref={areasDropdownRef}>
                 <SelectedOption onClick={() => setIsAreasDropdownOpen(!isAreasDropdownOpen)}>
-                  {selectedPsicologo?.areas?.length > 0
-                    ? `${selectedPsicologo.areas.length} área(s) selecionada(s)`
+                  {selectedPsicologo?.areasAtendimento?.length > 0
+                    ? `${selectedPsicologo.areasAtendimento.length} área(s) selecionada(s)`
                     : 'Selecione as áreas de atendimento'}
                   <FaChevronDown />
                 </SelectedOption>
@@ -757,12 +798,10 @@ const ProfissionaisConfig = () => {
                       <Option
                         key={area}
                         onClick={() => toggleArea(area)}
-                        selected={selectedPsicologo?.areas?.includes(area)}
+                        selected={selectedPsicologo?.areasAtendimento?.includes(area)}
                       >
                         <Checkbox
-                          name="areas"
-                          value={area}
-                          checked={selectedPsicologo?.areas?.includes(area)}
+                          checked={selectedPsicologo?.areasAtendimento?.includes(area)}
                           onChange={() => toggleArea(area)}
                         />
                         {area}
@@ -771,6 +810,11 @@ const ProfissionaisConfig = () => {
                   </Dropdown>
                 )}
               </SelectContainer>
+              <input
+                type="hidden"
+                name="areasAtendimento"
+                value={JSON.stringify(selectedPsicologo?.areasAtendimento || [])}
+              />
             </FormGroup>
             <FormGroup>
               <label htmlFor="abordagem">Abordagem</label>
@@ -790,8 +834,6 @@ const ProfissionaisConfig = () => {
                         selected={selectedPsicologo?.abordagem?.includes(abordagemOption)}
                       >
                         <Checkbox
-                          name="abordagem"
-                          value={abordagemOption}
                           checked={selectedPsicologo?.abordagem?.includes(abordagemOption)}
                           onChange={() => toggleAbordagem(abordagemOption)}
                         />
@@ -801,6 +843,11 @@ const ProfissionaisConfig = () => {
                   </Dropdown>
                 )}
               </SelectContainer>
+              <input
+                type="hidden"
+                name="abordagem"
+                value={JSON.stringify(selectedPsicologo?.abordagem || [])}
+              />
             </FormGroup>
             <FormGroup>
               <label htmlFor="publico">Público</label>
@@ -841,17 +888,18 @@ const ProfissionaisConfig = () => {
                 </FotoPlaceholder>
               )}
             </FormGroup>
-            <Button type="submit">Salvar</Button>
-            <Button type="button" onClick={handleCancel}>Cancelar</Button>
+            <Button type="submit" disabled={isLoading}>Salvar</Button>
+            <Button type="button" onClick={handleCancel} disabled={isLoading}>Cancelar</Button>
           </Form>
         </div>
       ) : (
         <div>
-          <Button onClick={handleAddPsicologo}>Adicionar Psicólogo</Button>
+          <Button onClick={handleAddPsicologo} disabled={isLoading}>Adicionar Psicólogo</Button>
           <TableContainer>
             <Table>
               <thead>
                 <tr>
+                  <th>Imagem</th>
                   <th>Nome</th>
                   <th>Email</th>
                   <th>CPF</th>
@@ -862,23 +910,51 @@ const ProfissionaisConfig = () => {
                 </tr>
               </thead>
               <tbody>
-                {psicologos.map(p => (
+                {currentPsicologos.map(p => (
                   <tr key={p.id}>
+                    <td>
+                      {p.foto ? (
+                        <ProfileImage src={p.foto} alt={p.nome} />
+                      ) : (
+                        <ImagePlaceholder>
+                          <FaUserCircle />
+                        </ImagePlaceholder>
+                      )}
+                    </td>
                     <td>{p.nome}</td>
                     <td>{p.email}</td>
                     <td>{p.cpf}</td>
-                    <td>{p.crp}</td>
-                    <td>{p.preco.toFixed(2)}</td>
-                    <td>{p.classificacao}</td>
+                    <td>{p.crp || ''}</td>
+                    <td>{(p.preco || 0).toFixed(2)}</td>
+                    <td>{p.classificacao || ''}</td>
                     <td>
-                      <Button onClick={() => handleEditPsicologo(p)}>Editar</Button>
-                      <Button onClick={() => handleDeletePsicologo(p.id)}>Excluir</Button>
+                      <Button onClick={() => handleEditPsicologo(p)} disabled={isLoading}>Editar</Button>
+                      <Button onClick={() => handleDeletePsicologo(p.id)} disabled={isLoading}>Excluir</Button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </Table>
           </TableContainer>
+          {totalPages > 1 && (
+            <PaginationContainer>
+              <PaginationButton
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Anterior
+              </PaginationButton>
+              <span>
+                Página {currentPage} de {totalPages}
+              </span>
+              <PaginationButton
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Próximo
+              </PaginationButton>
+            </PaginationContainer>
+          )}
         </div>
       )}
     </Section>

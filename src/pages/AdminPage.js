@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { FaSignOutAlt } from 'react-icons/fa';
 import ProfissionaisConfig from './ProfissionaisConfig.js';
-import PlanosConfig from './PlanosConfig.js/index.js';
-import PlanosProfissionaisConfig from './PlanosProfissionaisConfig.js/index.js';
+import PlanosConfig from './PlanosConfig.js';
+import PlanosProfissionaisConfig from './PlanosProfissionaisConfig.js';
 
 const AdminContainer = styled.div`
   padding: 60px 15px;
