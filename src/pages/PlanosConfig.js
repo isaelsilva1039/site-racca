@@ -25,7 +25,7 @@ const Section = styled.div`
   box-sizing: border-box;
 
   @media (min-width: 768px) {
-    max-width: 1200px;
+    max-width: 1600px;
     padding: 20px;
   }
 `;
