@@ -196,11 +196,11 @@ function PlanoOdontoEmpresarial() {
       </FAQSection>
 
       <WhatsAppButton
-        href="https://wa.me/5537999137500"
+        href="https://wa.me/5537999249432"
         target="_blank"
         rel="noopener noreferrer"
       >
-        Contrate Agora: (37) 99913-7500
+        Contrate Agora: (37) 99924-9432
       </WhatsAppButton>
 
       <BackButton to="/">Voltar</BackButton>

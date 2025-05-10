@@ -104,7 +104,7 @@ function Header() {
           className="nav-link" 
           onClick={() => {
             setIsMenuOpen(false);
-            scrollToTop(); // Adiciona a rolagem para o topo ao clicar em "Início"
+            scrollToTop();
           }}
         >
           Início
@@ -142,7 +142,7 @@ function Header() {
                 className="dropdown-item" 
                 onClick={() => {
                   setIsMenuOpen(false);
-                  scrollToTop(); // Adiciona a rolagem para o topo
+                  scrollToTop();
                 }}
               >
                 Cuidar Conectado
@@ -152,7 +152,7 @@ function Header() {
                 className="dropdown-item" 
                 onClick={() => {
                   setIsMenuOpen(false);
-                  scrollToTop(); // Adiciona a rolagem para o topo
+                  scrollToTop();
                 }}
               >
                 Especialidades
@@ -162,13 +162,19 @@ function Header() {
                 className="dropdown-item" 
                 onClick={() => {
                   setIsMenuOpen(false);
-                  scrollToTop(); // Adiciona a rolagem para o topo
+                  scrollToTop();
                 }}
               >
                 Seguros Pessoais
               </Link>
               <a href="#plans" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Telemedicina</a>
-              <a href="#plans" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Terapia Online</a>
+              <a 
+                href="#consultaavulsa" 
+                className="dropdown-item" 
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Terapia Online
+              </a>
             </div>
           )}
         </div>
