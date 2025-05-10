@@ -62,6 +62,11 @@ function Header() {
     setPassword('');
   };
 
+  // Função para rolar para o topo da página
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (navRef.current && !navRef.current.contains(event.target) && !event.target.closest('.hamburger')) {
@@ -103,7 +108,16 @@ function Header() {
               <a href="#missao-visao-valores" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Missão, Visão e Valores</a>
               <a href="#grupo-racca" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>O Grupo RACCA</a>
               <a href="#depoimentos" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Depoimentos</a>
-              <Link to="/politica-de-privacidade" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Política de Privacidade</Link>
+              <Link 
+                to="/politica-de-privacidade" 
+                className="dropdown-item" 
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  scrollToTop(); // Adiciona a rolagem para o topo
+                }}
+              >
+                Política de Privacidade
+              </Link>
             </div>
           )}
         </div>
