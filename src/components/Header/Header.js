@@ -99,7 +99,16 @@ function Header() {
       </button>
 
       <nav className={`nav-container ${isMenuOpen ? 'open' : ''}`} ref={navRef}>
-        <Link to="/" className="nav-link" onClick={() => setIsMenuOpen(false)}>Início</Link>
+        <Link 
+          to="/" 
+          className="nav-link" 
+          onClick={() => {
+            setIsMenuOpen(false);
+            scrollToTop(); // Adiciona a rolagem para o topo ao clicar em "Início"
+          }}
+        >
+          Início
+        </Link>
 
         <div className="nav-link dropdown" onClick={() => setRaccaOpen(!raccaOpen)}>
           Racca Saúde
@@ -113,7 +122,7 @@ function Header() {
                 className="dropdown-item" 
                 onClick={() => {
                   setIsMenuOpen(false);
-                  scrollToTop(); // Adiciona a rolagem para o topo
+                  scrollToTop();
                 }}
               >
                 Política de Privacidade
@@ -128,9 +137,36 @@ function Header() {
           Para Você
           {paraVoceOpen && (
             <div className="dropdown-menu">
-              <Link to="/cuidar-conectado" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Cuidar Conectado</Link>
-              <Link to="/especialidades" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Especialidades</Link>
-              <Link to="/seguros-pessoais" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Seguros Pessoais</Link>
+              <Link 
+                to="/cuidar-conectado" 
+                className="dropdown-item" 
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  scrollToTop(); // Adiciona a rolagem para o topo
+                }}
+              >
+                Cuidar Conectado
+              </Link>
+              <Link 
+                to="/especialidades" 
+                className="dropdown-item" 
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  scrollToTop(); // Adiciona a rolagem para o topo
+                }}
+              >
+                Especialidades
+              </Link>
+              <Link 
+                to="/seguros-pessoais" 
+                className="dropdown-item" 
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  scrollToTop(); // Adiciona a rolagem para o topo
+                }}
+              >
+                Seguros Pessoais
+              </Link>
               <a href="#plans" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Telemedicina</a>
               <a href="#plans" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>Terapia Online</a>
             </div>

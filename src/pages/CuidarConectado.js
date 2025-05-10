@@ -8,101 +8,109 @@ import {
   Campaign,
   PushPin
 } from '@mui/icons-material';
-import { Link } from 'react-router-dom'; // Para o botão Voltar
+import { Link } from 'react-router-dom';
 
 const CuidarConectadoContainer = styled.section`
-  padding: 50px;
+  padding: 80px 20px;
   text-align: center;
-  background-color: #eaf4ff;
+  background-color: #ffffff;
   color: #333;
+  min-height: 100vh; /* Ocupa toda a altura da viewport */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
   @media (max-width: 768px) {
-    padding: 20px;
+    padding: 40px 10px;
   }
 `;
 
 const Title = styled.h2`
-  font-size: 2.5rem;
-  margin-bottom: 40px;
+  font-size: 3rem;
+  margin-bottom: 50px;
   color: #a100ff;
 
   @media (max-width: 768px) {
-    font-size: 1.8rem;
-    margin-bottom: 20px;
+    font-size: 2rem;
+    margin-bottom: 30px;
   }
 `;
 
 const SectionTitle = styled.h3`
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   color: #a100ff;
-  margin: 20px 0 10px;
+  margin: 30px 0 15px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
 
   @media (max-width: 768px) {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
+    margin: 20px 0 10px;
   }
 `;
 
 const Text = styled.p`
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: #666;
-  line-height: 1.5;
-  margin-bottom: 15px;
-  max-width: 800px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  max-width: 90%; /* Aumenta a largura para ocupar mais espaço */
   margin-left: auto;
   margin-right: auto;
 
   @media (max-width: 768px) {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 `;
 
 const List = styled.ul`
   list-style: none;
   padding: 0;
-  margin: 0 auto 15px auto;
-  max-width: 800px;
+  margin: 0 auto 20px auto;
+  max-width: 90%; /* Aumenta a largura para ocupar mais espaço */
   text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 `;
 
 const ListItem = styled.li`
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: #666;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 10px;
 
   @media (max-width: 768px) {
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 
   &:before {
     content: '✔';
     color: #a100ff;
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
 `;
 
 const IconText = styled.span`
   display: flex;
   align-items: center;
-  margin-right: 8px;
+  margin-right: 10px;
   color: #a100ff;
 `;
 
 const BackButton = styled(Link)`
   display: inline-block;
-  margin-top: 30px;
-  padding: 10px 20px;
+  margin-top: 40px;
+  padding: 12px 25px;
   background-color: #a100ff;
   color: #fff;
   text-decoration: none;
-  border-radius: 5px;
-  font-size: 1rem;
+  border-radius: 6px;
+  font-size: 1.1rem;
   font-weight: bold;
   transition: background-color 0.3s ease;
 
@@ -111,8 +119,8 @@ const BackButton = styled(Link)`
   }
 
   @media (max-width: 768px) {
-    padding: 8px 16px;
-    font-size: 0.9rem;
+    padding: 10px 20px;
+    font-size: 1rem;
   }
 `;
 
@@ -120,7 +128,7 @@ const WhatsAppLink = styled.a`
   color: #a100ff;
   font-weight: bold;
   text-decoration: underline;
-  font-size: 1rem;
+  font-size: 1.1rem;
 
   &:hover {
     color: #7b00cc;
