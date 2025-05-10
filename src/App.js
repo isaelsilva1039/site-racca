@@ -24,7 +24,8 @@ import Especialidades from './pages/Especialidades';
 import PlanoOdontoEmpresarial from './pages/PlanoOdontoEmpresarial';
 import ConsultaAvulsa from './pages/ConsultaAvulsa';
 import AdminPage from './pages/AdminPage';
-import TrabalheConosco from './pages/TrabalheConosco'; // Novo import
+import TrabalheConosco from './pages/TrabalheConosco';
+import RaVerifiedSeal from './components/RaVerifiedSeal'; 
 
 const MainContainer = styled.div`
   display: flex;
@@ -85,6 +86,7 @@ function App() {
                 </Section>
                 <Section id="plans">
                   <Plans />
+                  <RaVerifiedSeal />
                 </Section>
                 <LegalLinks onFAQClick={handleOpenFAQModal} />
                 <Footer />
@@ -101,7 +103,7 @@ function App() {
           <Route path="/especialidades" element={<Especialidades />} />
           <Route path="/plano-odonto-empresarial" element={<PlanoOdontoEmpresarial />} />
           <Route path="/admin" element={<AdminPage />} />
-          <Route path="/trabalhe-conosco" element={<TrabalheConosco />} /> {/* Nova rota */}
+          <Route path="/trabalhe-conosco" element={<TrabalheConosco />} />
         </Routes>
         <FAQModal isOpen={isFAQModalOpen} onClose={handleCloseFAQModal} />
       </MainContainer>

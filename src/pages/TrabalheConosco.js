@@ -445,7 +445,7 @@ const TrabalheConosco = () => {
       <ContentWrapper>
         <Title>Junte-se à Racca Saúde como Psicólogo!</Title>
         <Subtitle>
-          Faça parte da nossa plataforma e ofereça seus serviços de psicologia online. Escolha o plano ideal para você e comece a atender pacientes de forma prática e segura.
+          Faça parte da nossa plataforma e ofereça seus serviços de psicologia online. Escolha o produto ideal para você e comece a atender pacientes de forma prática e segura.
         </Subtitle>
 
         <PlansSection>

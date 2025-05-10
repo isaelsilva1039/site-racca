@@ -161,17 +161,18 @@
   /* Conteúdo da Modal */
   .modal-content {
     background: #f0f4f8;
-    padding: 30px 40px;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 600px;
+    padding: 1vw 2vw; /* Usa unidades relativas para padding */
+    border-radius: clamp(8px, 2vw, 12px); /* Border-radius ajustável */
+    width: min(90%, 600px); /* Máximo de 90% da tela ou 600px */
+    max-width: 100%; /* Evita ultrapassar a largura da tela */
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
     position: relative;
     text-align: left;
     animation: fadeIn 0.5s ease;
     overflow-y: auto;
-    max-height: 90vh;
-  }
+    max-height: min(70vh, 90vh); /* Limita a altura com base na tela */
+    box-sizing: border-box; /* Garante que padding não aumente a largura */
+}
 
   /* Animação de Aparição */
   @keyframes fadeIn {
