@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { FaStar, FaCrown, FaBolt, FaGem, FaHeart, FaShieldAlt, FaRocket, FaMedal, FaTrophy, FaSun, FaMoon, FaFire, FaFlag, FaBell, FaGlobe, FaGift, FaKey, FaLock, FaPuzzlePiece, FaSnowflake, FaUmbrella, FaChevronDown } from 'react-icons/fa';
+import { FaStar, FaCrown, FaBolt, FaGem, FaHeart, FaShieldAlt, FaRocket, FaMedal, FaTrophy, FaSun, FaMoon, FaFire, FaFlag, FaBell, FaGlobe, FaGift, FaKey, FaLock, FaPuzzlePiece, FaSnowflake, FaUmbrella, FaChevronDown, FaPlus } from 'react-icons/fa';
 
 const fadeInUp = keyframes`
   from {
@@ -43,13 +43,14 @@ const TableContainer = styled.div`
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px;
+  min-width: 800px;
 
   th, td {
     padding: 10px;
     border: 1px solid #ddd;
     text-align: left;
     font-size: 0.9rem;
+    word-wrap: break-word;
   }
 
   th {
@@ -266,11 +267,16 @@ const ErrorMessage = styled.div`
   margin-bottom: 15px;
 `;
 
-const LoadingMessage = styled.div`
-  text-align: center;
-  font-size: 1rem;
-  color: #a100ff;
-  margin-bottom: 15px;
+const ExtraFidelityContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const ExtraFidelityItem = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
 `;
 
 const initialPlans = [
@@ -280,6 +286,7 @@ const initialPlans = [
     id_plano_sistema_racca: 471,
     title: 'RACCA Essencial',
     amount: 39.9,
+    description: 'Plano básico com consultas ilimitadas',
     prices: {
       mensal: 'R$ 39,90/mês s/ fidelidade',
     },
@@ -300,6 +307,7 @@ const initialPlans = [
     id_plano_sistema_racca: 472,
     title: 'RACCA Familiar',
     amount: 19.9,
+    description: 'Plano familiar com flexibilidade',
     prices: {
       mensal: 'R$ 19,90/mês s/ fidelidade',
     },
@@ -312,6 +320,11 @@ const initialPlans = [
       'Suporte via WhatsApp',
       'Adicione mais uma pessoa por R$ 9,90',
     ],
+    fidelidadesExtras: [
+      { preco: 19.7, periodo: '3 meses' },
+      { preco: 19.4, periodo: '6 meses' },
+      { preco: 18.9, periodo: '9 meses' },
+    ],
   },
   {
     id: 500,
@@ -319,6 +332,7 @@ const initialPlans = [
     id_plano_sistema_racca: 500,
     title: 'RACCA Premium',
     amount: 109.9,
+    description: 'Plano premium com benefícios adicionais',
     prices: {
       fidelidade: 'R$ 109,90/mês c/ fidelidade 12 meses',
     },
@@ -341,6 +355,7 @@ const initialPlans = [
     id_plano_sistema_racca: 706,
     title: 'RACCA Premium Extra Plus',
     amount: 189.9,
+    description: 'Plano completo com seguros e vantagens',
     prices: {
       fidelidade: 'R$ 189,90/mês c/ fidelidade 12 meses',
     },
@@ -369,6 +384,7 @@ const initialPlans = [
     id_plano_sistema_racca: 707,
     title: 'Consulta com Psiquiatra',
     amount: 100.0,
+    description: 'Consulta avulsa com psiquiatra',
     prices: {
       mensal: 'R$ 100,00 (avulso) s/ fidelidade',
     },
@@ -414,17 +430,21 @@ const PlanosConfig = () => {
   const dropdownRef = useRef(null);
 
   const handleAddPlan = () => {
+    const newId = plans.length > 0 ? Math.max(...plans.map(p => p.id)) + 1 : 1;
+    const newIdPlanoSistemaRacca = plans.length > 0 ? Math.max(...plans.map(p => p.id_plano_sistema_racca)) + 1 : 1;
     setSelectedPlan({
-      id: 0,
+      id: newId,
       icon: 'FaStar',
-      id_plano_sistema_racca: 0,
+      id_plano_sistema_racca: newIdPlanoSistemaRacca,
       title: '',
       amount: 0,
+      description: '',
       prices: {
         mensal: '',
         fidelidade: '',
       },
       benefits: [],
+      fidelidadesExtras: [],
     });
     setIsAddingPlan(true);
   };
@@ -444,34 +464,37 @@ const PlanosConfig = () => {
   const handlePlanFormSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const id = parseInt(formData.get('id'));
-    const id_plano_sistema_racca = parseInt(formData.get('id_plano_sistema_racca'));
     const amount = parseFloat(formData.get('amount'));
 
-    if (isNaN(id) || id <= 0) {
-      setError('ID deve ser um número maior que 0');
-      return;
-    }
-    if (isNaN(id_plano_sistema_racca) || id_plano_sistema_racca <= 0) {
-      setError('ID do plano RACCA deve ser um número maior que 0');
-      return;
-    }
     if (isNaN(amount) || amount <= 0) {
       setError('Valor deve ser um número maior que 0');
       return;
     }
 
+    const fidelidadesExtras = [];
+    const fidelidadesExtrasPreco = formData.getAll('fidelidadesExtrasPreco');
+    const fidelidadesExtrasPeriodo = formData.getAll('fidelidadesExtrasPeriodo');
+    for (let i = 0; i < fidelidadesExtrasPreco.length; i++) {
+      const preco = parseFloat(fidelidadesExtrasPreco[i]);
+      const periodo = fidelidadesExtrasPeriodo[i];
+      if (!isNaN(preco) && preco > 0 && periodo) {
+        fidelidadesExtras.push({ preco, periodo });
+      }
+    }
+
     const planData = {
-      id,
+      id: selectedPlan.id,
       icon: formData.get('icon'),
-      id_plano_sistema_racca,
+      id_plano_sistema_racca: selectedPlan.id_plano_sistema_racca,
       title: formData.get('title'),
       amount,
+      description: formData.get('description') || '',
       prices: {
         mensal: formData.get('pricesMensal') || '',
         fidelidade: formData.get('pricesFidelidade') || '',
       },
       benefits: formData.get('benefits').split('\n').map(b => b.trim()).filter(b => b),
+      fidelidadesExtras,
     };
 
     if (isAddingPlan) {
@@ -497,6 +520,13 @@ const PlanosConfig = () => {
 
   const selectedIcon = iconOptions.find(opt => opt.name === selectedPlan?.icon)?.component || <FaStar />;
 
+  const addFidelityExtra = () => {
+    setSelectedPlan(prev => ({
+      ...prev,
+      fidelidadesExtras: [...(prev.fidelidadesExtras || []), { preco: 0, periodo: '' }],
+    }));
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -519,26 +549,6 @@ const PlanosConfig = () => {
           <h3>{isAddingPlan ? 'Adicionar Plano' : 'Editar Plano'}</h3>
           <Form onSubmit={handlePlanFormSubmit}>
             <FormGroup>
-              <label htmlFor="id">ID</label>
-              <Input
-                type="number"
-                id="id"
-                name="id"
-                defaultValue={selectedPlan?.id || ''}
-                required
-              />
-            </FormGroup>
-            <FormGroup>
-              <label htmlFor="id_plano_sistema_racca">ID Plano Sistema RACCA</label>
-              <Input
-                type="number"
-                id="id_plano_sistema_racca"
-                name="id_plano_sistema_racca"
-                defaultValue={selectedPlan?.id_plano_sistema_racca || ''}
-                required
-              />
-            </FormGroup>
-            <FormGroup>
               <label htmlFor="title">Título</label>
               <Input
                 type="text"
@@ -546,6 +556,15 @@ const PlanosConfig = () => {
                 name="title"
                 defaultValue={selectedPlan?.title || ''}
                 required
+              />
+            </FormGroup>
+            <FormGroup>
+              <label htmlFor="description">Descrição</label>
+              <Input
+                type="text"
+                id="description"
+                name="description"
+                defaultValue={selectedPlan?.description || ''}
               />
             </FormGroup>
             <FormGroup>
@@ -611,6 +630,32 @@ const PlanosConfig = () => {
                 required
               />
             </FormGroup>
+            <FormGroup>
+              <label>Fidelidades Extras</label>
+              <ExtraFidelityContainer>
+                {selectedPlan?.fidelidadesExtras?.map((fidelity, index) => (
+                  <ExtraFidelityItem key={index}>
+                    <Input
+                      type="number"
+                      name="fidelidadesExtrasPreco"
+                      defaultValue={fidelity.preco || 0}
+                      min="0"
+                      step="0.01"
+                      placeholder="Preço (R$)"
+                    />
+                    <Input
+                      type="text"
+                      name="fidelidadesExtrasPeriodo"
+                      defaultValue={fidelity.periodo || ''}
+                      placeholder="Período (ex: 3 meses)"
+                    />
+                  </ExtraFidelityItem>
+                ))}
+                <Button type="button" onClick={addFidelityExtra}>
+                  <FaPlus /> Adicionar Fidelidade
+                </Button>
+              </ExtraFidelityContainer>
+            </FormGroup>
             <Button type="submit">Salvar</Button>
             <Button type="button" onClick={handleCancel}>Cancelar</Button>
           </Form>
@@ -622,22 +667,26 @@ const PlanosConfig = () => {
             <Table>
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Título</th>
+                  <th>Descrição</th>
                   <th>Valor (R$)</th>
                   <th>Preço Mensal</th>
                   <th>Preço Fidelidade</th>
+                  <th>Fidelidades Extras</th>
+                  <th>Benefícios</th>
                   <th>Ação</th>
                 </tr>
               </thead>
               <tbody>
                 {plans.map(p => (
                   <tr key={p.id}>
-                    <td>{p.id}</td>
                     <td>{p.title}</td>
+                    <td>{p.description || '-'}</td>
                     <td>{p.amount.toFixed(2)}</td>
                     <td>{p.prices.mensal || '-'}</td>
                     <td>{p.prices.fidelidade || '-'}</td>
+                    <td>{p.fidelidadesExtras?.map(f => `${f.preco.toFixed(2)}/${f.periodo}`).join(', ') || '-'}</td>
+                    <td>{p.benefits?.join(', ') || '-'}</td>
                     <td>
                       <Button onClick={() => handleEditPlan(p)}>Editar</Button>
                       <Button onClick={() => handleDeletePlan(p.id)}>Excluir</Button>
