@@ -279,124 +279,6 @@ const ExtraFidelityItem = styled.div`
   align-items: center;
 `;
 
-const initialPlans = [
-  {
-    id: 471,
-    icon: 'FaStar',
-    id_plano_sistema_racca: 471,
-    title: 'RACCA Essencial',
-    amount: 39.9,
-    description: 'Plano básico com consultas ilimitadas',
-    prices: {
-      mensal: 'R$ 39,90/mês s/ fidelidade',
-    },
-    benefits: [
-      'Consultas ilimitadas com Clínico Geral',
-      '1 consulta mensal com especialista (Cardiologista, Dermatologista, etc.)',
-      'Descontos em farmácias parceiras',
-      'Prescrição de receitas, exames e atestados médicos',
-      'Aplicativo RACCA SAÚDE',
-      'Ativação em até 48 horas',
-      'Agendamento online',
-      'Suporte via WhatsApp',
-    ],
-  },
-  {
-    id: 472,
-    icon: 'FaCrown',
-    id_plano_sistema_racca: 472,
-    title: 'RACCA Familiar',
-    amount: 19.9,
-    description: 'Plano familiar com flexibilidade',
-    prices: {
-      mensal: 'R$ 19,90/mês s/ fidelidade',
-    },
-    benefits: [
-      'Consultas ilimitadas com Clínico Geral',
-      'Descontos em farmácias parceiras',
-      'Prescrição de receitas, exames e atestados médicos',
-      'Aplicativo RACCA SAÚDE',
-      'Ativação em até 48 horas',
-      'Suporte via WhatsApp',
-      'Adicione mais uma pessoa por R$ 9,90',
-    ],
-    fidelidadesExtras: [
-      { preco: 19.7, periodo: '3 meses' },
-      { preco: 19.4, periodo: '6 meses' },
-      { preco: 18.9, periodo: '9 meses' },
-    ],
-  },
-  {
-    id: 500,
-    icon: 'FaBolt',
-    id_plano_sistema_racca: 500,
-    title: 'RACCA Premium',
-    amount: 109.9,
-    description: 'Plano premium com benefícios adicionais',
-    prices: {
-      fidelidade: 'R$ 109,90/mês c/ fidelidade 12 meses',
-    },
-    benefits: [
-      'Consultas ilimitadas com Clínico Geral',
-      '1 consulta mensal com especialista (Cardiologista, Dermatologista, etc.)',
-      'Descontos em farmácias parceiras',
-      'Prescrição de receitas, exames e atestados médicos',
-      '5% de desconto para pagamento antecipado',
-      'Aplicativo RACCA SAÚDE',
-      'Ativação em até 48 horas',
-      'Agendamento online',
-      'Suporte via WhatsApp',
-      'Acesso ao grupo CUIDAR CONECTADO',
-    ],
-  },
-  {
-    id: 706,
-    icon: 'FaGem',
-    id_plano_sistema_racca: 706,
-    title: 'RACCA Premium Extra Plus',
-    amount: 189.9,
-    description: 'Plano completo com seguros e vantagens',
-    prices: {
-      fidelidade: 'R$ 189,90/mês c/ fidelidade 12 meses',
-    },
-    benefits: [
-      'Consultas ilimitadas com Clínico Geral',
-      '1 consulta mensal com especialista (Cardiologista, Dermatologista, etc.)',
-      '1 consulta com Psiquiatra (20 minutos)',
-      'Descontos em farmácias parceiras',
-      'Prescrição de receitas, exames e atestados médicos',
-      '5% de desconto para pagamento antecipado',
-      'Aplicativo RACCA SAÚDE',
-      'Ativação em até 48 horas',
-      'Agendamento online',
-      'Suporte via WhatsApp',
-      'Acesso ao grupo CUIDAR CONECTADO',
-      'Seguro: Morte Acidental (R$ 20.000,00)',
-      'Invalidez Permanente por Acidente (R$ 20.000,00)',
-      'Assistência Funeral Familiar',
-      'Auxílio Medicamentos Genéricos (até R$ 100,00/mês)',
-      'Clube de Vantagens',
-    ],
-  },
-  {
-    id: 707,
-    icon: 'FaStar',
-    id_plano_sistema_racca: 707,
-    title: 'Consulta com Psiquiatra',
-    amount: 100.0,
-    description: 'Consulta avulsa com psiquiatra',
-    prices: {
-      mensal: 'R$ 100,00 (avulso) s/ fidelidade',
-    },
-    benefits: [
-      'Consulta avulsa com Psiquiatra (20 minutos)',
-      'Prescrição de receitas, exames e atestados médicos',
-      'Agendamento online',
-      'Suporte via WhatsApp',
-    ],
-  },
-];
-
 const iconOptions = [
   { name: 'FaStar', component: <FaStar /> },
   { name: 'FaCrown', component: <FaCrown /> },
@@ -422,46 +304,113 @@ const iconOptions = [
 ];
 
 const PlanosConfig = () => {
-  const [plans, setPlans] = useState(initialPlans);
+  const [plans, setPlans] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isAddingPlan, setIsAddingPlan] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [error, setError] = useState(null);
   const dropdownRef = useRef(null);
 
+  // Função para buscar todos os planos ao carregar o componente
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const response = await fetch('https://racca.store/api/clientes/planos/all', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao buscar planos');
+        }
+
+        const data = await response.json();
+        // Mapeia os dados da API para o formato esperado pelo componente
+        const mappedPlans = data.map(plan => ({
+          id: plan.id,
+          icon: 'FaStar', // Ícone padrão, já que a API não retorna ícone
+          title: plan.nome_plano,
+          amount: parseFloat(plan.valor),
+          description: plan.descricao,
+          benefits: [], // A API não retorna benefícios, então deixamos vazio
+          fidelidadesExtras: plan.fidelidades_extras,
+        }));
+        setPlans(mappedPlans);
+      } catch (error) {
+        setError('Erro ao buscar planos: ' + error.message);
+      }
+    };
+
+    fetchPlans();
+  }, []);
+
   const handleAddPlan = () => {
-    const newId = plans.length > 0 ? Math.max(...plans.map(p => p.id)) + 1 : 1;
-    const newIdPlanoSistemaRacca = plans.length > 0 ? Math.max(...plans.map(p => p.id_plano_sistema_racca)) + 1 : 1;
     setSelectedPlan({
-      id: newId,
+      id: null, // ID será gerado pela API
       icon: 'FaStar',
-      id_plano_sistema_racca: newIdPlanoSistemaRacca,
       title: '',
       amount: 0,
       description: '',
-      prices: {
-        mensal: '',
-        fidelidade: '',
-      },
       benefits: [],
       fidelidadesExtras: [],
     });
     setIsAddingPlan(true);
   };
 
-  const handleEditPlan = (plan) => {
-    setSelectedPlan({ ...plan });
-    setIsAddingPlan(false);
-  };
+  const handleEditPlan = async (plan) => {
+    try {
+      const response = await fetch(`https://racca.store/api/clientes/planos/${plan.id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-  const handleDeletePlan = (id) => {
-    if (window.confirm('Tem certeza que deseja excluir este plano?')) {
-      setPlans(plans.filter(p => p.id !== id));
-      setError(null);
+      if (!response.ok) {
+        throw new Error('Erro ao buscar plano');
+      }
+
+      const data = await response.json();
+      setSelectedPlan({
+        id: data.id,
+        icon: plan.icon || 'FaStar',
+        title: data.nome_plano,
+        amount: parseFloat(data.valor),
+        description: data.descricao,
+        benefits: plan.benefits || [],
+        fidelidadesExtras: data.fidelidades_extras || [],
+      });
+      setIsAddingPlan(false);
+    } catch (error) {
+      setError('Erro ao buscar plano: ' + error.message);
     }
   };
 
-  const handlePlanFormSubmit = (e) => {
+  const handleDeletePlan = async (id) => {
+    if (window.confirm('Tem certeza que deseja excluir este plano?')) {
+      try {
+        const response = await fetch(`https://racca.store/api/clientes/planos/deletar/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao deletar plano');
+        }
+
+        setPlans(plans.filter(p => p.id !== id));
+        setError(null);
+      } catch (error) {
+        setError('Erro ao deletar plano: ' + error.message);
+      }
+    }
+  };
+
+  const handlePlanFormSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const amount = parseFloat(formData.get('amount'));
@@ -483,28 +432,54 @@ const PlanosConfig = () => {
     }
 
     const planData = {
-      id: selectedPlan.id,
-      icon: formData.get('icon'),
-      id_plano_sistema_racca: selectedPlan.id_plano_sistema_racca,
-      title: formData.get('title'),
-      amount,
-      description: formData.get('description') || '',
-      prices: {
-        mensal: formData.get('pricesMensal') || '',
-        fidelidade: formData.get('pricesFidelidade') || '',
-      },
-      benefits: formData.get('benefits').split('\n').map(b => b.trim()).filter(b => b),
-      fidelidadesExtras,
+      nome_plano: formData.get('title'),
+      descricao: formData.get('description') || '',
+      fidelidade: fidelidadesExtras.length > 0 ? 1 : 0,
+      valor: amount.toFixed(2), // API espera valor como string
+      fidelidades_extras: fidelidadesExtras,
     };
 
-    if (isAddingPlan) {
-      setPlans([...plans, planData]);
-    } else {
-      setPlans(plans.map(p => (p.id === selectedPlan.id ? planData : p)));
+    try {
+      const url = isAddingPlan
+        ? 'https://racca.store/api/clientes/planos/create'
+        : `https://racca.store/api/clientes/planos/update/${selectedPlan.id}`;
+      const method = isAddingPlan ? 'POST' : 'PUT';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(planData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao salvar na API');
+      }
+
+      const responseData = await response.json();
+      const updatedPlan = {
+        id: responseData.id || selectedPlan.id,
+        icon: formData.get('icon') || 'FaStar',
+        title: planData.nome_plano,
+        amount: parseFloat(planData.valor),
+        description: planData.descricao,
+        benefits: formData.get('benefits').split('\n').map(b => b.trim()).filter(b => b),
+        fidelidadesExtras: planData.fidelidades_extras,
+      };
+
+      if (isAddingPlan) {
+        setPlans([...plans, updatedPlan]);
+      } else {
+        setPlans(plans.map(p => (p.id === selectedPlan.id ? updatedPlan : p)));
+      }
+      setSelectedPlan(null);
+      setIsAddingPlan(false);
+      setError(null);
+    } catch (error) {
+      setError('Erro ao salvar na API: ' + error.message);
     }
-    setSelectedPlan(null);
-    setIsAddingPlan(false);
-    setError(null);
   };
 
   const handleIconSelect = (iconName) => {
@@ -568,7 +543,7 @@ const PlanosConfig = () => {
               />
             </FormGroup>
             <FormGroup>
-              <label htmlFor="amount">Valor (R$)</label>
+              <label htmlFor="amount">Valor Base (R$)</label>
               <Input
                 type="number"
                 id="amount"
@@ -577,24 +552,6 @@ const PlanosConfig = () => {
                 min="0"
                 step="0.01"
                 required
-              />
-            </FormGroup>
-            <FormGroup>
-              <label htmlFor="pricesMensal">Preço Mensal (ex: R$ 39,90/mês s/ fidelidade)</label>
-              <Input
-                type="text"
-                id="pricesMensal"
-                name="pricesMensal"
-                defaultValue={selectedPlan?.prices?.mensal || ''}
-              />
-            </FormGroup>
-            <FormGroup>
-              <label htmlFor="pricesFidelidade">Preço com Fidelidade (ex: R$ 109,90/mês c/ fidelidade 12 meses)</label>
-              <Input
-                type="text"
-                id="pricesFidelidade"
-                name="pricesFidelidade"
-                defaultValue={selectedPlan?.prices?.fidelidade || ''}
               />
             </FormGroup>
             <FormGroup>
@@ -642,12 +599,14 @@ const PlanosConfig = () => {
                       min="0"
                       step="0.01"
                       placeholder="Preço (R$)"
+                      required
                     />
                     <Input
                       type="text"
                       name="fidelidadesExtrasPeriodo"
                       defaultValue={fidelity.periodo || ''}
                       placeholder="Período (ex: 3 meses)"
+                      required
                     />
                   </ExtraFidelityItem>
                 ))}
@@ -669,9 +628,7 @@ const PlanosConfig = () => {
                 <tr>
                   <th>Título</th>
                   <th>Descrição</th>
-                  <th>Valor (R$)</th>
-                  <th>Preço Mensal</th>
-                  <th>Preço Fidelidade</th>
+                  <th>Valor Base (R$)</th>
                   <th>Fidelidades Extras</th>
                   <th>Benefícios</th>
                   <th>Ação</th>
@@ -683,8 +640,6 @@ const PlanosConfig = () => {
                     <td>{p.title}</td>
                     <td>{p.description || '-'}</td>
                     <td>{p.amount.toFixed(2)}</td>
-                    <td>{p.prices.mensal || '-'}</td>
-                    <td>{p.prices.fidelidade || '-'}</td>
                     <td>{p.fidelidadesExtras?.map(f => `${f.preco.toFixed(2)}/${f.periodo}`).join(', ') || '-'}</td>
                     <td>{p.benefits?.join(', ') || '-'}</td>
                     <td>
