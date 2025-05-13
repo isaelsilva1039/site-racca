@@ -363,7 +363,7 @@ const PlanosConfig = () => {
           nomePlano: plan.nome_plano,
           valor: parseFloat(plan.valor),
           descricao: plan.descricao,
-          benefits: plan.benefits || [],
+          benefits: plan.beneficios || [], // Ajustado para "beneficios" ao mapear do backend
           fidelidadesExtras: plan.fidelidades_extras || [],
         }));
         setPlans(mappedPlans);
@@ -419,7 +419,7 @@ const PlanosConfig = () => {
         nomePlano: data.nome_plano,
         valor: parseFloat(data.valor),
         descricao: data.descricao,
-        benefits: data.benefits || [],
+        benefits: data.beneficios || [], // Ajustado para "beneficios" ao mapear do backend
         fidelidadesExtras: data.fidelidades_extras || [],
       });
       setIsAddingPlan(false);
@@ -498,10 +498,10 @@ const PlanosConfig = () => {
     const planData = {
       nomePlano: formData.get("nomePlano"),
       descricao: formData.get("descricao") || "",
-      fidelidade: fidelidadesExtras.length > 0 ? 1 : 0, // Ajustado para "fidelidade"
+      fidelidade: fidelidadesExtras.length > 0 ? 1 : 0,
       valor: valor.toFixed(2),
       fidelidadesExtras: fidelidadesExtras,
-      benefits: benefitsArray.length > 0 ? benefitsArray : undefined,
+      beneficios: benefitsArray.length > 0 ? benefitsArray : undefined, // Ajustado para "beneficios"
     };
 
     try {
@@ -545,7 +545,7 @@ const PlanosConfig = () => {
         nomePlano: responseData.nome_plano,
         valor: parseFloat(responseData.valor),
         descricao: responseData.descricao,
-        benefits: responseData.benefits || [],
+        benefits: responseData.beneficios || [], // Ajustado para "beneficios" ao mapear do backend
         fidelidadesExtras: responseData.fidelidades_extras,
       };
 
