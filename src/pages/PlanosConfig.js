@@ -149,7 +149,7 @@ const Input = styled.input`
   font-size: 1rem;
   width: 100%;
   box-sizing: border-box;
-  transition: border-color 0\xa0.3sease;
+  transition: border-color 0.3s ease;
 
   &:focus {
     border-color: #8a00e6;
@@ -336,9 +336,9 @@ const PlanosConfig = () => {
   const [isAddingPlan, setIsAddingPlan] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [error, setError] = useState(null);
+  const [benefits, setBenefits] = useState([]);
   const dropdownRef = useRef(null);
 
-  // Fetch all plans on component mount
   useEffect(() => {
     const fetchPlans = async () => {
       try {
@@ -348,8 +348,6 @@ const PlanosConfig = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              // Uncomment if token is needed: 'Authorization': `Bearer ${token}`,
-              // Uncomment if session-based auth: credentials: 'include',
             },
           }
         );
@@ -361,12 +359,12 @@ const PlanosConfig = () => {
         const data = await response.json();
         const mappedPlans = data.map((plan) => ({
           id: plan.id,
-          icon: "FaStar", // Default icon
-          title: plan.nome_plano,
-          amount: parseFloat(plan.valor),
-          description: plan.descricao,
-          benefits: [], // API doesn't return benefits
-          fidelidadesExtras: plan.fidelidades_extras,
+          icon: "FaStar",
+          nomePlano: plan.nome_plano,
+          valor: parseFloat(plan.valor),
+          descricao: plan.descricao,
+          benefits: plan.benefits || [],
+          fidelidadesExtras: plan.fidelidades_extras || [],
         }));
         setPlans(mappedPlans);
       } catch (error) {
@@ -377,13 +375,21 @@ const PlanosConfig = () => {
     fetchPlans();
   }, []);
 
+  useEffect(() => {
+    if (selectedPlan) {
+      setBenefits(selectedPlan.benefits || []);
+    } else if (isAddingPlan) {
+      setBenefits([]);
+    }
+  }, [selectedPlan, isAddingPlan]);
+
   const handleAddPlan = () => {
     setSelectedPlan({
       id: null,
       icon: "FaStar",
-      title: "",
-      amount: 0,
-      description: "",
+      nomePlano: "",
+      valor: 0,
+      descricao: "",
       benefits: [],
       fidelidadesExtras: [],
     });
@@ -398,8 +404,6 @@ const PlanosConfig = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            // Uncomment if token is needed: 'Authorization': `Bearer ${token}`,
-            // Uncomment if session-based auth: credentials: 'include',
           },
         }
       );
@@ -412,10 +416,10 @@ const PlanosConfig = () => {
       setSelectedPlan({
         id: data.id,
         icon: plan.icon || "FaStar",
-        title: data.nome_plano,
-        amount: parseFloat(data.valor),
-        description: data.descricao,
-        benefits: plan.benefits || [],
+        nomePlano: data.nome_plano,
+        valor: parseFloat(data.valor),
+        descricao: data.descricao,
+        benefits: data.benefits || [],
         fidelidadesExtras: data.fidelidades_extras || [],
       });
       setIsAddingPlan(false);
@@ -434,8 +438,6 @@ const PlanosConfig = () => {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
-            // Uncomment if token is needed: 'Authorization': `Bearer ${token}`,
-            // Uncomment if session-based auth: credentials: 'include',
           },
         });
 
@@ -456,7 +458,6 @@ const PlanosConfig = () => {
           throw new Error(errorMessage);
         }
 
-        // Only update state if deletion is successful
         setPlans(plans.filter((p) => p.id !== id));
         setError(null);
       } catch (error) {
@@ -469,18 +470,16 @@ const PlanosConfig = () => {
   const handlePlanFormSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const amount = parseFloat(formData.get("amount"));
+    const valor = parseFloat(formData.get("valor"));
 
-    if (isNaN(amount) || amount <= 0) {
+    if (isNaN(valor) || valor <= 0) {
       setError("Valor deve ser um número maior que 0");
       return;
     }
 
     const fidelidadesExtras = [];
     const fidelidadesExtrasPreco = formData.getAll("fidelidadesExtrasPreco");
-    const fidelidadesExtrasPeriodo = formData.getAll(
-      "fidelidadesExtrasPeriodo"
-    );
+    const fidelidadesExtrasPeriodo = formData.getAll("fidelidadesExtrasPeriodo");
     for (let i = 0; i < fidelidadesExtrasPreco.length; i++) {
       const preco = parseFloat(fidelidadesExtrasPreco[i]);
       const periodo = fidelidadesExtrasPeriodo[i];
@@ -489,12 +488,20 @@ const PlanosConfig = () => {
       }
     }
 
+    const benefitsArray = [];
+    formData.forEach((value, key) => {
+      if (key.startsWith("benefits[")) {
+        benefitsArray.push(value);
+      }
+    });
+
     const planData = {
-      nomePlano: formData.get("title"),
-      descricao: formData.get("description") || "",
-      fidelity: fidelidadesExtras.length > 0 ? 1 : 0,
-      valor: amount.toFixed(2),
+      nomePlano: formData.get("nomePlano"),
+      descricao: formData.get("descricao") || "",
+      fidelidade: fidelidadesExtras.length > 0 ? 1 : 0, // Ajustado para "fidelidade"
+      valor: valor.toFixed(2),
       fidelidadesExtras: fidelidadesExtras,
+      benefits: benefitsArray.length > 0 ? benefitsArray : undefined,
     };
 
     try {
@@ -510,8 +517,6 @@ const PlanosConfig = () => {
         method,
         headers: {
           "Content-Type": "application/json",
-          // Uncomment if token is needed: 'Authorization': `Bearer ${token}`,
-          // Uncomment if session-based auth: credentials: 'include',
         },
         body: JSON.stringify(planData),
       });
@@ -537,14 +542,10 @@ const PlanosConfig = () => {
       const updatedPlan = {
         id: responseData.id || selectedPlan.id,
         icon: formData.get("icon") || "FaStar",
-        title: responseData.nome_plano,
-        amount: parseFloat(responseData.valor),
-        description: responseData.descricao,
-        benefits: formData
-          .get("benefits")
-          .split("\n")
-          .map((b) => b.trim())
-          .filter((b) => b),
+        nomePlano: responseData.nome_plano,
+        valor: parseFloat(responseData.valor),
+        descricao: responseData.descricao,
+        benefits: responseData.benefits || [],
         fidelidadesExtras: responseData.fidelidades_extras,
       };
 
@@ -557,6 +558,7 @@ const PlanosConfig = () => {
       }
       setSelectedPlan(null);
       setIsAddingPlan(false);
+      setBenefits([]);
       setError(null);
     } catch (error) {
       setError("Erro ao salvar na API: " + error.message);
@@ -572,12 +574,9 @@ const PlanosConfig = () => {
   const handleCancel = () => {
     setSelectedPlan(null);
     setIsAddingPlan(false);
+    setBenefits([]);
     setError(null);
   };
-
-  const selectedIcon = iconOptions.find(
-    (opt) => opt.name === selectedPlan?.icon
-  )?.component || <FaStar />;
 
   const addFidelityExtra = () => {
     setSelectedPlan((prev) => ({
@@ -588,6 +587,24 @@ const PlanosConfig = () => {
       ],
     }));
   };
+
+  const addBenefit = () => {
+    setBenefits([...benefits, ""]);
+  };
+
+  const removeBenefit = (index) => {
+    setBenefits(benefits.filter((_, i) => i !== index));
+  };
+
+  const updateBenefit = (index, value) => {
+    const updatedBenefits = [...benefits];
+    updatedBenefits[index] = value;
+    setBenefits(updatedBenefits);
+  };
+
+  const selectedIcon = iconOptions.find(
+    (opt) => opt.name === selectedPlan?.icon
+  )?.component || <FaStar />;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -611,31 +628,31 @@ const PlanosConfig = () => {
           <h3>{isAddingPlan ? "Adicionar Plano" : "Editar Plano"}</h3>
           <Form onSubmit={handlePlanFormSubmit}>
             <FormGroup>
-              <label htmlFor="title">Título</label>
+              <label htmlFor="nomePlano">Título</label>
               <Input
                 type="text"
-                id="title"
-                name="title"
-                defaultValue={selectedPlan?.title || ""}
+                id="nomePlano"
+                name="nomePlano"
+                defaultValue={selectedPlan?.nomePlano || ""}
                 required
               />
             </FormGroup>
             <FormGroup>
-              <label htmlFor="description">Descrição</label>
+              <label htmlFor="descricao">Descrição</label>
               <Input
                 type="text"
-                id="description"
-                name="description"
-                defaultValue={selectedPlan?.description || ""}
+                id="descricao"
+                name="descricao"
+                defaultValue={selectedPlan?.descricao || ""}
               />
             </FormGroup>
             <FormGroup>
-              <label htmlFor="amount">Valor Base (R$)</label>
+              <label htmlFor="valor">Valor Base (R$)</label>
               <Input
                 type="number"
-                id="amount"
-                name="amount"
-                defaultValue={selectedPlan?.amount || 0}
+                id="valor"
+                name="valor"
+                defaultValue={selectedPlan?.valor || 0}
                 min="0"
                 step="0.01"
                 required
@@ -678,13 +695,27 @@ const PlanosConfig = () => {
               />
             </FormGroup>
             <FormGroup>
-              <label htmlFor="benefits">Benefícios (um por linha)</label>
-              <Textarea
-                id="benefits"
-                name="benefits"
-                defaultValue={selectedPlan?.benefits?.join("\n") || ""}
-                required
-              />
+              <label>Benefícios</label>
+              {benefits.map((benefit, index) => (
+                <div
+                  key={index}
+                  style={{ display: "flex", gap: "10px", marginBottom: "10px" }}
+                >
+                  <Textarea
+                    name={`benefits[${index}]`}
+                    value={benefit}
+                    onChange={(e) => updateBenefit(index, e.target.value)}
+                    placeholder="Digite um benefício (inclua subtítulos e detalhes)"
+                    required
+                  />
+                  <Button type="button" onClick={() => removeBenefit(index)}>
+                    Remover
+                  </Button>
+                </div>
+              ))}
+              <Button type="button" onClick={addBenefit}>
+                <FaPlus /> Adicionar Benefício
+              </Button>
             </FormGroup>
             <FormGroup>
               <label>Fidelidades Extras</label>
@@ -738,9 +769,9 @@ const PlanosConfig = () => {
               <tbody>
                 {plans.map((p) => (
                   <tr key={p.id}>
-                    <td>{p.title}</td>
-                    <td>{p.description || "-"}</td>
-                    <td>{p.amount.toFixed(2)}</td>
+                    <td>{p.nomePlano}</td>
+                    <td>{p.descricao || "-"}</td>
+                    <td>{p.valor.toFixed(2)}</td>
                     <td>
                       {p.fidelidadesExtras
                         ?.map((f) => `${f.preco.toFixed(2)}/${f.periodo}`)
