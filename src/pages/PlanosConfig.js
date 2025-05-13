@@ -427,7 +427,7 @@ const PlanosConfig = () => {
   const handleDeletePlan = async (id) => {
     if (window.confirm("Tem certeza que deseja excluir este plano?")) {
       try {
-        const url = `https://racca.store/api/clientes/planos/deletar/${id}`;
+        const url = `https://racca.store/api/clientes/planos/delete/${id}`;
         console.log("Delete Request URL:", url);
 
         const response = await fetch(url, {
