@@ -306,6 +306,12 @@ const ExtraFidelityItem = styled.div`
   align-items: center;
 `;
 
+const FidelityBaseContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+`;
+
 const iconOptions = [
   { name: "FaStar", component: <FaStar /> },
   { name: "FaCrown", component: <FaCrown /> },
@@ -362,8 +368,9 @@ const PlanosConfig = () => {
           icon: "FaStar",
           nomePlano: plan.nome_plano,
           valor: parseFloat(plan.valor),
+          fidelidade: plan.fidelidade || 0,
           descricao: plan.descricao,
-          benefits: plan.beneficios || [], // Ajustado para "beneficios" ao mapear do backend
+          benefits: plan.beneficios || [],
           fidelidadesExtras: plan.fidelidades_extras || [],
         }));
         setPlans(mappedPlans);
@@ -389,6 +396,7 @@ const PlanosConfig = () => {
       icon: "FaStar",
       nomePlano: "",
       valor: 0,
+      fidelidade: 0,
       descricao: "",
       benefits: [],
       fidelidadesExtras: [],
@@ -418,8 +426,9 @@ const PlanosConfig = () => {
         icon: plan.icon || "FaStar",
         nomePlano: data.nome_plano,
         valor: parseFloat(data.valor),
+        fidelidade: data.fidelidade || 0,
         descricao: data.descricao,
-        benefits: data.beneficios || [], // Ajustado para "beneficios" ao mapear do backend
+        benefits: data.beneficios || [],
         fidelidadesExtras: data.fidelidades_extras || [],
       });
       setIsAddingPlan(false);
@@ -471,6 +480,7 @@ const PlanosConfig = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const valor = parseFloat(formData.get("valor"));
+    const fidelidade = parseInt(formData.get("fidelidade")) || 0;
 
     if (isNaN(valor) || valor <= 0) {
       setError("Valor deve ser um número maior que 0");
@@ -498,10 +508,10 @@ const PlanosConfig = () => {
     const planData = {
       nomePlano: formData.get("nomePlano"),
       descricao: formData.get("descricao") || "",
-      fidelidade: fidelidadesExtras.length > 0 ? 1 : 0,
+      fidelidade,
       valor: valor.toFixed(2),
       fidelidadesExtras: fidelidadesExtras,
-      beneficios: benefitsArray.length > 0 ? benefitsArray : undefined, // Ajustado para "beneficios"
+      beneficios: benefitsArray.length > 0 ? benefitsArray : undefined,
     };
 
     try {
@@ -544,8 +554,9 @@ const PlanosConfig = () => {
         icon: formData.get("icon") || "FaStar",
         nomePlano: responseData.nome_plano,
         valor: parseFloat(responseData.valor),
+        fidelidade: responseData.fidelidade || 0,
         descricao: responseData.descricao,
-        benefits: responseData.beneficios || [], // Ajustado para "beneficios" ao mapear do backend
+        benefits: responseData.beneficios || [],
         fidelidadesExtras: responseData.fidelidades_extras,
       };
 
@@ -647,16 +658,28 @@ const PlanosConfig = () => {
               />
             </FormGroup>
             <FormGroup>
-              <label htmlFor="valor">Valor Base (R$)</label>
-              <Input
-                type="number"
-                id="valor"
-                name="valor"
-                defaultValue={selectedPlan?.valor || 0}
-                min="0"
-                step="0.01"
-                required
-              />
+              <label>Valor Base (R$)</label>
+              <FidelityBaseContainer>
+                <Input
+                  type="number"
+                  id="valor"
+                  name="valor"
+                  defaultValue={selectedPlan?.valor || 0}
+                  min="0"
+                  step="0.01"
+                  required
+                  style={{ width: "60%" }}
+                />
+                <Input
+                  type="number"
+                  id="fidelidade"
+                  name="fidelidade"
+                  defaultValue={selectedPlan?.fidelidade || 0}
+                  min="0"
+                  placeholder="Meses de fidelidade"
+                  style={{ width: "40%" }}
+                />
+              </FidelityBaseContainer>
             </FormGroup>
             <FormGroup>
               <label htmlFor="icon">Ícone</label>
@@ -771,7 +794,10 @@ const PlanosConfig = () => {
                   <tr key={p.id}>
                     <td>{p.nomePlano}</td>
                     <td>{p.descricao || "-"}</td>
-                    <td>{p.valor.toFixed(2)}</td>
+                    <td>
+                      {p.valor.toFixed(2)}
+                      {p.fidelidade > 0 ? ` (${p.fidelidade} ${p.fidelidade === 1 ? "mês" : "meses"} de fidelidade)` : ""}
+                    </td>
                     <td>
                       {p.fidelidadesExtras
                         ?.map((f) => `${f.preco.toFixed(2)}/${f.periodo}`)
