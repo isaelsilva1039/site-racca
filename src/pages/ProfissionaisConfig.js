@@ -438,7 +438,6 @@ const ProfissionaisConfig = () => {
   const areasDropdownRef = useRef(null);
   const abordagemDropdownRef = useRef(null);
 
-  // Fetch professionals from API on component mount
   useEffect(() => {
     const fetchProfissionais = async () => {
       setIsLoading(true);
@@ -453,7 +452,6 @@ const ProfissionaisConfig = () => {
           throw new Error(`Erro ao buscar profissionais: ${response.status} ${response.statusText}`);
         }
         const data = await response.json();
-        // Map API data to match component's expected structure
         const mappedData = data.map(profissional => ({
           id: profissional.id,
           nome: profissional.nome,
@@ -466,9 +464,9 @@ const ProfissionaisConfig = () => {
           sobreMim: profissional.sobreMim || '',
           classificacao: profissional.classificacao || 'Prata',
           foto: profissional.fotoUrl || null,
-          email: profissional.email || '', // Email not provided in API, default to empty
-          data_nascimento: profissional.data_nascimento || '', // Not provided, default to empty
-          especialidade: profissional.especialidade || '', // Not provided, default to empty
+          email: profissional.email || '',
+          data_nascimento: profissional.data_nascimento || '',
+          especialidade: profissional.especialidade || '',
           avatar: profissional.fotoUrl || null,
           fk_anexo: null,
           created_at: null,
@@ -588,7 +586,6 @@ const ProfissionaisConfig = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const cpf = formData.get('cpf');
-    const crp = formData.get('crp');
     const preco = parseFloat(formData.get('preco'));
     const avatarFile = formData.get('avatar');
     const areasAtendimento = JSON.stringify(formData.getAll('areasAtendimento')[0] || []);
@@ -596,10 +593,6 @@ const ProfissionaisConfig = () => {
 
     if (!/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(cpf)) {
       setError('CPF deve estar no formato 123.456.789-00');
-      return;
-    }
-    if (!/^\d{2}\/\d{5}$/.test(crp)) {
-      setError('CRP deve estar no formato 04/70777');
       return;
     }
     if (isNaN(preco) || preco <= 0) {
@@ -674,7 +667,7 @@ const ProfissionaisConfig = () => {
       setSelectedPsicologo(null);
       setIsAddingPsicologo(false);
       setError(null);
-      setCurrentPage(1); // Reset to first page after adding/updating
+      setCurrentPage(1);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -729,7 +722,6 @@ const ProfissionaisConfig = () => {
     }
   };
 
-  // Pagination logic
   const totalPages = Math.ceil(psicologos.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentPsicologos = psicologos.slice(startIndex, startIndex + itemsPerPage);
