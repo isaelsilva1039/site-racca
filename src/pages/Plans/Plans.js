@@ -63,7 +63,6 @@ function Plans() {
         }
         const data = await response.json();
         const mappedProducts = Array.isArray(data) ? data.map(plan => {
-          // Decode Unicode in relevant fields
           const decodedTitle = decodeUnicode(plan.nome_plano);
           const decodedBenefits = Array.isArray(plan.beneficios) ? plan.beneficios.map(benefit => 
             decodeUnicode(benefit).split('\n').filter(line => line.trim() !== '').join(' ')
@@ -232,6 +231,8 @@ function Plans() {
       priceValue = selectedPlan.amount * 0.925;
     } else if (selectedPriceOption === '6 meses') {
       priceValue = selectedPlan.amount * 0.95;
+    } else if (selectedPriceOption === '5 meses') {
+      priceValue = selectedPlan.amount * 0.96; // Example discount for 5 months
     } else if (selectedPriceOption === '3 meses') {
       priceValue = selectedPlan.amount * 0.975;
     }
