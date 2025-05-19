@@ -75,12 +75,22 @@ function Plans() {
             id_plano_sistema_racca: plan.id,
             title: decodedTitle,
             amount: valorAsFloat,
-            prices: Array.isArray(plan.fidelidades_extras) && plan.fidelidades_extras.length > 0
-              ? plan.fidelidades_extras.reduce((acc, extra) => ({
-                  ...acc,
-                  [extra.periodo]: `R$ ${parseFloat(extra.preco).toFixed(2)}/mês c/ fidelidade ${extra.periodo}`,
-                }), { 'Sem': `R$ ${valorAsFloat.toFixed(2)}/mês s/ fidelidade` })
-              : { 'Sem': `R$ ${valorAsFloat.toFixed(2)}/mês s/ fidelidade` },
+            prices: plan.fidelidade === 0
+              ? {
+                  Sem: `R$ ${parseFloat(plan.valor).toFixed(2)}/mês s/ fidelidade`,
+                  ...Array.isArray(plan.fidelidades_extras) && plan.fidelidades_extras.length > 0
+                    ? plan.fidelidades_extras.reduce((acc, extra) => ({
+                        ...acc,
+                        [extra.periodo]: `R$ ${parseFloat(extra.preco).toFixed(2)}/mês c/ fidelidade ${extra.periodo}`,
+                      }), {})
+                    : {}
+                }
+              : Array.isArray(plan.fidelidades_extras) && plan.fidelidades_extras.length > 0
+                ? plan.fidelidades_extras.reduce((acc, extra) => ({
+                    ...acc,
+                    [extra.periodo]: `R$ ${parseFloat(extra.preco).toFixed(2)}/mês c/ fidelidade ${extra.periodo}`,
+                  }), {})
+                : {},
             benefits: decodedBenefits.length > 0 ? decodedBenefits : ['Nenhum benefício disponível'],
           };
         }) : [];
@@ -300,21 +310,19 @@ function Plans() {
               ))}
             </ul>
             <div className="price-option-selector">
-              {['12 meses', '9 meses', '6 meses', '5 meses', '3 meses', 'Sem'].map((option) =>
-                product.prices[option] && (
-                  <label key={option} className="price-option-label">
-                    <input
-                      type="radio"
-                      name={`priceOption-${product.id}`}
-                      value={option}
-                      checked={selectedPriceOption === option}
-                      onChange={() => setSelectedPriceOption(option)}
-                      className="price-radio"
-                    />
-                    <span className="price-text">{product.prices[option]}</span>
-                  </label>
-                )
-              )}
+              {Object.entries(product.prices).map(([option, price]) => (
+                <label key={option} className="price-option-label">
+                  <input
+                    type="radio"
+                    name={`priceOption-${product.id}`}
+                    value={option}
+                    checked={selectedPriceOption === option}
+                    onChange={() => setSelectedPriceOption(option)}
+                    className="price-radio"
+                  />
+                  <span className="price-text">{price}</span>
+                </label>
+              ))}
             </div>
             <button onClick={() => openModal(product)} className="plan-button">
               Assine Agora

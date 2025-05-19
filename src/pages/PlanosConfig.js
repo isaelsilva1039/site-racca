@@ -24,6 +24,7 @@ import {
   FaUmbrella,
   FaChevronDown,
   FaPlus,
+  FaTrash, // Adicionando FaTrash para o botão de remover
 } from "react-icons/fa";
 
 const fadeInUp = keyframes`
@@ -288,6 +289,34 @@ const Button = styled.button`
   }
 `;
 
+const RemoveButton = styled.button`
+  padding: 8px;
+  background: #dc3545;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: #c82333;
+  }
+
+  @media (max-width: 768px) {
+    padding: 6px;
+    font-size: 0.95rem;
+  }
+  @media (max-width: 480px) {
+    padding: 5px;
+    font-size: 0.9rem;
+  }
+`;
+
 const ErrorMessage = styled.div`
   color: red;
   text-align: center;
@@ -343,6 +372,7 @@ const PlanosConfig = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [error, setError] = useState(null);
   const [benefits, setBenefits] = useState([]);
+  const [extraFidelities, setExtraFidelities] = useState([]); // Novo estado para fidelidades extras
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -385,8 +415,15 @@ const PlanosConfig = () => {
   useEffect(() => {
     if (selectedPlan) {
       setBenefits(selectedPlan.benefits || []);
+      setExtraFidelities(
+        selectedPlan.fidelidadesExtras.map((f, index) => ({
+          ...f,
+          id: `fidelity-${index}-${Date.now()}`,
+        })) || []
+      );
     } else if (isAddingPlan) {
       setBenefits([]);
+      setExtraFidelities([]);
     }
   }, [selectedPlan, isAddingPlan]);
 
@@ -487,17 +524,6 @@ const PlanosConfig = () => {
       return;
     }
 
-    const fidelidadesExtras = [];
-    const fidelidadesExtrasPreco = formData.getAll("fidelidadesExtrasPreco");
-    const fidelidadesExtrasPeriodo = formData.getAll("fidelidadesExtrasPeriodo");
-    for (let i = 0; i < fidelidadesExtrasPreco.length; i++) {
-      const preco = parseFloat(fidelidadesExtrasPreco[i]);
-      const periodo = fidelidadesExtrasPeriodo[i];
-      if (!isNaN(preco) && preco > 0 && periodo) {
-        fidelidadesExtras.push({ preco, periodo });
-      }
-    }
-
     const benefitsArray = [];
     formData.forEach((value, key) => {
       if (key.startsWith("benefits[")) {
@@ -510,7 +536,10 @@ const PlanosConfig = () => {
       descricao: formData.get("descricao") || "",
       fidelidade,
       valor: valor.toFixed(2),
-      fidelidadesExtras: fidelidadesExtras,
+      fidelidadesExtras: extraFidelities.map((fidelity) => ({
+        preco: parseFloat(fidelity.preco),
+        periodo: fidelity.periodo,
+      })),
       beneficios: benefitsArray.length > 0 ? benefitsArray : undefined,
     };
 
@@ -570,6 +599,7 @@ const PlanosConfig = () => {
       setSelectedPlan(null);
       setIsAddingPlan(false);
       setBenefits([]);
+      setExtraFidelities([]);
       setError(null);
     } catch (error) {
       setError("Erro ao salvar na API: " + error.message);
@@ -586,17 +616,27 @@ const PlanosConfig = () => {
     setSelectedPlan(null);
     setIsAddingPlan(false);
     setBenefits([]);
+    setExtraFidelities([]);
     setError(null);
   };
 
   const addFidelityExtra = () => {
-    setSelectedPlan((prev) => ({
-      ...prev,
-      fidelidadesExtras: [
-        ...(prev.fidelidadesExtras || []),
-        { preco: 0, periodo: "" },
-      ],
-    }));
+    setExtraFidelities([
+      ...extraFidelities,
+      { preco: 0, periodo: "", id: `fidelity-new-${Date.now()}` },
+    ]);
+  };
+
+  const removeFidelityExtra = (id) => {
+    setExtraFidelities(extraFidelities.filter((fidelity) => fidelity.id !== id));
+  };
+
+  const updateFidelityExtra = (id, field, value) => {
+    setExtraFidelities(
+      extraFidelities.map((fidelity) =>
+        fidelity.id === id ? { ...fidelity, [field]: value } : fidelity
+      )
+    );
   };
 
   const addBenefit = () => {
@@ -743,12 +783,15 @@ const PlanosConfig = () => {
             <FormGroup>
               <label>Fidelidades Extras</label>
               <ExtraFidelityContainer>
-                {selectedPlan?.fidelidadesExtras?.map((fidelity, index) => (
-                  <ExtraFidelityItem key={index}>
+                {extraFidelities.map((fidelity, index) => (
+                  <ExtraFidelityItem key={fidelity.id}>
                     <Input
                       type="number"
-                      name="fidelidadesExtrasPreco"
-                      defaultValue={fidelity.preco || 0}
+                      name={`fidelidadesExtrasPreco[${index}]`}
+                      value={fidelity.preco}
+                      onChange={(e) =>
+                        updateFidelityExtra(fidelity.id, "preco", e.target.value)
+                      }
                       min="0"
                       step="0.01"
                       placeholder="Preço (R$)"
@@ -756,11 +799,20 @@ const PlanosConfig = () => {
                     />
                     <Input
                       type="text"
-                      name="fidelidadesExtrasPeriodo"
-                      defaultValue={fidelity.periodo || ""}
+                      name={`fidelidadesExtrasPeriodo[${index}]`}
+                      value={fidelity.periodo}
+                      onChange={(e) =>
+                        updateFidelityExtra(fidelity.id, "periodo", e.target.value)
+                      }
                       placeholder="Período (ex: 3 meses)"
                       required
                     />
+                    <RemoveButton
+                      type="button"
+                      onClick={() => removeFidelityExtra(fidelity.id)}
+                    >
+                      <FaTrash />
+                    </RemoveButton>
                   </ExtraFidelityItem>
                 ))}
                 <Button type="button" onClick={addFidelityExtra}>
