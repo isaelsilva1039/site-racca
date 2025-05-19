@@ -69,6 +69,9 @@ function App() {
                 <Section id="consultaavulsa">
                   <ConsultaAvulsa />
                 </Section>
+                                <Section id="plans">
+                  <Plans />
+                </Section>
                 <Section id="benefits-section">
                   <BenefitsSection />
                 </Section>
@@ -84,11 +87,8 @@ function App() {
                 <Section id="benefits">
                   <Benefits />
                 </Section>
-                <Section id="plans">
-                  <Plans />
-                  <RaVerifiedSeal />
-                </Section>
                 <LegalLinks onFAQClick={handleOpenFAQModal} />
+                <RaVerifiedSeal />
                 <Footer />
                 <WhatsAppButton />
               </>
