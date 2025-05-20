@@ -6,6 +6,7 @@ import ProfissionaisConfig from './ProfissionaisConfig.js';
 import PlanosConfig from './PlanosConfig.js';
 import PlanosProfissionaisConfig from './PlanosProfissionaisConfig.js';
 import EspecialidadesConfig from './EspecialidadesConfig.js';
+import OpcoesConfig from './OpcoesConfig.js';
 
 const AdminContainer = styled.div`
   padding: 60px 15px;
@@ -132,6 +133,8 @@ const AdminPage = () => {
         return <PlanosProfissionaisConfig />;
       case 'especialidades':
         return <EspecialidadesConfig />;
+      case 'opcoes':
+        return <OpcoesConfig />;
       default:
         return null;
     }
@@ -167,6 +170,12 @@ const AdminPage = () => {
           onClick={() => setActiveTab('especialidades')}
         >
           Especialidades
+        </Tab>
+        <Tab
+          active={activeTab === 'opcoes'}
+          onClick={() => setActiveTab('opcoes')}
+        >
+          Abordagens
         </Tab>
       </TabsContainer>
       <TabContent>{renderTabContent()}</TabContent>
