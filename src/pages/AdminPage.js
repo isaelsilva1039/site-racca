@@ -5,6 +5,7 @@ import { FaSignOutAlt } from 'react-icons/fa';
 import ProfissionaisConfig from './ProfissionaisConfig.js';
 import PlanosConfig from './PlanosConfig.js';
 import PlanosProfissionaisConfig from './PlanosProfissionaisConfig.js';
+import EspecialidadesConfig from './EspecialidadesConfig.js';
 
 const AdminContainer = styled.div`
   padding: 60px 15px;
@@ -129,6 +130,8 @@ const AdminPage = () => {
         return <PlanosConfig />;
       case 'planosProfissionais':
         return <PlanosProfissionaisConfig />;
+      case 'especialidades':
+        return <EspecialidadesConfig />;
       default:
         return null;
     }
@@ -158,6 +161,12 @@ const AdminPage = () => {
           onClick={() => setActiveTab('planosProfissionais')}
         >
           Planos Profissionais
+        </Tab>
+        <Tab
+          active={activeTab === 'especialidades'}
+          onClick={() => setActiveTab('especialidades')}
+        >
+          Especialidades
         </Tab>
       </TabsContainer>
       <TabContent>{renderTabContent()}</TabContent>

@@ -451,6 +451,7 @@ const ProfissionaisConfig = () => {
   const [abordagemOptions, setAbordagemOptions] = useState([]);
   const [publicoOptions] = useState(['Adolescentes', 'Adultos', 'Casais', 'Idosos', 'Crianças']);
   const [classificacaoOptions, setClassificacaoOptions] = useState([]);
+  const [especialidades, setEspecialidades] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const areasDropdownRef = useRef(null);
@@ -505,8 +506,31 @@ const ProfissionaisConfig = () => {
     }
   };
 
+  const fetchEspecialidades = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/specialties/all`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Accept': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar especialidades: ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      const mappedEspecialidades = (data.data || []).map(especialidade => ({
+        id: especialidade.id,
+        nome: especialidade.nome,
+      }));
+      setEspecialidades(mappedEspecialidades);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   useEffect(() => {
     fetchProfissionais();
+    fetchEspecialidades();
   }, []);
 
   useEffect(() => {
@@ -976,6 +1000,23 @@ const ProfissionaisConfig = () => {
               />
             </FormGroup>
             <FormGroup>
+              <label htmlFor="especialidade">Especialidade</label>
+              <select
+                id="especialidade"
+                name="especialidade"
+                value={selectedProfissional?.especialidade || ''}
+                onChange={(e) => setSelectedProfissional({ ...selectedProfissional, especialidade: e.target.value })}
+                required
+              >
+                <option value="">Selecione uma especialidade</option>
+                {especialidades.map((especialidade) => (
+                  <option key={especialidade.id} value={especialidade.nome}>
+                    {especialidade.nome}
+                  </option>
+                ))}
+              </select>
+            </FormGroup>
+            <FormGroup>
               <label htmlFor="sobreMim">Sobre Mim</label>
               <Textarea
                 id="sobreMim"
@@ -993,17 +1034,6 @@ const ProfissionaisConfig = () => {
                 name="data_nascimento"
                 value={selectedProfissional?.data_nascimento || ''}
                 onChange={(e) => setSelectedProfissional({ ...selectedProfissional, data_nascimento: e.target.value })}
-                required
-              />
-            </FormGroup>
-            <FormGroup>
-              <label htmlFor="especialidade">Especialidade</label>
-              <Input
-                type="text"
-                id="especialidade"
-                name="especialidade"
-                value={selectedProfissional?.especialidade || ''}
-                onChange={(e) => setSelectedProfissional({ ...selectedProfissional, especialidade: e.target.value })}
                 required
               />
             </FormGroup>
@@ -1031,7 +1061,6 @@ const ProfissionaisConfig = () => {
                 <tr>
                   <th>Imagem</th>
                   <th>Nome</th>
-                 
                   <th>CRP</th>
                   <th>Preço (R$)</th>
                   <th>Classificação</th>
@@ -1051,8 +1080,6 @@ const ProfissionaisConfig = () => {
                       )}
                     </td>
                     <td>{p.nome}</td>
-                 
-                   
                     <td>{p.crp || ''}</td>
                     <td>{(p.preco || 0).toFixed(2)}</td>
                     <td>{p.classificacao || ''}</td>
