@@ -657,31 +657,7 @@ const ProfissionaisConfig = () => {
     setIsAddingProfissional(false);
   };
 
-  const handleDeleteProfissional = async (id) => {
-    if (window.confirm('Tem certeza que deseja excluir este profissional?')) {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`${BASE_URL}/api/profissionais/delete/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error('Sessão expirada. Faça login novamente.');
-          }
-          throw new Error(`Erro ao excluir profissional: ${response.status} ${response.statusText}`);
-        }
-        setProfissionais(profissionais.filter(p => p.id !== id));
-        setError(null);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
+  
 
   const handleProfissionalFormSubmit = async (e) => {
     e.preventDefault();
@@ -1085,9 +1061,7 @@ const ProfissionaisConfig = () => {
                     <td>{p.classificacao || ''}</td>
                     <td>
                       <Button onClick={() => handleEditProfissional(p)} disabled={isLoading}>Editar</Button>
-                      <Button onClick={() => handleDeleteProfissional(p.id)} disabled={isLoading}>
-                        {isLoading ? 'Excluindo...' : 'Excluir'}
-                      </Button>
+ 
                     </td>
                   </tr>
                 ))}
