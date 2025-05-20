@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { FaSignOutAlt } from 'react-icons/fa';
@@ -71,11 +71,67 @@ const LogoutButton = styled.button`
   }
 `;
 
+const TabsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  gap: 10px;
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+`;
+
+const Tab = styled.button`
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: ${props => (props.active ? '#ffffff' : '#a100ff')};
+  background: ${props => (props.active ? '#a100ff' : '#ffffff')};
+  border: 1px solid #a100ff;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: ${props => (props.active ? '#a100ff' : '#f0eaff')};
+    color: ${props => (props.active ? '#ffffff' : '#8a00e6')};
+  }
+
+  @media (max-width: 768px) {
+    padding: 8px 16px;
+    font-size: 0.95rem;
+  }
+  @media (max-width: 480px) {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+  }
+`;
+
+const TabContent = styled.div`
+  width: 100%;
+`;
+
 const AdminPage = () => {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('profissionais'); // Aba inicial: Profissionais
 
   const handleLogout = () => {
     navigate('/');
+  };
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'profissionais':
+        return <ProfissionaisConfig />;
+      case 'planos':
+        return <PlanosConfig />;
+      case 'planosProfissionais':
+        return <PlanosProfissionaisConfig />;
+      default:
+        return null;
+    }
   };
 
   return (
@@ -84,9 +140,27 @@ const AdminPage = () => {
       <LogoutButton onClick={handleLogout}>
         <FaSignOutAlt /> Sair
       </LogoutButton>
-      <ProfissionaisConfig />
-      <PlanosConfig />
-      <PlanosProfissionaisConfig />
+      <TabsContainer>
+        <Tab
+          active={activeTab === 'profissionais'}
+          onClick={() => setActiveTab('profissionais')}
+        >
+          Profissionais
+        </Tab>
+        <Tab
+          active={activeTab === 'planos'}
+          onClick={() => setActiveTab('planos')}
+        >
+          Planos
+        </Tab>
+        <Tab
+          active={activeTab === 'planosProfissionais'}
+          onClick={() => setActiveTab('planosProfissionais')}
+        >
+          Planos Profissionais
+        </Tab>
+      </TabsContainer>
+      <TabContent>{renderTabContent()}</TabContent>
     </AdminContainer>
   );
 };
