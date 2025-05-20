@@ -129,13 +129,28 @@ const Input = styled.input`
     box-shadow: 0 0 5px rgba(138, 0, 230, 0.3);
   }
 
+  &[type="color"] {
+    padding: 5px;
+    height: 40px;
+    width: 100px;
+    cursor: pointer;
+  }
+
   @media (max-width: 768px) {
     padding: 8px;
     font-size: 0.95rem;
+    &[type="color"] {
+      height: 36px;
+      width: 80px;
+    }
   }
   @media (max-width: 480px) {
     padding: 7px;
     font-size: 0.9rem;
+    &[type="color"] {
+      height: 32px;
+      width: 60px;
+    }
   }
 `;
 
@@ -250,6 +265,11 @@ const Button = styled.button`
     background: #8a00e6;
   }
 
+  &:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+  }
+
   @media (max-width: 768px) {
     padding: 10px;
     font-size: 0.95rem;
@@ -258,6 +278,16 @@ const Button = styled.button`
     padding: 8px;
     font-size: 0.9rem;
   }
+`;
+
+const ColorDisplay = styled.span`
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  margin-right: 8px;
+  vertical-align: middle;
+  border: 1px solid #ddd;
 `;
 
 const ErrorMessage = styled.div`
@@ -303,42 +333,46 @@ const PlanosProfissionaisConfig = () => {
   const [professionalPlans, setProfessionalPlans] = useState([]);
   const [selectedProfessionalPlan, setSelectedProfessionalPlan] = useState(null);
   const [isAddingProfessionalPlan, setIsAddingProfessionalPlan] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isIconDropdownOpen, setIsIconDropdownOpen] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const dropdownRef = useRef(null);
+  const iconDropdownRef = useRef(null);
+
+  const fetchProfessionalPlans = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${BASE_URL}/api/profissionais/planos/all`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Accept': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar planos para profissionais: ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      const mappedData = data.map(plan => ({
+        id: plan.id,
+        title: plan.titulo,
+        price: parseFloat(plan.preco).toFixed(2),
+        benefits: plan.beneficios ? plan.beneficios.split(',').map(b => b.trim()) : [],
+        classificacao: plan.classificacao,
+        icon: plan.icon || 'FaStar',
+        cor: plan.cor || '#ffffff',
+        descricao: plan.descricao || '',
+        created_at: plan.created_at,
+        updated_at: plan.updated_at,
+      }));
+      setProfessionalPlans(mappedData);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProfessionalPlans = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`${BASE_URL}/api/profissionais/planos/all`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error(`Erro ao buscar planos para profissionais: ${response.status} ${response.statusText}`);
-        }
-        const data = await response.json();
-        const mappedData = data.map(plan => ({
-          id: plan.id,
-          title: plan.titulo,
-          price: parseFloat(plan.preco).toFixed(2),
-          benefits: plan.beneficios.split(',').map(b => b.trim()),
-          classificacao: plan.classificacao,
-          icon: plan.icon || 'FaStar',
-          created_at: plan.created_at,
-          updated_at: plan.updated_at,
-        }));
-        setProfessionalPlans(mappedData);
-        setError(null);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchProfessionalPlans();
   }, []);
 
@@ -350,6 +384,8 @@ const PlanosProfissionaisConfig = () => {
       benefits: [],
       classificacao: 'Prata',
       icon: 'FaStar',
+      cor: '#ffffff',
+      descricao: '',
     });
     setIsAddingProfessionalPlan(true);
   };
@@ -360,6 +396,7 @@ const PlanosProfissionaisConfig = () => {
       const response = await fetch(`${BASE_URL}/api/profissionais/planos/${plan.id}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Accept': 'application/json',
         },
       });
       if (!response.ok) {
@@ -370,9 +407,11 @@ const PlanosProfissionaisConfig = () => {
         id: data.id,
         title: data.titulo,
         price: parseFloat(data.preco).toFixed(2),
-        benefits: data.beneficios.split(',').map(b => b.trim()),
+        benefits: data.beneficios ? data.beneficios.split(',').map(b => b.trim()) : [],
         classificacao: data.classificacao,
         icon: data.icon || 'FaStar',
+        cor: data.cor || '#ffffff',
+        descricao: data.descricao || '',
         created_at: data.created_at,
         updated_at: data.updated_at,
       };
@@ -425,6 +464,8 @@ const PlanosProfissionaisConfig = () => {
       beneficios: formData.get('benefits').split('\n').map(b => b.trim()).join(','),
       classificacao: formData.get('classificacao'),
       icon: formData.get('icon'),
+      cor: formData.get('cor'),
+      descricao: formData.get('descricao') || null,
     };
 
     setIsLoading(true);
@@ -441,18 +482,7 @@ const PlanosProfissionaisConfig = () => {
         if (!response.ok) {
           throw new Error(`Erro ao criar plano para profissional: ${response.status} ${response.statusText}`);
         }
-        const newPlan = await response.json();
-        const mappedNewPlan = {
-          id: newPlan.id,
-          title: newPlan.titulo,
-          price: parseFloat(newPlan.preco).toFixed(2),
-          benefits: newPlan.beneficios.split(',').map(b => b.trim()),
-          classificacao: newPlan.classificacao,
-          icon: newPlan.icon || 'FaStar',
-          created_at: newPlan.created_at,
-          updated_at: newPlan.updated_at,
-        };
-        setProfessionalPlans([...professionalPlans, mappedNewPlan]);
+        await fetchProfessionalPlans(); // Recarrega os dados após criação
       } else {
         const response = await fetch(`${BASE_URL}/api/profissionais/planos/update/${selectedProfessionalPlan.id}`, {
           method: 'PUT',
@@ -465,18 +495,7 @@ const PlanosProfissionaisConfig = () => {
         if (!response.ok) {
           throw new Error(`Erro ao atualizar plano para profissional: ${response.status} ${response.statusText}`);
         }
-        const updatedPlan = await response.json();
-        const mappedUpdatedPlan = {
-          id: updatedPlan.id,
-          title: updatedPlan.titulo,
-          price: parseFloat(updatedPlan.preco).toFixed(2),
-          benefits: updatedPlan.beneficios.split(',').map(b => b.trim()),
-          classificacao: updatedPlan.classificacao,
-          icon: updatedPlan.icon || 'FaStar',
-          created_at: updatedPlan.created_at,
-          updated_at: updatedPlan.updated_at,
-        };
-        setProfessionalPlans(professionalPlans.map(p => (p.id === selectedProfessionalPlan.id ? mappedUpdatedPlan : p)));
+        await fetchProfessionalPlans(); // Recarrega os dados após atualização
       }
       setSelectedProfessionalPlan(null);
       setIsAddingProfessionalPlan(false);
@@ -496,15 +515,15 @@ const PlanosProfissionaisConfig = () => {
 
   const handleIconSelect = (iconName) => {
     setSelectedProfessionalPlan({ ...selectedProfessionalPlan, icon: iconName });
-    setIsDropdownOpen(false);
+    setIsIconDropdownOpen(false);
   };
 
   const selectedProfessionalIcon = iconOptions.find(opt => opt.name === selectedProfessionalPlan?.icon)?.component || <FaStar />;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
+      if (iconDropdownRef.current && !iconDropdownRef.current.contains(event.target)) {
+        setIsIconDropdownOpen(false);
       }
     };
 
@@ -551,15 +570,26 @@ const PlanosProfissionaisConfig = () => {
               </select>
             </FormGroup>
             <FormGroup>
+              <label htmlFor="cor">Cor do Plano</label>
+              <Input
+                type="color"
+                id="cor"
+                name="cor"
+                value={selectedProfessionalPlan?.cor || '#ffffff'}
+                onChange={(e) => setSelectedProfessionalPlan({ ...selectedProfessionalPlan, cor: e.target.value })}
+                required
+              />
+            </FormGroup>
+            <FormGroup>
               <label htmlFor="icon">Ícone</label>
-              <SelectContainer ref={dropdownRef}>
-                <SelectedOption onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+              <SelectContainer ref={iconDropdownRef}>
+                <SelectedOption onClick={() => setIsIconDropdownOpen(!isIconDropdownOpen)}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     {selectedProfessionalIcon} {selectedProfessionalPlan?.icon || 'Selecione um ícone'}
                   </span>
                   <FaChevronDown />
                 </SelectedOption>
-                {isDropdownOpen && (
+                {isIconDropdownOpen && (
                   <Dropdown>
                     {iconOptions.map((option) => (
                       <Option
@@ -575,6 +605,14 @@ const PlanosProfissionaisConfig = () => {
               <input type="hidden" name="icon" value={selectedProfessionalPlan?.icon || 'FaStar'} />
             </FormGroup>
             <FormGroup>
+              <label htmlFor="descricao">Descrição</label>
+              <Textarea
+                id="descricao"
+                name="descricao"
+                defaultValue={selectedProfessionalPlan?.descricao || ''}
+              />
+            </FormGroup>
+            <FormGroup>
               <label htmlFor="benefits">Benefícios (um por linha)</label>
               <Textarea
                 id="benefits"
@@ -583,13 +621,13 @@ const PlanosProfissionaisConfig = () => {
                 required
               />
             </FormGroup>
-            <Button type="submit">Salvar</Button>
-            <Button type="button" onClick={handleCancel}>Cancelar</Button>
+            <Button type="submit" disabled={isLoading}>{isLoading ? 'Salvando...' : 'Salvar'}</Button>
+            <Button type="button" onClick={handleCancel} disabled={isLoading}>Cancelar</Button>
           </Form>
         </div>
       ) : (
         <div>
-          <Button onClick={handleAddProfessionalPlan}>Adicionar Plano para Profissionais</Button>
+          <Button onClick={handleAddProfessionalPlan} disabled={isLoading}>Adicionar Plano para Profissionais</Button>
           <TableContainer>
             <Table>
               <thead>
@@ -598,6 +636,8 @@ const PlanosProfissionaisConfig = () => {
                   <th>Título</th>
                   <th>Preço</th>
                   <th>Classificação</th>
+                  <th>Cor</th>
+                  <th>Descrição</th>
                   <th>Ação</th>
                 </tr>
               </thead>
@@ -609,8 +649,15 @@ const PlanosProfissionaisConfig = () => {
                     <td>{p.price}</td>
                     <td>{p.classificacao}</td>
                     <td>
-                      <Button onClick={() => handleEditProfessionalPlan(p)}>Editar</Button>
-                      <Button onClick={() => handleDeleteProfessionalPlan(p.id)}>Excluir</Button>
+                      <ColorDisplay style={{ backgroundColor: p.cor }} />
+                      {p.cor}
+                    </td>
+                    <td>{p.descricao || 'Nenhuma'}</td>
+                    <td>
+                      <Button onClick={() => handleEditProfessionalPlan(p)} disabled={isLoading}>Editar</Button>
+                      <Button onClick={() => handleDeleteProfessionalPlan(p.id)} disabled={isLoading}>
+                        {isLoading ? 'Excluindo...' : 'Excluir'}
+                      </Button>
                     </td>
                   </tr>
                 ))}

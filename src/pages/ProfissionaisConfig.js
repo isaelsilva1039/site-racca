@@ -856,7 +856,7 @@ const ProfissionaisConfig = () => {
               />
             </FormGroup>
             <FormGroup>
-              <label htmlFor="crp">CRP</label>
+              <label htmlFor="crp">CRP/CRM/CRN</label>
               <Input
                 type="text"
                 id="crp"
