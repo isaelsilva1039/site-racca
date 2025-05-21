@@ -1,20 +1,9 @@
-import React, { useState, useRef } from 'react';
-import styled, { keyframes } from 'styled-components';
-import { FaUserCircle, FaTimes, FaChevronLeft, FaChevronRight, FaEnvelope, FaWhatsapp } from 'react-icons/fa';
+import React, { useState, useEffect, useRef } from 'react';
+import styled from 'styled-components';
+import { FaUserCircle, FaChevronLeft, FaChevronRight, FaEnvelope, FaWhatsapp } from 'react-icons/fa';
 import InputMask from 'react-input-mask';
 import { createCustomer, createPayment, getOrCreateCustomer } from '../services/server';
-import './Plans/Plans.css'; // Import Plans.css for consistent modal and form styling
-
-const fadeInUp = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
+import './Plans/Plans.css';
 
 const ConsultaContainer = styled.section`
   text-align: center;
@@ -38,7 +27,6 @@ const Title = styled.h2`
   text-transform: uppercase;
   letter-spacing: 2px;
   font-weight: bold;
-  animation: ${fadeInUp} 1s ease-out;
 
   @media (max-width: 768px) {
     font-size: 1.8rem;
@@ -232,7 +220,6 @@ const PsicologoCard = styled.div`
   min-width: 400px;
   max-width: 400px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: ${fadeInUp} 1s ease-out ${({ delay }) => delay || '0s'} forwards;
   background: linear-gradient(145deg, #ffffff, #f0f0f5);
   border: 2px solid ${({ classificacao }) => (classificacao === 'Ouro' ? '#FFD700' : '#C0C0C0')};
 
@@ -250,8 +237,6 @@ const PsicologoCard = styled.div`
 
   @media (max-width: 480px) {
     min-width: 260px;
-    max-width: 280px;
-    padding: 12px;
   }
 `;
 
@@ -320,6 +305,25 @@ const PsicologoInfo = styled.div`
     p {
       font-size: 0.75rem;
     }
+  }
+`;
+
+const PriceHighlight = styled.p`
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #a100ff;
+  background: #e6d6ff;
+  padding: 5px 10px;
+  border-radius: 8px;
+  margin: 5px 0;
+  display: inline-block;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 0.85rem;
   }
 `;
 
@@ -460,276 +464,11 @@ const ConsultarButton = styled.button`
   }
 `;
 
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-`;
-
-const ModalContent = styled.div`
-  background: #ffffff;
-  border-radius: 15px;
-  padding: 20px;
-  width: 90%;
-  max-width: 800px;
-  max-height: 80vh;
-  overflow-y: auto;
-  position: relative;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-
-  @media (max-width: 768px) {
-    width: 95%;
-    padding: 15px;
-    max-width: 600px;
-  }
-
-  @media (max-width: 480px) {
-    width: 90%;
-    padding: 12px;
-    max-height: 85vh;
-  }
-`;
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: #a100ff;
-  cursor: pointer;
-
-  @media (max-width: 480px) {
-    font-size: 1.2rem;
-    top: 8px;
-    right: 8px;
-  }
-`;
-
-const ModalTitle = styled.h3`
-  font-size: 2rem;
-  color: #a100ff;
-  text-align: center;
-  margin-bottom: 20px;
-
-  @media (max-width: 768px) {
-    font-size: 1.8rem;
-    margin-bottom: 15px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 1.5rem;
-    margin-bottom: 12px;
-  }
-`;
-
-const CalendarioHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-
-  @media (max-width: 480px) {
-    margin-bottom: 15px;
-  }
-`;
-
-const MesAno = styled.h4`
-  font-size: 1.2rem;
-  color: #333;
-
-  @media (max-width: 480px) {
-    font-size: 1rem;
-  }
-`;
-
-const NavegacaoButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 1.2rem;
-  color: #a100ff;
-  cursor: pointer;
-  transition: color 0.3s ease;
-
-  &:hover {
-    color: #8a00e6;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 1rem;
-  }
-`;
-
-const DiasGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
-
-  @media (max-width: 768px) {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 15px;
-  }
-
-  @media (max-width: 480px) {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-`;
-
-const DiaCard = styled.div`
-  background: ${(props) => (props.disponivel ? '#ffffff' : '#f0f0f0')};
-  border-radius: 10px;
-  padding: 10px;
-  text-align: center;
-  cursor: ${(props) => (props.disponivel ? 'pointer' : 'not-allowed')};
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-  ${(props) =>
-    props.disponivel &&
-    `
-    &:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    }
-  `}
-
-  ${(props) =>
-    props.selecionado &&
-    `
-    background: #a100ff;
-    color: #ffffff;
-  `}
-
-  p {
-    margin: 0;
-    font-size: 1rem;
-  }
-
-  @media (max-width: 768px) {
-    padding: 8px;
-
-    p {
-      font-size: 0.9rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    padding: 6px;
-
-    p {
-      font-size: 0.8rem;
-    }
-  }
-`;
-
-const HorariosGrid = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 20px;
-
-  @media (max-width: 768px) {
-    gap: 8px;
-    margin-bottom: 15px;
-  }
-
-  @media (max-width: 480px) {
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-`;
-
-const HorarioButton = styled.button`
-  background: #ffffff;
-  border: 1px solid #a100ff;
-  border-radius: 10px;
-  padding: 8px 15px;
-  font-size: 0.9rem;
-  color: #a100ff;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: #a100ff;
-    color: #ffffff;
-  }
-
-  ${(props) =>
-    props.selecionado &&
-    `
-    background: #a100ff;
-    color: #ffffff;
-  `}
-
-  @media (max-width: 768px) {
-    padding: 6px 12px;
-    font-size: 0.85rem;
-  }
-
-  @media (max-width: 480px) {
-    padding: 5px 10px;
-    font-size: 0.75rem;
-  }
-`;
-
-const ConfirmarButton = styled.button`
-  width: 100%;
-  max-width: 200px;
-  padding: 10px;
-  background: #a100ff;
-  color: #ffffff;
-  border: none;
-  border-radius: 10px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.3s ease;
-  display: block;
-  margin: 10px auto;
-
-  &:hover {
-    background: #8a00e6;
-    transform: scale(1.05);
-  }
-
-  &:disabled {
-    background: #cccccc;
-    cursor: not-allowed;
-  }
-
-  @media (max-width: 768px) {
-    max-width: 180px;
-    padding: 8px;
-    font-size: 1rem;
-  }
-
-  @media (max-width: 480px) {
-    max-width: 160px;
-    padding: 7px;
-    font-size: 0.9rem;
-  }
-`;
-
 const ConsultaAvulsa = () => {
   const [filtroArea, setFiltroArea] = useState('todos');
+  const [psicologos, setPsicologos] = useState([]);
   const [selectedPsicologo, setSelectedPsicologo] = useState(null);
-  const [selectedDia, setSelectedDia] = useState(null);
-  const [selectedHorario, setSelectedHorario] = useState(null);
   const [expandedSobreMim, setExpandedSobreMim] = useState({});
-  const [mesAtual, setMesAtual] = useState(4); // Mês inicial: abril (1-12)
-  const [anoAtual, setAnoAtual] = useState(2025); // Ano inicial: 2025
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -750,295 +489,47 @@ const ConsultaAvulsa = () => {
     estado: '',
   });
 
-  const psicologos = [
-    {
-      id: 1,
-      nome: 'Fábio da Silva Ferreira',
-      crp: '04/70777',
-      preco: 30,
-      areas: ['adolescência', 'casais', 'depressão', 'ansiedade', 'identidade'],
-      abordagem: 'Terapia Cognitivo Comportamental - TCC',
-      publico: 'Adolescentes, Adultos, Casais, Idosos',
-      sobreMim:
-        'Psicólogo clínico especialista em TCC, terapia cognitiva comportamental. Intervenção em crise de Ansiedade; Tratamento da Depressão; Problemas conjugais; Relacionamentos tóxicos; Dependência emocional; Abuso psicológico; Crises de Pânico; Traumas e Luto; Transtornos de Personalidade; Bipolar; Borderline; Obsessivo Compulsivo; TDAH; Crises Dependentes Químicas; Suicídio; Luto; Perdas e Morte; Transtorno de Automutilação; Suicídio; Prevenção ao Suicídio (diagnóstico e tratamento). Intervenções Mentais, e pacientes, dificuldades de relacionamento interpessoal. Auxílio no processo de evolução pessoal em busca da reestruturação cognitiva, autoestima e autoconhecimento. Priorizo identificar e modificar pensamentos disfuncionais, cognitives distorcidas e alterar padrões destrutivos e desencadeadores de comportamentos causadores de sofrimento psíquico. Disponho de um processo terapêutico eficaz, com ética, sigilo, confiança e sem julgamentos.',
-      disponibilidade: {
-        '2025-04': {
-          1: ['09:00', '10:00', '14:00'],
-          3: ['11:00', '15:00'],
-          4: ['09:00', '13:00', '16:00'],
-        },
-        '2025-05': {
-          5: ['10:00', '14:00'],
-          6: ['09:00', '11:00'],
-        },
-      },
-      classificacao: 'Ouro',
-    },
-    {
-      id: 2,
-      nome: 'Igor Leonardo da Silva Pinheiro',
-      crp: '17/7389',
-      preco: 30,
-      areas: ['abuso infantil', 'adolescência', 'ansiedade', 'bullying', 'depressão', 'LGBTQIA+', 'relacionamento'],
-      abordagem: 'Psicologia Transpessoal',
-      publico: 'Adolescentes, Adultos',
-      sobreMim:
-        'Psicólogo com foco em Psicologia Transpessoal, atuo com adolescentes e adultos, especialmente em questões de abuso infantil, bullying e identidade de gênero. Trabalho com ansiedade, depressão e relacionamentos, promovendo o autoconhecimento e a expansão da consciência. Meu objetivo é ajudar os pacientes a encontrarem um sentido maior em suas vidas, superando traumas e desafios emocionais com uma abordagem integrativa e acolhedora.',
-      disponibilidade: {
-        '2025-04': {
-          2: ['10:00', '14:00'],
-          5: ['09:00', '11:00', '15:00'],
-        },
-        '2025-05': {
-          7: ['10:00', '14:00'],
-          8: ['09:00', '13:00'],
-        },
-      },
-      classificacao: 'Prata',
-    },
-    {
-      id: 3,
-      nome: 'Mariana Oliveira',
-      crp: '05/12345',
-      preco: 40,
-      areas: ['ansiedade', 'depressão', 'estresse', 'carreira'],
-      abordagem: 'Terapia Cognitivo Comportamental - TCC',
-      publico: 'Adultos, Idosos',
-      sobreMim:
-        'Psicóloga clínica com especialização em TCC, atuo com adultos e idosos enfrentando ansiedade, depressão e estresse, especialmente em questões relacionadas à carreira. Ajudo meus pacientes a desenvolverem estratégias práticas para lidar com pressões do dia a dia, promovendo equilíbrio emocional e bem-estar. Minha abordagem é focada em resultados, com ênfase em técnicas baseadas em evidências.',
-      disponibilidade: {
-        '2025-04': {
-          6: ['09:00', '11:00'],
-          7: ['14:00', '16:00'],
-        },
-        '2025-05': {
-          9: ['10:00', '14:00'],
-          10: ['09:00', '15:00'],
-        },
-      },
-      classificacao: 'Ouro',
-    },
-    {
-      id: 4,
-      nome: 'Clara Souza',
-      crp: '06/54321',
-      preco: 35,
-      areas: ['relacionamento', 'autoestima', 'ansiedade', 'depressão'],
-      abordagem: 'Psicoterapia Humanista',
-      publico: 'Adolescentes, Adultos',
-      sobreMim:
-        'Psicóloga humanista, trabalho com adolescentes e adultos que buscam melhorar seus relacionamentos e autoestima. Atuo em casos de ansiedade e depressão, oferecendo um espaço seguro para o autoconhecimento e o desenvolvimento pessoal. Minha abordagem valoriza a experiência única de cada indivíduo, promovendo aceitação e crescimento emocional.',
-      disponibilidade: {
-        '2025-04': {
-          8: ['10:00', '15:00'],
-          9: ['09:00', '13:00'],
-        },
-        '2025-05': {
-          11: ['10:00', '14:00'],
-          12: ['09:00', '15:00'],
-        },
-      },
-      classificacao: 'Prata',
-    },
-    {
-      id: 5,
-      nome: 'Lucas Almeida',
-      crp: '07/98765',
-      preco: 50,
-      areas: ['trauma', 'ansiedade', 'depressão', 'luto'],
-      abordagem: 'EMDR',
-      publico: 'Adultos, Idosos',
-      sobreMim:
-        'Psicólogo especializado em EMDR, atuo com adultos e idosos que enfrentam traumas, luto, ansiedade e depressão. Utilizo técnicas avançadas para ajudar na reprocessamento de experiências traumáticas, promovendo alívio emocional e recuperação. Meu trabalho é focado em criar um ambiente seguro e acolhedor para que os pacientes possam superar suas dificuldades.',
-      disponibilidade: {
-        '2025-04': {
-          10: ['11:00', '14:00'],
-          11: ['09:00', '16:00'],
-        },
-        '2025-05': {
-          13: ['10:00', '14:00'],
-          14: ['09:00', '15:00'],
-        },
-      },
-      classificacao: 'Ouro',
-    },
-    {
-      id: 6,
-      nome: 'Beatriz Lima',
-      crp: '08/45678',
-      preco: 45,
-      areas: ['adolescência', 'bullying', 'autoestima', 'ansiedade'],
-      abordagem: 'Terapia Cognitivo Comportamental - TCC',
-      publico: 'Adolescentes',
-      sobreMim:
-        'Psicóloga clínica com foco em adolescentes, utilizo a TCC para tratar questões como bullying, ansiedade e baixa autoestima. Meu objetivo é ajudar jovens a desenvolverem resiliência emocional e habilidades para enfrentar os desafios da adolescência. Trabalho com empatia e acolhimento, criando um espaço seguro para o crescimento pessoal.',
-      disponibilidade: {
-        '2025-04': {
-          12: ['09:00', '10:00'],
-          13: ['14:00', '15:00'],
-        },
-        '2025-05': {
-          15: ['10:00', '14:00'],
-          16: ['09:00', '15:00'],
-        },
-      },
-      classificacao: 'Prata',
-    },
-    {
-      id: 7,
-      nome: 'Rafael Costa',
-      crp: '09/11223',
-      preco: 30,
-      areas: ['casais', 'relacionamento', 'conflitos familiares'],
-      abordagem: 'Terapia Sistêmica',
-      publico: 'Casais, Adultos',
-      sobreMim:
-        'Psicólogo especializado em Terapia Sistêmica, atuo com casais e adultos que enfrentam conflitos familiares e dificuldades nos relacionamentos. Meu trabalho foca em compreender as dinâmicas familiares e promover uma comunicação mais saudável entre os envolvidos. Ofereço um espaço de escuta e reflexão para construir relações mais harmoniosas.',
-      disponibilidade: {
-        '2025-04': {
-          14: ['10:00', '11:00'],
-          15: ['13:00', '16:00'],
-        },
-        '2025-05': {
-          17: ['10:00', '14:00'],
-          18: ['09:00', '15:00'],
-        },
-      },
-      classificacao: 'Prata',
-    },
-    {
-      id: 8,
-      nome: 'Sofia Mendes',
-      crp: '10/33445',
-      preco: 40,
-      areas: ['LGBTQIA+', 'identidade', 'depressão', 'ansiedade'],
-      abordagem: 'Psicologia Analítica',
-      publico: 'Adolescentes, Adultos',
-      sobreMim:
-        'Psicóloga com abordagem em Psicologia Analítica, atuo com adolescentes e adultos, especialmente da comunidade LGBTQIA+, em questões de identidade, depressão e ansiedade. Meu trabalho é focado em explorar o inconsciente e promover o autoconhecimento, ajudando os pacientes a encontrarem equilíbrio e autenticidade em suas vidas.',
-      disponibilidade: {
-        '2025-04': {
-          16: ['09:00', '14:00'],
-          17: ['10:00', '15:00'],
-        },
-        '2025-05': {
-          19: ['10:00', '14:00'],
-          20: ['09:00', '15:00'],
-        },
-      },
-      classificacao: 'Ouro',
-    },
-    {
-      id: 9,
-      nome: 'Pedro Henrique',
-      crp: '11/55667',
-      preco: 35,
-      areas: ['carreira', 'estresse', 'ansiedade', 'depressão'],
-      abordagem: 'Terapia Cognitivo Comportamental - TCC',
-      publico: 'Adultos',
-      sobreMim:
-        'Psicólogo clínico com especialização em TCC, atuo com adultos que enfrentam estresse, ansiedade e depressão relacionados à carreira. Ajudo meus pacientes a desenvolverem estratégias para lidar com pressões profissionais e encontrar um equilíbrio entre vida pessoal e trabalho. Minha abordagem é prática e focada em resultados.',
-      disponibilidade: {
-        '2025-04': {
-          18: ['11:00', '13:00'],
-          19: ['09:00', '16:00'],
-        },
-        '2025-05': {
-          21: ['10:00', '14:00'],
-          22: ['09:00', '15:00'],
-        },
-      },
-      classificacao: 'Prata',
-    },
-    {
-      id: 10,
-      nome: 'Ana Clara Ribeiro',
-      crp: '12/77889',
-      preco: 50,
-      areas: ['trauma', 'luto', 'ansiedade', 'depressão'],
-      abordagem: 'Psicoterapia Psicanalítica',
-      publico: 'Adultos, Idosos',
-      sobreMim:
-        'Psicóloga com formação em Psicoterapia Psicanalítica, atuo com adultos e idosos que enfrentam traumas, luto, ansiedade e depressão. Meu trabalho é focado em explorar os processos inconscientes que influenciam o comportamento e as emoções, promovendo autoconhecimento e transformação pessoal em um ambiente acolhedor e seguro.',
-      disponibilidade: {
-        '2025-04': {
-          20: ['10:00', '14:00'],
-          21: ['09:00', '15:00'],
-        },
-        '2025-05': {
-          23: ['10:00', '14:00'],
-          24: ['09:00', '15:00'],
-        },
-      },
-      classificacao: 'Prata',
-    },
-  ];
+  useEffect(() => {
+    const fetchPsicologos = async () => {
+      try {
+        const response = await fetch('https://racca.store/api/profissionais/all');
+        const data = await response.json();
+        const validPsicologos = data.filter(
+          (psicologo) =>
+            psicologo.nome &&
+            psicologo.crp &&
+            psicologo.preco &&
+            psicologo.classificacao &&
+            psicologo.areasAtendimento &&
+            psicologo.abordagem &&
+            psicologo.publico &&
+            psicologo.sobreMim
+        );
+        setPsicologos(validPsicologos);
+      } catch (error) {
+        console.error('Erro ao buscar psicólogos:', error);
+      }
+    };
+    fetchPsicologos();
+  }, []);
 
   const todasAreas = [
     'todos',
     ...new Set(
-      psicologos.flatMap((psicologo) => psicologo.areas)
+      psicologos.flatMap((psicologo) => psicologo.areasAtendimento || [])
     ),
   ];
 
   const psicologosFiltrados = filtroArea === 'todos'
     ? psicologos
     : psicologos.filter((psicologo) =>
-        psicologo.areas.includes(filtroArea)
+        psicologo.areasAtendimento.includes(filtroArea)
       );
-
-  const meses = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-  ];
-
-  const diasNoMes = (mes, ano) => {
-    return new Date(ano, mes, 0).getDate();
-  };
-
-  const dias = Array.from({ length: diasNoMes(mesAtual, anoAtual) }, (_, i) => {
-    const dia = i + 1;
-    const chaveMesAno = `${anoAtual}-${String(mesAtual).padStart(2, '0')}`;
-    const disponibilidadeMes = selectedPsicologo?.disponibilidade[chaveMesAno] || {};
-    return {
-      dia,
-      disponivel: disponibilidadeMes[dia] !== undefined,
-    };
-  });
-
-  const horarios = selectedDia
-    ? (selectedPsicologo?.disponibilidade[`${anoAtual}-${String(mesAtual).padStart(2, '0')}`]?.[selectedDia] || [])
-    : [];
 
   const handleConsultarClick = (psicologo) => {
     setSelectedPsicologo(psicologo);
-    if (psicologo.classificacao === 'Prata') {
-      setIsPaymentModalOpen(true);
-      setStep(1);
-    } else {
-      setSelectedDia(null);
-      setSelectedHorario(null);
-      setMesAtual(4);
-      setAnoAtual(2025);
-    }
-  };
-
-  const handleDiaClick = (dia) => {
-    if (dia.disponivel) {
-      setSelectedDia(dia.dia);
-      setSelectedHorario(null);
-    }
-  };
-
-  const handleHorarioClick = (horario) => {
-    setSelectedHorario(horario);
-  };
-
-  const handleConfirmar = () => {
-    if (selectedDia && selectedHorario && selectedPsicologo.classificacao === 'Ouro') {
-      setIsPaymentModalOpen(true);
-      setStep(1);
-    }
+    setIsPaymentModalOpen(true);
+    setStep(1);
   };
 
   const closePaymentModal = () => {
@@ -1060,8 +551,6 @@ const ConsultaAvulsa = () => {
     setStep(1);
     setLoading(false);
     setSelectedPsicologo(null);
-    setSelectedDia(null);
-    setSelectedHorario(null);
   };
 
   const handleInputChange = (e) => {
@@ -1104,7 +593,7 @@ const ConsultaAvulsa = () => {
 
   const formatAddress = () => {
     const { cep, rua, numero, complemento, bairro, cidade, estado } = payerInfo;
-    if (!cep && !rua && !numero && !bairro && !cidade && !estado) return "";
+    if (!cep && !rua && !numero && !bairro && !cidade && !estado) return '';
     return `${rua}, ${numero}${complemento ? ' - ' + complemento : ''}, ${bairro}, ${cidade} - ${estado}, CEP: ${cep}`;
   };
 
@@ -1124,7 +613,7 @@ const ConsultaAvulsa = () => {
         }));
       }
     } catch (err) {
-      console.error("Erro ao buscar CEP:", err);
+      console.error('Erro ao buscar CEP:', err);
     }
   };
 
@@ -1141,7 +630,7 @@ const ConsultaAvulsa = () => {
         }
       },
       onError: (message) => {
-        console.error("onError chamado com:", message);
+        console.error('onError chamado com:', message);
         setLoading(false);
       },
     });
@@ -1166,7 +655,7 @@ const ConsultaAvulsa = () => {
         }
       },
       onError: (message) => {
-        console.error("onError chamado com:", message);
+        console.error('onError chamado com:', message);
         setLoading(false);
       },
     });
@@ -1174,10 +663,10 @@ const ConsultaAvulsa = () => {
 
   const payment = (id_cliente_assas) => {
     createPayment({
-      externalReference: selectedPsicologo.id, // Using psychologist ID as external reference
+      externalReference: selectedPsicologo.id,
       customer: id_cliente_assas,
       billingType: 'UNDEFINED',
-      dueDate: new Date().toISOString().split("T")[0],
+      dueDate: new Date().toISOString().split('T')[0],
       value: selectedPsicologo.preco,
       description: `Consulta avulsa com o psicólogo ${selectedPsicologo.nome}`,
       cpfCnpj: payerInfo?.cpfCnpj,
@@ -1190,19 +679,16 @@ const ConsultaAvulsa = () => {
         if (invoiceUrl) {
           window.location.href = invoiceUrl;
         }
-        // After payment, redirect to WhatsApp
-        const mensagem = selectedPsicologo.classificacao === 'Ouro' && selectedDia && selectedHorario
-          ? `Olá, gostaria de agendar uma consulta com o psicólogo ${selectedPsicologo.nome} (CRP: ${selectedPsicologo.crp}) no dia ${selectedDia} de ${meses[mesAtual - 1]} de ${anoAtual} às ${selectedHorario}.`
-          : `Olá, gostaria de agendar uma consulta com o psicólogo ${selectedPsicologo.nome} (CRP: ${selectedPsicologo.crp}).`;
+        const mensagem = `Olá, gostaria de agendar uma consulta com o psicólogo ${selectedPsicologo.nome} (CRP: ${selectedPsicologo.crp}).`;
         const url = `https://wa.me/5537999137500?text=${encodeURIComponent(mensagem)}`;
         setTimeout(() => {
           window.open(url, '_blank');
           closePaymentModal();
-        }, 1000); // Small delay to ensure payment redirect completes
+        }, 1000);
       },
       onError: (message) => {
         setLoading(false);
-        console.error("onError chamado com:", message);
+        console.error('onError chamado com:', message);
       },
     });
   };
@@ -1212,28 +698,6 @@ const ConsultaAvulsa = () => {
       ...prev,
       [id]: !prev[id],
     }));
-  };
-
-  const handlePrevMes = () => {
-    setSelectedDia(null);
-    setSelectedHorario(null);
-    if (mesAtual === 1) {
-      setMesAtual(12);
-      setAnoAtual(anoAtual - 1);
-    } else {
-      setMesAtual(mesAtual - 1);
-    }
-  };
-
-  const handleNextMes = () => {
-    setSelectedDia(null);
-    setSelectedHorario(null);
-    if (mesAtual === 12) {
-      setMesAtual(1);
-      setAnoAtual(anoAtual + 1);
-    } else {
-      setMesAtual(mesAtual + 1);
-    }
   };
 
   const scrollLeft = () => {
@@ -1274,29 +738,37 @@ const ConsultaAvulsa = () => {
           {psicologosFiltrados.map((psicologo, index) => (
             <PsicologoCard
               key={psicologo.id}
-              delay={`${0.2 * (index + 1)}s`}
               classificacao={psicologo.classificacao}
             >
               <PsicologoHeader>
                 <PsicologoFoto>
-                  <FaUserCircle />
+                  {psicologo.fotoUrl ? (
+                    <img
+                      src={psicologo.fotoUrl}
+                      alt={psicologo.nome}
+                      style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+                      onError={(e) => (e.target.outerHTML = '<FaUserCircle />')}
+                    />
+                  ) : (
+                    <FaUserCircle />
+                  )}
                 </PsicologoFoto>
                 <PsicologoInfo>
                   <h3>{psicologo.nome}</h3>
                   <p>Psicólogo</p>
                   <p>CRP: {psicologo.crp}</p>
-                  <p>Valor da consulta: R${psicologo.preco}</p>
+                  <PriceHighlight>Valor da consulta: R${psicologo.preco}</PriceHighlight>
                 </PsicologoInfo>
               </PsicologoHeader>
               <TagsContainer>
-                {psicologo.areas.map((area) => (
+                {psicologo.areasAtendimento.map((area) => (
                   <Tag key={area}>{area}</Tag>
                 ))}
               </TagsContainer>
               <Abordagem>
                 Abordagem: <span>{psicologo.abordagem}</span>
               </Abordagem>
-              <Publico>👥 {psicologo.publico}</Publico>
+              <Publico>👥 {psicologo.publico.join(', ')}</Publico>
               <SobreMim expandido={expandedSobreMim[psicologo.id]}>
                 <strong>Sobre mim:</strong>
                 <div className="texto">{psicologo.sobreMim}</div>
@@ -1316,65 +788,6 @@ const ConsultaAvulsa = () => {
           <FaChevronRight />
         </NavButton>
       </GridContainer>
-
-      {selectedPsicologo && selectedPsicologo.classificacao === 'Ouro' && !isPaymentModalOpen && (
-        <ModalOverlay>
-          <ModalContent>
-            <CloseButton onClick={() => setSelectedPsicologo(null)}>
-              <FaTimes />
-            </CloseButton>
-            <ModalTitle>Agendar com {selectedPsicologo.nome}</ModalTitle>
-            <CalendarioHeader>
-              <NavegacaoButton onClick={handlePrevMes}>
-                <FaChevronLeft />
-              </NavegacaoButton>
-              <MesAno>{meses[mesAtual - 1]} {anoAtual}</MesAno>
-              <NavegacaoButton onClick={handleNextMes}>
-                <FaChevronRight />
-              </NavegacaoButton>
-            </CalendarioHeader>
-            <h4>Selecione o Dia</h4>
-            <DiasGrid>
-              {dias.map((dia) => (
-                <DiaCard
-                  key={dia.dia}
-                  disponivel={dia.disponivel}
-                  selecionado={selectedDia === dia.dia}
-                  onClick={() => handleDiaClick(dia)}
-                >
-                  <p>{dia.dia}</p>
-                </DiaCard>
-              ))}
-            </DiasGrid>
-            {selectedDia && (
-              <>
-                <h4>Selecione o Horário</h4>
-                <HorariosGrid>
-                  {horarios.length > 0 ? (
-                    horarios.map((horario) => (
-                      <HorarioButton
-                        key={horario}
-                        selecionado={selectedHorario === horario}
-                        onClick={() => handleHorarioClick(horario)}
-                      >
-                        {horario}
-                      </HorarioButton>
-                    ))
-                  ) : (
-                    <p>Nenhum horário disponível para este dia.</p>
-                  )}
-                </HorariosGrid>
-                <ConfirmarButton
-                  disabled={!selectedHorario}
-                  onClick={handleConfirmar}
-                >
-                  Confirmar Agendamento
-                </ConfirmarButton>
-              </>
-            )}
-          </ModalContent>
-        </ModalOverlay>
-      )}
 
       {isPaymentModalOpen && selectedPsicologo && (
         <div className="modal-overlay" onClick={closePaymentModal}>
