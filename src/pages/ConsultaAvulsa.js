@@ -98,7 +98,7 @@ const FiltroContainer = styled.div`
 
 const GridContainer = styled.div`
   position: relative;
-  max-width: 1400px;
+  max-width: 1800px;
   margin: 0 auto;
   padding: 0 40px;
 
