@@ -24,7 +24,7 @@ import {
   FaUmbrella,
   FaChevronDown,
   FaPlus,
-  FaTrash, // Adicionando FaTrash para o botão de remover
+  FaTrash,
 } from "react-icons/fa";
 
 const fadeInUp = keyframes`
@@ -168,6 +168,31 @@ const Input = styled.input`
   }
 `;
 
+const Select = styled.select`
+  padding: 10px;
+  border: 1px solid #a100ff;
+  border-radius: 5px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+
+  &:focus {
+    border-color: #8a00e6;
+    outline: none;
+    box-shadow: 0 0 5px rgba(138, 0, 230, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    padding: 8px;
+    font-size: 0.95rem;
+  }
+  @media (max-width: 480px) {
+    padding: 7px;
+    font-size: 0.9rem;
+  }
+`;
+
 const SelectContainer = styled.div`
   position: relative;
   width: 100%;
@@ -279,6 +304,11 @@ const Button = styled.button`
     background: #8a00e6;
   }
 
+  &:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+  }
+
   @media (max-width: 768px) {
     padding: 10px;
     font-size: 0.95rem;
@@ -335,6 +365,12 @@ const ExtraFidelityItem = styled.div`
   align-items: center;
 `;
 
+const SpecialtyItem = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+`;
+
 const FidelityBaseContainer = styled.div`
   display: flex;
   gap: 10px;
@@ -372,7 +408,9 @@ const PlanosConfig = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [error, setError] = useState(null);
   const [benefits, setBenefits] = useState([]);
-  const [extraFidelities, setExtraFidelities] = useState([]); // Novo estado para fidelidades extras
+  const [extraFidelities, setExtraFidelities] = useState([]);
+  const [specialties, setSpecialties] = useState([]);
+  const [availableSpecialties, setAvailableSpecialties] = useState([]);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -402,6 +440,7 @@ const PlanosConfig = () => {
           descricao: plan.descricao,
           benefits: plan.beneficios || [],
           fidelidadesExtras: plan.fidelidades_extras || [],
+          especialidades: plan.especialidades || [],
         }));
         setPlans(mappedPlans);
       } catch (error) {
@@ -409,7 +448,32 @@ const PlanosConfig = () => {
       }
     };
 
+    const fetchSpecialties = async () => {
+      try {
+        const response = await fetch(
+          "https://racca.store/api/specialties/all",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Erro ao buscar especialidades");
+        }
+
+        const data = await response.json();
+        // Extract the data array and ensure it's an array
+        setAvailableSpecialties(Array.isArray(data.data) ? data.data : []);
+      } catch (error) {
+        setError("Erro ao buscar especialidades: " + error.message);
+      }
+    };
+
     fetchPlans();
+    fetchSpecialties();
   }, []);
 
   useEffect(() => {
@@ -421,9 +485,16 @@ const PlanosConfig = () => {
           id: `fidelity-${index}-${Date.now()}`,
         })) || []
       );
+      setSpecialties(
+        selectedPlan.especialidades.map((s, index) => ({
+          ...s,
+          id: `specialty-${index}-${Date.now()}`,
+        })) || []
+      );
     } else if (isAddingPlan) {
       setBenefits([]);
       setExtraFidelities([]);
+      setSpecialties([]);
     }
   }, [selectedPlan, isAddingPlan]);
 
@@ -437,6 +508,7 @@ const PlanosConfig = () => {
       descricao: "",
       benefits: [],
       fidelidadesExtras: [],
+      especialidades: [],
     });
     setIsAddingPlan(true);
   };
@@ -467,6 +539,7 @@ const PlanosConfig = () => {
         descricao: data.descricao,
         benefits: data.beneficios || [],
         fidelidadesExtras: data.fidelidades_extras || [],
+        especialidades: data.especialidades || [],
       });
       setIsAddingPlan(false);
     } catch (error) {
@@ -540,6 +613,10 @@ const PlanosConfig = () => {
         preco: parseFloat(fidelity.preco),
         periodo: fidelity.periodo,
       })),
+      especialidades: specialties.map((specialty) => ({
+        nome: specialty.nome,
+        consultationCount: specialty.consultationCount,
+      })),
       beneficios: benefitsArray.length > 0 ? benefitsArray : undefined,
     };
 
@@ -586,7 +663,8 @@ const PlanosConfig = () => {
         fidelidade: responseData.fidelidade || 0,
         descricao: responseData.descricao,
         benefits: responseData.beneficios || [],
-        fidelidadesExtras: responseData.fidelidades_extras,
+        fidelidadesExtras: responseData.fidelidades_extras || [],
+        especialidades: responseData.especialidades || [],
       };
 
       if (isAddingPlan) {
@@ -600,6 +678,7 @@ const PlanosConfig = () => {
       setIsAddingPlan(false);
       setBenefits([]);
       setExtraFidelities([]);
+      setSpecialties([]);
       setError(null);
     } catch (error) {
       setError("Erro ao salvar na API: " + error.message);
@@ -617,6 +696,7 @@ const PlanosConfig = () => {
     setIsAddingPlan(false);
     setBenefits([]);
     setExtraFidelities([]);
+    setSpecialties([]);
     setError(null);
   };
 
@@ -651,6 +731,30 @@ const PlanosConfig = () => {
     const updatedBenefits = [...benefits];
     updatedBenefits[index] = value;
     setBenefits(updatedBenefits);
+  };
+
+  const addSpecialty = () => {
+    if (availableSpecialties.length === 0) return; // Prevent adding if no specialties are available
+    setSpecialties([
+      ...specialties,
+      {
+        nome: availableSpecialties[0].nome,
+        consultationCount: "0",
+        id: `specialty-new-${Date.now()}`,
+      },
+    ]);
+  };
+
+  const removeSpecialty = (id) => {
+    setSpecialties(specialties.filter((specialty) => specialty.id !== id));
+  };
+
+  const updateSpecialty = (id, field, value) => {
+    setSpecialties(
+      specialties.map((specialty) =>
+        specialty.id === id ? { ...specialty, [field]: value } : specialty
+      )
+    );
   };
 
   const selectedIcon = iconOptions.find(
@@ -820,6 +924,59 @@ const PlanosConfig = () => {
                 </Button>
               </ExtraFidelityContainer>
             </FormGroup>
+            <FormGroup>
+              <label>Especialidades</label>
+              <ExtraFidelityContainer>
+                {specialties.map((specialty, index) => (
+                  <SpecialtyItem key={specialty.id}>
+                    <Select
+                      name={`especialidadesNome[${index}]`}
+                      value={specialty.nome}
+                      onChange={(e) =>
+                        updateSpecialty(specialty.id, "nome", e.target.value)
+                      }
+                      required
+                    >
+                      {availableSpecialties.length > 0 ? (
+                        availableSpecialties.map((s) => (
+                          <option key={s.id} value={s.nome}>
+                            {s.nome}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="" disabled>
+                          Nenhuma especialidade disponível
+                        </option>
+                      )}
+                    </Select>
+                    <Input
+                      type="number"
+                      name={`especialidadesConsultationCount[${index}]`}
+                      value={specialty.consultationCount}
+                      onChange={(e) =>
+                        updateSpecialty(specialty.id, "consultationCount", e.target.value)
+                      }
+                      min="0"
+                      placeholder="Nº de consultas"
+                      required
+                    />
+                    <RemoveButton
+                      type="button"
+                      onClick={() => removeSpecialty(specialty.id)}
+                    >
+                      <FaTrash />
+                    </RemoveButton>
+                  </SpecialtyItem>
+                ))}
+                <Button
+                  type="button"
+                  onClick={addSpecialty}
+                  disabled={availableSpecialties.length === 0}
+                >
+                  <FaPlus /> Adicionar Especialidade
+                </Button>
+              </ExtraFidelityContainer>
+            </FormGroup>
             <Button type="submit">Salvar</Button>
             <Button type="button" onClick={handleCancel}>
               Cancelar
@@ -838,6 +995,7 @@ const PlanosConfig = () => {
                   <th>Valor Base (R$)</th>
                   <th>Fidelidades Extras</th>
                   <th>Benefícios</th>
+                  <th>Especialidades</th>
                   <th>Ação</th>
                 </tr>
               </thead>
@@ -848,7 +1006,11 @@ const PlanosConfig = () => {
                     <td>{p.descricao || "-"}</td>
                     <td>
                       {p.valor.toFixed(2)}
-                      {p.fidelidade > 0 ? ` (${p.fidelidade} ${p.fidelidade === 1 ? "mês" : "meses"} de fidelidade)` : ""}
+                      {p.fidelidade > 0
+                        ? ` (${p.fidelidade} ${
+                            p.fidelidade === 1 ? "mês" : "meses"
+                          } de fidelidade)`
+                        : ""}
                     </td>
                     <td>
                       {p.fidelidadesExtras
@@ -856,6 +1018,11 @@ const PlanosConfig = () => {
                         .join(", ") || "-"}
                     </td>
                     <td>{p.benefits?.join(", ") || "-"}</td>
+                    <td>
+                      {p.especialidades
+                        ?.map((s) => `${s.nome} (${s.consultationCount} consultas)`)
+                        .join(", ") || "-"}
+                    </td>
                     <td>
                       <Button onClick={() => handleEditPlan(p)}>Editar</Button>
                       <Button onClick={() => handleDeletePlan(p.id)}>
