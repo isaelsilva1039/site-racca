@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { FaStar, FaCrown, FaEnvelope, FaWhatsapp, FaArrowLeft } from 'react-icons/fa';
 import InputMask from 'react-input-mask';
@@ -103,7 +103,7 @@ const PlansContainer = styled.div`
 
 const PlanCard = styled.div`
   background: ${props => (props.plan === 'Ouro' ? 'linear-gradient(135deg, #fff5e6, #ffe4b5)' : '#fff')};
-  border: 2px solid ${props => (props.plan === 'Ouro' ? '#ffd700' : '#ddd')};
+  border: 2px solid ${props => props.borderColor || '#ddd'};
   border-radius: 15px;
   padding: 25px;
   width: 100%;
@@ -130,7 +130,7 @@ const PlanCard = styled.div`
 
 const PlanIcon = styled.div`
   font-size: 2.5rem;
-  color: ${props => (props.plan === 'Ouro' ? '#ffd700' : '#a007f2')};
+  color: ${props => props.iconColor || '#a007f2'};
   margin-bottom: 15px;
 
   @media (max-width: 480px) {
@@ -140,7 +140,8 @@ const PlanIcon = styled.div`
 
 const PlanTitle = styled.h3`
   font-size: 1.8rem;
-  color: ${props => (props.plan === 'Ouro' ? '#d4af37' : '#a007f2')};
+  color: ${props => props.plan ===
+  'Ouro' ? '#d4af37' : '#a007f2'};
   margin-bottom: 10px;
 
   @media (max-width: 480px) {
@@ -177,7 +178,7 @@ const PlanBenefit = styled.li`
     content: '✔';
     position: absolute;
     left: 0;
-    color: ${props => (props.plan === 'Ouro' ? '#d4af37' : '#a007f2')};
+    color: ${props => props.plan === 'Ouro' ? '#d4af37' : '#a007f2'};
     font-size: 1.2rem;
   }
 
@@ -214,49 +215,37 @@ const ChooseButton = styled.button`
   }
 `;
 
-const plans = [
-  {
-    name: 'Prata',
-    id_plano_sistema_racca: 1001, // Unique ID for Prata plan
-    price: 'R$ 30/mês',
-    amount: 30.0,
-    icon: <FaStar />,
-    prices: {
-      mensal: 'R$ 30,00/mês s/ fidelidade',
-    },
-    benefits: [
-      'Acesso básico à plataforma',
-      'Até 10 consultas por mês',
-      'Suporte padrão via e-mail',
-    ],
-  },
-  {
-    name: 'Ouro',
-    id_plano_sistema_racca: 1002, // Unique ID for Ouro plan
-    price: 'R$ 50/mês',
-    amount: 50.0,
-    icon: <FaCrown />,
-    prices: {
-      mensal: 'R$ 50,00/mês s/ fidelidade',
-    },
-    benefits: [
-      'Consultas ilimitadas',
-      'Suporte prioritário (e-mail e WhatsApp)',
-      'Perfil destacado na plataforma',
-      'Acesso a recursos premium',
-    ],
-  },
-];
+const ErrorMessage = styled.div`
+  color: red;
+  text-align: center;
+  margin-bottom: 15px;
+`;
+
+const LoadingMessage = styled.div`
+  text-align: center;
+  font-size: 1rem;
+  color: #a007f2;
+  margin-bottom: 15px;
+`;
+
+const BASE_URL = 'https://racca.store';
+
+// Map icon names from API to React components
+const iconMap = {
+  FaStar: <FaStar />,
+  FaCrown: <FaCrown />,
+  // Add more mappings as needed for other icons
+};
 
 const TrabalheConosco = () => {
-  // States for modal and form
+  const [plans, setPlans] = useState([]);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPriceOption, setSelectedPriceOption] = useState('mensal');
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Payer information state
   const [payerInfo, setPayerInfo] = useState({
     name: '',
     email: '',
@@ -272,10 +261,48 @@ const TrabalheConosco = () => {
     estado: '',
   });
 
-  // Modal handlers
+  const fetchPlans = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${BASE_URL}/api/profissionais/planos/all`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Accept': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar planos: ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      const mappedPlans = data.map(plan => ({
+        name: plan.titulo,
+        id_plano_sistema_racca: plan.id,
+        price: `R$ ${parseFloat(plan.preco).toFixed(2)}/mês`,
+        amount: parseFloat(plan.preco),
+        icon: iconMap[plan.icon] || <FaStar />,
+        prices: {
+          mensal: `R$ ${parseFloat(plan.preco).toFixed(2)}/mês s/ fidelidade`,
+        },
+        benefits: plan.beneficios ? plan.beneficios.split(',').map(b => b.trim()) : [],
+        cor: plan.cor || '#ddd',
+        classificacao: plan.classificacao,
+      }));
+      setPlans(mappedPlans);
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
   const openModal = (plan) => {
     setSelectedPlan(plan);
-    setSelectedPriceOption('mensal'); // Default to mensal as plans only have this option
+    setSelectedPriceOption('mensal');
     setIsModalOpen(true);
     setStep(1);
   };
@@ -301,7 +328,6 @@ const TrabalheConosco = () => {
     setLoading(false);
   };
 
-  // Form handlers
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setPayerInfo((prev) => ({ ...prev, [name]: value }));
@@ -325,7 +351,6 @@ const TrabalheConosco = () => {
     getOrCreateCustomerPla();
   };
 
-  // Validation
   const isStep1Valid =
     payerInfo.name &&
     payerInfo.email &&
@@ -341,7 +366,6 @@ const TrabalheConosco = () => {
     payerInfo.cidade &&
     payerInfo.estado;
 
-  // Address formatting and CEP lookup
   const formatAddress = () => {
     const { cep, rua, numero, complemento, bairro, cidade, estado } = payerInfo;
     if (!cep && !rua && !numero && !bairro && !cidade && !estado) return "";
@@ -368,7 +392,6 @@ const TrabalheConosco = () => {
     }
   };
 
-  // Payment processing
   const getOrCreateCustomerPla = async () => {
     setLoading(true);
     getOrCreateCustomer({
@@ -448,16 +471,23 @@ const TrabalheConosco = () => {
           Faça parte da nossa plataforma e ofereça seus serviços de psicologia online. Escolha o produto ideal para você e comece a atender pacientes de forma prática e segura.
         </Subtitle>
 
+        {error && <ErrorMessage>{error}</ErrorMessage>}
+        {loading && <LoadingMessage>Carregando planos...</LoadingMessage>}
+
         <PlansSection>
           <PlansContainer>
             {plans.map((plan) => (
-              <PlanCard key={plan.name} plan={plan.name}>
-                <PlanIcon plan={plan.name}>{plan.icon}</PlanIcon>
-                <PlanTitle plan={plan.name}>{plan.name}</PlanTitle>
+              <PlanCard
+                key={plan.id_plano_sistema_racca}
+                plan={plan.classificacao}
+                borderColor={plan.cor}
+              >
+                <PlanIcon iconColor={plan.cor}>{plan.icon}</PlanIcon>
+                <PlanTitle plan={plan.classificacao}>{plan.name}</PlanTitle>
                 <PlanPrice>{plan.price}</PlanPrice>
                 <PlanBenefits>
                   {plan.benefits.map((benefit, index) => (
-                    <PlanBenefit key={index} plan={plan.name}>{benefit}</PlanBenefit>
+                    <PlanBenefit key={index} plan={plan.classificacao}>{benefit}</PlanBenefit>
                   ))}
                 </PlanBenefits>
                 <ChooseButton onClick={() => openModal(plan)}>
