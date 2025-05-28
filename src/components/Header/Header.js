@@ -30,10 +30,7 @@ function Header() {
     window.open('https://raccasaude.blogspot.com/', '_blank');
   };
 
-  const handleContatoClick = () => {
-    setIsMenuOpen(false);
-    window.open('https://wa.me/5537999137500', '_blank');
-  };
+
 
   const handleImageOptionsClick = () => {
     setIsMenuOpen(false);
@@ -259,9 +256,7 @@ function Header() {
         <a href="#agende-agora" className="nav-link agende-agora" onClick={handleAgendamentoClick}>
           Agende Agora
         </a>
-        <a href="#contato" className="nav-link" onClick={handleContatoClick}>
-          Contato
-        </a>
+
 
         <div className="nav-link" onClick={handleAdminClick}>
           Área Administrativa
