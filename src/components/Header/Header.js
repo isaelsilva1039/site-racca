@@ -142,9 +142,7 @@ function Header() {
           )}
         </div>
 
-        <a href="#benefits" className="nav-link" onClick={() => setIsMenuOpen(false)}>
-          Benefícios
-        </a>
+     
 
         <div className="nav-link dropdown" onClick={() => setParaVoceOpen(!paraVoceOpen)}>
           Para Você
@@ -236,14 +234,20 @@ function Header() {
           )}
         </div>
 
-        <div className="nav-link dropdown" onClick={() => setSejaParceiroOpen(!sejaParceiroOpen)}>
-          Seja Parceiro
-          {sejaParceiroOpen && (
-            <div className="dropdown-menu">
-              {/* Adicione itens aqui se necessário */}
-            </div>
-          )}
-        </div>
+<div
+  className="nav-link dropdown"
+  onClick={() => {
+    setSejaParceiroOpen(!sejaParceiroOpen);
+    window.open('https://wa.me/5537999137500', '_blank');
+  }}
+>
+  Seja Parceiro
+  {sejaParceiroOpen && (
+    <div className="dropdown-menu">
+      {/* Adicione itens aqui se necessário */}
+    </div>
+  )}
+</div>
 
         <Link to="/trabalhe-conosco" className="nav-link" onClick={() => setIsMenuOpen(false)}>
           Trabalhe Conosco
