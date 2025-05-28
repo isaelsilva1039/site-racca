@@ -219,6 +219,8 @@ const PsicologoCard = styled.div`
   text-align: left;
   min-width: 400px;
   max-width: 400px;
+  min-height: 600px;
+  position: relative;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   background: linear-gradient(145deg, #ffffff, #f0f0f5);
   border: 2px solid ${({ classificacao }) => (classificacao === 'Ouro' ? '#FFD700' : '#C0C0C0')};
@@ -231,12 +233,14 @@ const PsicologoCard = styled.div`
   @media (max-width: 768px) {
     min-width: 300px;
     max-width: 320px;
+    min-height: 550px;
     padding: 15px;
     scroll-snap-align: start;
   }
 
   @media (max-width: 480px) {
     min-width: 260px;
+    min-height: 500px;
   }
 `;
 
@@ -342,9 +346,9 @@ const TagsContainer = styled.div`
 const Tag = styled.span`
   background: #e6d6ff;
   color: #a100ff;
-  padding: 5px 10px;
+  padding: 0px 2px;
   border-radius: 15px;
-  font-size: 0.9rem;
+  font-size: 0.7rem;
   text-transform: capitalize;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 
@@ -386,6 +390,7 @@ const SobreMim = styled.div`
   font-size: 0.9rem;
   color: #555;
   line-height: 1.5;
+  position: relative;
 
   strong {
     color: #333;
@@ -394,11 +399,11 @@ const SobreMim = styled.div`
   }
 
   .texto {
-    display: -webkit-box;
-    -webkit-line-clamp: ${({ expandido }) => (expandido ? 'unset' : '7')};
+    display: ${({ expandido }) => (expandido ? 'block' : '-webkit-box')};
+    -webkit-line-clamp: ${({ expandido }) => (expandido ? 'unset' : 5)};
     -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow: ${({ expandido }) => (expandido ? 'visible' : 'hidden')};
+    text-overflow: ${({ expandido }) => (expandido ? 'clip' : 'ellipsis')};
   }
 
   @media (max-width: 480px) {
@@ -406,7 +411,7 @@ const SobreMim = styled.div`
     line-height: 1.4;
 
     .texto {
-      -webkit-line-clamp: ${({ expandido }) => (expandido ? 'unset' : '5')};
+      -webkit-line-clamp: ${({ expandido }) => (expandido ? 'unset' : 5)};
     }
   }
 `;
@@ -435,6 +440,7 @@ const VerMaisButton = styled.button`
 const ConsultarButton = styled.button`
   width: 100%;
   max-width: 200px;
+  
   padding: 10px;
   background: #a100ff;
   color: #ffffff;
@@ -443,12 +449,14 @@ const ConsultarButton = styled.button`
   font-size: 1.1rem;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.3s ease;
-  display: block;
-  margin: 10px auto;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
 
   &:hover {
     background: #8a00e6;
-    transform: scale(1.05);
+    transform: translateX(-50%) scale(1.05);
   }
 
   @media (max-width: 768px) {
@@ -698,6 +706,7 @@ const ConsultaAvulsa = () => {
       ...prev,
       [id]: !prev[id],
     }));
+    console.log(`Toggling expand for ID ${id}. New state:`, { ...expandedSobreMim, [id]: !expandedSobreMim[id] }); // Debug log
   };
 
   const scrollLeft = () => {
@@ -735,54 +744,60 @@ const ConsultaAvulsa = () => {
           <FaChevronLeft />
         </NavButton>
         <PsicologoGrid ref={gridRef}>
-          {psicologosFiltrados.map((psicologo, index) => (
-            <PsicologoCard
-              key={psicologo.id}
-              classificacao={psicologo.classificacao}
-            >
-              <PsicologoHeader>
-                <PsicologoFoto>
-                  {psicologo.fotoUrl ? (
-                    <img
-                      src={psicologo.fotoUrl}
-                      alt={psicologo.nome}
-                      style={{ width: '100%', height: '100%', borderRadius: '50%' }}
-                      onError={(e) => (e.target.outerHTML = '<FaUserCircle />')}
-                    />
-                  ) : (
-                    <FaUserCircle />
+          {psicologosFiltrados.map((psicologo, index) => {
+            const text = psicologo.sobreMim.trim();
+            const words = text.split(/\s+/).length;
+            const estimatedLines = Math.ceil(words / 10);
+
+            return (
+              <PsicologoCard
+                key={psicologo.id}
+                classificacao={psicologo.classificacao}
+              >
+                <PsicologoHeader>
+                  <PsicologoFoto>
+                    {psicologo.fotoUrl ? (
+                      <img
+                        src={psicologo.fotoUrl}
+                        alt={psicologo.nome}
+                        style={{ width: '100%', height: '100%', borderRadius: '50%' }}
+                        onError={(e) => (e.target.outerHTML = '<FaUserCircle />')}
+                      />
+                    ) : (
+                      <FaUserCircle />
+                    )}
+                  </PsicologoFoto>
+                  <PsicologoInfo>
+                    <h3>{psicologo.nome}</h3>
+                    <p>Psicólogo</p>
+                    <p>CRP: {psicologo.crp}</p>
+                    <PriceHighlight>Valor da consulta: R${psicologo.preco}</PriceHighlight>
+                  </PsicologoInfo>
+                </PsicologoHeader>
+                <TagsContainer>
+                  {psicologo.areasAtendimento.map((area) => (
+                    <Tag key={area}>{area}</Tag>
+                  ))}
+                </TagsContainer>
+                <Abordagem>
+                  Abordagem: <span>{psicologo.abordagem}</span>
+                </Abordagem>
+                <Publico>👥 {psicologo.publico.join(', ')}</Publico>
+                <SobreMim expandido={expandedSobreMim[psicologo.id] || false}>
+                  <strong>Sobre mim:</strong>
+                  <div className="texto">{psicologo.sobreMim}</div>
+                  {estimatedLines > 5 && (
+                    <VerMaisButton onClick={() => toggleExpandSobreMim(psicologo.id)}>
+                      {expandedSobreMim[psicologo.id] ? 'Ver menos' : 'Ver mais'}
+                    </VerMaisButton>
                   )}
-                </PsicologoFoto>
-                <PsicologoInfo>
-                  <h3>{psicologo.nome}</h3>
-                  <p>Psicólogo</p>
-                  <p>CRP: {psicologo.crp}</p>
-                  <PriceHighlight>Valor da consulta: R${psicologo.preco}</PriceHighlight>
-                </PsicologoInfo>
-              </PsicologoHeader>
-              <TagsContainer>
-                {psicologo.areasAtendimento.map((area) => (
-                  <Tag key={area}>{area}</Tag>
-                ))}
-              </TagsContainer>
-              <Abordagem>
-                Abordagem: <span>{psicologo.abordagem}</span>
-              </Abordagem>
-              <Publico>👥 {psicologo.publico.join(', ')}</Publico>
-              <SobreMim expandido={expandedSobreMim[psicologo.id]}>
-                <strong>Sobre mim:</strong>
-                <div className="texto">{psicologo.sobreMim}</div>
-                {psicologo.sobreMim.split('\n').length > 7 && (
-                  <VerMaisButton onClick={() => toggleExpandSobreMim(psicologo.id)}>
-                    {expandedSobreMim[psicologo.id] ? 'Ver menos' : 'Ver mais'}
-                  </VerMaisButton>
-                )}
-              </SobreMim>
-              <ConsultarButton onClick={() => handleConsultarClick(psicologo)}>
-                Quero me consultar
-              </ConsultarButton>
-            </PsicologoCard>
-          ))}
+                </SobreMim>
+                <ConsultarButton onClick={() => handleConsultarClick(psicologo)}>
+                  Quero me consultar
+                </ConsultarButton>
+              </PsicologoCard>
+            );
+          })}
         </PsicologoGrid>
         <NavButton onClick={scrollRight}>
           <FaChevronRight />
