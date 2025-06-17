@@ -117,7 +117,7 @@ const PsicologoGrid = styled.div`
   gap: 30px;
   padding: 0 10px;
   overflow-x: auto;
-  scrollbar-width: thick;
+  scrollbar-width: thin;
   scrollbar-color: #a100ff #e6d6ff;
 
   &::-webkit-scrollbar {
@@ -440,7 +440,6 @@ const VerMaisButton = styled.button`
 const ConsultarButton = styled.button`
   width: 100%;
   max-width: 200px;
-  
   padding: 10px;
   background: #a100ff;
   color: #ffffff;
@@ -480,6 +479,7 @@ const ConsultaAvulsa = () => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const gridRef = useRef(null);
 
   const [payerInfo, setPayerInfo] = useState({
@@ -496,6 +496,30 @@ const ConsultaAvulsa = () => {
     cidade: '',
     estado: '',
   });
+
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid || isPaused) return;
+
+    const isMobile = window.innerWidth <= 768;
+    const scrollSpeed = isMobile ? 0.3 : 6; // 0.3 pixels no mobile, 2 pixels no desktop
+    const scrollIntervalTime = isMobile ? 1000 : 1; // 60ms no mobile, 30ms no desktop
+
+    const scrollInterval = setInterval(() => {
+      if (grid) {
+        const maxScrollLeft = grid.scrollWidth - grid.clientWidth;
+        const currentScrollLeft = grid.scrollLeft;
+
+        if (currentScrollLeft >= maxScrollLeft - 1) {
+          grid.scrollTo({ left: 0, behavior: 'auto' });
+        } else {
+          grid.scrollBy({ left: scrollSpeed, behavior: 'smooth' });
+        }
+      }
+    }, scrollIntervalTime);
+
+    return () => clearInterval(scrollInterval);
+  }, [isPaused]);
 
   useEffect(() => {
     const fetchPsicologos = async () => {
@@ -706,7 +730,6 @@ const ConsultaAvulsa = () => {
       ...prev,
       [id]: !prev[id],
     }));
-    console.log(`Toggling expand for ID ${id}. New state:`, { ...expandedSobreMim, [id]: !expandedSobreMim[id] }); // Debug log
   };
 
   const scrollLeft = () => {
@@ -722,6 +745,11 @@ const ConsultaAvulsa = () => {
       gridRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
+
+  const handleMouseEnter = () => setIsPaused(true);
+  const handleMouseLeave = () => setIsPaused(false);
+  const handleTouchStart = () => setIsPaused(true);
+  const handleTouchEnd = () => setIsPaused(false);
 
   return (
     <ConsultaContainer>
@@ -743,7 +771,13 @@ const ConsultaAvulsa = () => {
         <NavButton onClick={scrollLeft}>
           <FaChevronLeft />
         </NavButton>
-        <PsicologoGrid ref={gridRef}>
+        <PsicologoGrid
+          ref={gridRef}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           {psicologosFiltrados.map((psicologo, index) => {
             const text = psicologo.sobreMim.trim();
             const words = text.split(/\s+/).length;
