@@ -502,7 +502,7 @@ const ConsultaAvulsa = () => {
     if (!grid || isPaused) return;
 
     const isMobile = window.innerWidth <= 768;
-    const scrollSpeed = isMobile ? 6 : 6; // 0.3 pixels no mobile, 2 pixels no desktop
+    const scrollSpeed = isMobile ? 0.3 : 6; // 0.3 pixels no mobile, 2 pixels no desktop
     const scrollIntervalTime = isMobile ? 1000 : 1; // 60ms no mobile, 30ms no desktop
 
     const scrollInterval = setInterval(() => {
