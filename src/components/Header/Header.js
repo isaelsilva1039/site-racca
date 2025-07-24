@@ -112,32 +112,7 @@ function Header() {
           Início
         </Link>
 
-        <div className="nav-link dropdown" onClick={() => setRaccaOpen(!raccaOpen)}>
-          Racca Saúde
-          {raccaOpen && (
-            <div className="dropdown-menu">
-              <a href="#missao-visao-valores" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
-                Missão, Visão e Valores
-              </a>
-              <a href="#grupo-racca" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
-                O Grupo RACCA
-              </a>
-              <a href="#depoimentos" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
-                Depoimentos
-              </a>
-              <Link
-                to="/politica-de-privacidade"
-                className="dropdown-item"
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  scrollToTop();
-                }}
-              >
-                Política de Privacidade
-              </Link>
-            </div>
-          )}
-        </div>
+        
 
      
 
@@ -205,54 +180,12 @@ function Header() {
           )}
         </div>
 
-        <div className="nav-link dropdown" onClick={() => setSouPacienteOpen(!souPacienteOpen)}>
-          Sou Paciente
-          {souPacienteOpen && (
-            <div className="dropdown-menu">
-              <div className="dropdown-item" onClick={handleAgendamentoClick}>
-                Agende Agora
-              </div>
-              <div className="dropdown-item" onClick={handleConsultaClinicaClick}>
-                Consulta Clínica
-              </div>
-              <div className="dropdown-item" onClick={handleImageOptionsClick}>
-                Financeiro
-              </div>
-              <div className="dropdown-item" onClick={handleImageOptionsClick}>
-                Ouvidoria
-              </div>
-              <Link to="/cuidar-conectado" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
-                Programa Cuidar Conectado
-              </Link>
-              <div className="dropdown-item" onClick={handleAtendimentoClick}>
-                Suporte WhatsApp
-              </div>
-            </div>
-          )}
-        </div>
-
-<div
-  className="nav-link dropdown"
-  onClick={() => {
-    setSejaParceiroOpen(!sejaParceiroOpen);
-    window.open('https://wa.me/5537999137500', '_blank');
-  }}
->
-  Seja Parceiro
-  {sejaParceiroOpen && (
-    <div className="dropdown-menu">
-      {/* Adicione itens aqui se necessário */}
-    </div>
-  )}
-</div>
-
+        
         <Link to="/trabalhe-conosco" className="nav-link" onClick={() => setIsMenuOpen(false)}>
           Trabalhe Conosco
         </Link>
 
-        <a href="#blog" className="nav-link" onClick={handleBlogClick}>
-          Blog
-        </a>
+
         <a href="#agende-agora" className="nav-link agende-agora" onClick={handleAgendamentoClick}>
           Agende Agora
         </a>
