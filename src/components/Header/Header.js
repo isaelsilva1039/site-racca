@@ -9,6 +9,7 @@ function Header() {
   const [paraEmpresasOpen, setParaEmpresasOpen] = useState(false);
   const [souPacienteOpen, setSouPacienteOpen] = useState(false);
   const [sejaParceiroOpen, setSejaParceiroOpen] = useState(false);
+  const [areaClienteOpen, setAreaClienteOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -30,8 +31,6 @@ function Header() {
     window.open('https://raccasaude.blogspot.com/', '_blank');
   };
 
-
-
   const handleImageOptionsClick = () => {
     setIsMenuOpen(false);
     window.open('https://wa.me/5537999137500', '_blank');
@@ -45,6 +44,11 @@ function Header() {
   const handleAdminClick = () => {
     setIsMenuOpen(false);
     setIsModalOpen(true);
+  };
+
+  const handleSejaCredenciadoClick = () => {
+    setIsMenuOpen(false);
+    window.open('https://wa.me/5537999137500', '_blank');
   };
 
   const handleLogin = () => {
@@ -64,9 +68,12 @@ function Header() {
     setPassword('');
   };
 
-  // Função para rolar para o topo da página
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsMenuOpen(false);
   };
 
   useEffect(() => {
@@ -77,6 +84,7 @@ function Header() {
         setParaEmpresasOpen(false);
         setSouPacienteOpen(false);
         setSejaParceiroOpen(false);
+        setAreaClienteOpen(false);
         setIsMenuOpen(false);
       }
       if (modalRef.current && !modalRef.current.contains(event.target)) {
@@ -106,15 +114,11 @@ function Header() {
           className="nav-link"
           onClick={() => {
             setIsMenuOpen(false);
-            scrollToTop();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >
           Início
         </Link>
-
-        
-
-     
 
         <div className="nav-link dropdown" onClick={() => setParaVoceOpen(!paraVoceOpen)}>
           Para Você
@@ -125,7 +129,7 @@ function Header() {
                 className="dropdown-item"
                 onClick={() => {
                   setIsMenuOpen(false);
-                  scrollToTop();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
               >
                 Cuidar Conectado
@@ -135,7 +139,7 @@ function Header() {
                 className="dropdown-item"
                 onClick={() => {
                   setIsMenuOpen(false);
-                  scrollToTop();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
               >
                 Especialidades
@@ -145,16 +149,31 @@ function Header() {
                 className="dropdown-item"
                 onClick={() => {
                   setIsMenuOpen(false);
-                  scrollToTop();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
               >
                 Seguros Pessoais
               </Link>
-              <a href="#plans" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+              <a
+                href="#plans"
+                className="dropdown-item"
+                onClick={() => scrollToSection('plans')}
+              >
                 Telemedicina
               </a>
-              <a href="#consultaavulsa" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+              <a
+                href="#plans"
+                className="dropdown-item"
+                onClick={() => scrollToSection('plans')}
+              >
                 Terapia Online
+              </a>
+              <a
+                href="https://raccasaude.blogspot.com/"
+                className="dropdown-item"
+                onClick={handleBlogClick}
+              >
+                Blog RACCA
               </a>
             </div>
           )}
@@ -164,32 +183,100 @@ function Header() {
           Para Empresas
           {paraEmpresasOpen && (
             <div className="dropdown-menu">
-              <a href="/plano-odonto-empresarial" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+              <a
+                href="/plano-odonto-empresarial"
+                className="dropdown-item"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Plano Odontológico
               </a>
-              <Link to="/nr1" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+              <Link
+                to="/nr1"
+                className="dropdown-item"
+                onClick={() => setIsMenuOpen(false)}
+              >
                 Saúde Mental – NR1
               </Link>
-              <a href="#telemedicina" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+              <a
+                href="https://wa.me/5537999137500"
+                className="dropdown-item"
+                onClick={handleAtendimentoClick}
+              >
                 Telemedicina
               </a>
-              <a href="#terapia-online" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+              <a
+                href="https://wa.me/5537999137500"
+                className="dropdown-item"
+                onClick={handleAtendimentoClick}
+              >
                 Terapia Online
               </a>
             </div>
           )}
         </div>
 
-        
-        <Link to="/trabalhe-conosco" className="nav-link" onClick={() => setIsMenuOpen(false)}>
+        <div className="nav-link dropdown" onClick={() => setSejaParceiroOpen(!sejaParceiroOpen)}>
           Trabalhe Conosco
-        </Link>
+          {sejaParceiroOpen && (
+            <div className="dropdown-menu">
+              <Link
+                to="/trabalhe-conosco"
+                className="dropdown-item"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Para Psicólogos
+              </Link>
+              <a
+                href="https://wa.me/5537999137500"
+                className="dropdown-item"
+                onClick={handleSejaCredenciadoClick}
+              >
+                Seja um Credenciado
+              </a>
+            </div>
+          )}
+        </div>
 
+        <a
+          href="#plans"
+          className="nav-link"
+          onClick={() => scrollToSection('plans')}
+        >
+          Assine Agora
+        </a>
+
+        <div className="nav-link dropdown" onClick={() => setAreaClienteOpen(!areaClienteOpen)}>
+          Área do Cliente
+          {areaClienteOpen && (
+            <div className="dropdown-menu">
+              <a
+                href="https://app.racca.store/login"
+                className="dropdown-item"
+                onClick={handleAgendamentoClick}
+              >
+                Agendar Terapia
+              </a>
+              <a
+                href="#"
+                className="dropdown-item"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Clínico 24 Horas
+              </a>
+              <a
+                href="https://wa.me/5537999137500"
+                className="dropdown-item"
+                onClick={handleAtendimentoClick}
+              >
+                Suporte RACCA
+              </a>
+            </div>
+          )}
+        </div>
 
         <a href="#agende-agora" className="nav-link agende-agora" onClick={handleAgendamentoClick}>
           Agende Agora
         </a>
-
 
         <div className="nav-link" onClick={handleAdminClick}>
           Área Administrativa
