@@ -42,7 +42,7 @@ function Plans() {
 
   const BACKEND_URL = 'https://www.asaas.com/api/v3';
 
-  useEffect(() => {
+  useEffect(( ) => {
     const fetchPlans = async () => {
       try {
         const response = await fetch('https://racca.store/api/clientes/planos/all', {
@@ -55,7 +55,7 @@ function Plans() {
             'Sec-Fetch-Dest': 'empty',
             'Sec-Fetch-Mode': 'cors',
             'Sec-Fetch-Site': 'cross-site',
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16_6 Mobile/15E148 Safari/604.1',
+            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X ) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16_6 Mobile/15E148 Safari/604.1',
           },
         });
         if (!response.ok) {
@@ -64,7 +64,7 @@ function Plans() {
         const data = await response.json();
         const mappedProducts = Array.isArray(data) ? data.map(plan => {
           const decodedTitle = decodeUnicode(plan.nome_plano);
-          const decodedBenefits = Array.isArray(plan.beneficios) ? plan.beneficios.map(benefit => 
+          const decodedBenefits = Array.isArray(plan.beneficios) ? plan.beneficios.map(benefit =>
             decodeUnicode(benefit).split('\n').filter(line => line.trim() !== '').join(' ')
           ) : [];
           const valorAsFloat = parseFloat(plan.valor) || 0;
@@ -173,7 +173,7 @@ function Plans() {
     const cep = payerInfo.cep.replace(/\D/g, '');
     if (cep.length !== 8) return;
     try {
-      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/` );
       const data = await response.json();
       if (!data.erro) {
         setPayerInfo((prev) => ({
@@ -293,40 +293,41 @@ function Plans() {
       <div className="plans-grid">
         {products.map((product) => (
           <div className="plan-card" key={product.id}>
-            <div className="plan-icon">{product.icon}</div>
-            <h3 className="plan-title">{product.title}</h3>
-            <div className="plan-price-container">
-              <span className="original-price">
-                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.amount * 1.5)}
-              </span>
+            <div className="plan-details">
+              <div className="plan-header">
+                <div className="plan-icon">{product.icon}</div>
+                <h3 className="plan-title">{product.title}</h3>
+              </div>
+              <ul className="plan-benefits">
+                {product.benefits.map((benefit, index) => (
+                  <li key={index}>{benefit}</li>
+                ))}
+              </ul>
+              <div className="price-option-selector">
+                {Object.entries(product.prices).map(([option, price]) => (
+                  <label key={option} className="price-option-label">
+                    <input
+                      type="radio"
+                      name={`priceOption-${product.id}`}
+                      value={option}
+                      checked={selectedPriceOption === option}
+                      onChange={() => setSelectedPriceOption(option)}
+                      className="price-radio"
+                    />
+                    <span className="price-text">{price}</span>
+                  </label>
+                ))}
+              </div>
             </div>
-            <p className="plan-price">
-              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.amount)}
-              <span className="price-unit">/mês</span>
-            </p>
-            <ul className="plan-benefits">
-              {product.benefits.map((benefit, index) => (
-                <li key={index}>{benefit}</li>
-              ))}
-            </ul>
-            <div className="price-option-selector">
-              {Object.entries(product.prices).map(([option, price]) => (
-                <label key={option} className="price-option-label">
-                  <input
-                    type="radio"
-                    name={`priceOption-${product.id}`}
-                    value={option}
-                    checked={selectedPriceOption === option}
-                    onChange={() => setSelectedPriceOption(option)}
-                    className="price-radio"
-                  />
-                  <span className="price-text">{price}</span>
-                </label>
-              ))}
+            <div className="plan-pricing">
+              <p className="plan-price">
+                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.amount)}
+                <span className="price-unit">/mês</span>
+              </p>
+              <button onClick={() => openModal(product)} className="plan-button">
+                Assine Agora
+              </button>
             </div>
-            <button onClick={() => openModal(product)} className="plan-button">
-              Assine Agora
-            </button>
           </div>
         ))}
       </div>
