@@ -257,9 +257,9 @@ function Header() {
                 Agendar Terapia
               </a>
               <a
-                href="#"
+                href="https://clientes.raccasaude.com.br/login"
                 className="dropdown-item"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={handleConsultaClinicaClick}
               >
                 Clínico 24 Horas
               </a>
@@ -274,9 +274,7 @@ function Header() {
           )}
         </div>
 
-        <a href="#agende-agora" className="nav-link agende-agora" onClick={handleAgendamentoClick}>
-          Agende Agora
-        </a>
+     
 
         <div className="nav-link" onClick={handleAdminClick}>
           Área Administrativa
