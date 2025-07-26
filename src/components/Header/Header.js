@@ -239,7 +239,7 @@ function Header() {
 
         <a
           href="#plans"
-          className="nav-link"
+          className="nav-link agende-agora"
           onClick={() => scrollToSection('plans')}
         >
           Assine Agora
