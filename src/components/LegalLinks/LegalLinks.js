@@ -1,25 +1,35 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { FaInstagram, FaFacebook, FaYoutube, FaBlog, FaGooglePlay } from 'react-icons/fa'; // Added FaYoutube, FaBlog, and FaGooglePlay
+import { FaInstagram, FaFacebook, FaYoutube, FaBlog, FaGooglePlay, FaApple } from 'react-icons/fa';
 
 const LegalSection = styled.div`
-  background-color: #f8f9fa; /* Cor de fundo */
+  background-color: #f8f9fa;
   padding: 20px 0;
   text-align: center;
   font-size: 0.9rem;
   color: #666;
 
   .social-icons {
-    margin-bottom: 10px; /* Espaço entre os ícones e os links */
+    margin-bottom: 10px;
     
     a {
       margin: 0 10px;
-      font-size: 1.5rem; /* Tamanho dos ícones */
+      font-size: 1.5rem;
       color: #a100ff;
       transition: color 0.3s;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      text-decoration: none;
 
       &:hover {
         color: #7d00cc;
+      }
+
+      span {
+        font-size: 0.7rem;
+        margin-top: 5px;
+        color: #666;
       }
     }
   }
@@ -52,18 +62,27 @@ function LegalLinks({ onFAQClick }) {
       <div className="social-icons">
         <a href="https://www.instagram.com/raccasaude/" target="_blank" rel="noopener noreferrer">
           <FaInstagram />
+          <span>Instagram</span>
         </a>
         <a href="https://www.youtube.com/@RACCASAUDE" target="_blank" rel="noopener noreferrer">
           <FaYoutube />
+          <span>YouTube</span>
         </a>
         <a href="https://www.facebook.com/raccasaude" target="_blank" rel="noopener noreferrer">
           <FaFacebook />
+          <span>Facebook</span>
         </a>
         <a href="https://raccasaude.blogspot.com" target="_blank" rel="noopener noreferrer">
           <FaBlog />
+          <span>Blog</span>
         </a>
-        <a href="https://play.google.com/store/apps/details?id=br.com.app.gpu3062692.gpu1d404764e1a7796325d587e2a0a7dc10&hl=pt_BR&pli=1" target="_blank" rel="noopener noreferrer">
+        <a href="https://play.google.com/store/apps/details?id=com.racca.raccaapp" target="_blank" rel="noopener noreferrer">
           <FaGooglePlay />
+          <span>Google Play</span>
+        </a>
+        <a href="https://apps.apple.com/br/app/racca-sa%C3%BAde-app/id6745531117" target="_blank" rel="noopener noreferrer">
+          <FaApple />
+          <span>App Store</span>
         </a>
       </div>
 
